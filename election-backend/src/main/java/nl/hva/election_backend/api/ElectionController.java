@@ -1,7 +1,7 @@
 package nl.hva.election_backend.api;
 
-import nl.hva.ict.sm3.backend.model.Election;
-import nl.hva.ict.sm3.backend.service.DutchElectionService;
+import nl.hva.election_backend.model.Election;
+import nl.hva.election_backend.service.DutchElectionService;
 import org.springframework.web.bind.annotation.*;
 
 /**

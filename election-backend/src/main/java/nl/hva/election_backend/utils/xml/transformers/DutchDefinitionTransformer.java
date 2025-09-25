@@ -1,7 +1,7 @@
 package nl.hva.election_backend.utils.xml.transformers;
 
-import nl.hva.ict.sm3.backend.model.Election;
-import nl.hva.ict.sm3.backend.utils.xml.DefinitionTransformer;
+import nl.hva.election_backend.model.Election;
+import nl.hva.election_backend.utils.xml.DefinitionTransformer;
 
 import java.util.Map;
 

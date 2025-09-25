@@ -1,9 +1,9 @@
 package nl.hva.election_backend.service;
 
-import nl.hva.ict.sm3.backend.model.*;
-import nl.hva.ict.sm3.backend.utils.PathUtils;
-import nl.hva.ict.sm3.backend.utils.xml.*;
-import nl.hva.ict.sm3.backend.utils.xml.transformers.*;
+import nl.hva.election_backend.model.*;
+import nl.hva.election_backend.utils.PathUtils;
+import nl.hva.election_backend.utils.xml.*;
+import nl.hva.election_backend.utils.xml.transformers.*;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 

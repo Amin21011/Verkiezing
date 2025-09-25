@@ -1,6 +1,6 @@
 package nl.hva.election_backend.utils.xml;
 
-import nl.hva.ict.sm3.backend.utils.PathUtils;
+import nl.hva.election_backend.utils.PathUtils;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
