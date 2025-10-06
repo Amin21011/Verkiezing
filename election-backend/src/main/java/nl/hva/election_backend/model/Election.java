@@ -1,22 +1,25 @@
 package nl.hva.election_backend.model;
 
-/**
- * This will hold the information for one specific election.<br/>
- * <b>This class is by no means production ready! You need to alter it extensively!</b>
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class Election {
     private final String id;
+    private final List<PartyDTO> parties = new ArrayList<>();
 
     public Election(String id) {
         this.id = id;
     }
 
-    @Override
-    public String toString() {
-        return "You have to create a proper election model yourself!";
+    public String getId() { return id; }
+    public List<PartyDTO> getParties() { return parties; }
+
+    public void addParty(PartyDTO party) {
+        this.parties.add(party);
     }
 
-    public String getId() {
-        return id;
+    @Override
+    public String toString() {
+        return "Election " + id + " with " + parties.size() + " parties";
     }
 }
