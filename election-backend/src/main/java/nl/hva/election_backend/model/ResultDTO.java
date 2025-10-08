@@ -3,9 +3,10 @@ package nl.hva.election_backend.model;
 public class ResultDTO {
     private final String partyId;
     private final String candidateId;
-    private final int votes;
+    private int votes;
     private final String regionType;
     private final String regionId;
+    private String partyName; // extra veld
 
     public ResultDTO(String partyId, String candidateId, int votes, String regionType, String regionId) {
         this.partyId = partyId;
@@ -18,12 +19,18 @@ public class ResultDTO {
     public String getPartyId() { return partyId; }
     public String getCandidateId() { return candidateId; }
     public int getVotes() { return votes; }
+    public void setVotes(int votes) { this.votes = votes; }
+
     public String getRegionType() { return regionType; }
     public String getRegionId() { return regionId; }
 
+    public String getPartyName() { return partyName; }
+    public void setPartyName(String partyName) { this.partyName = partyName; }
+
     @Override
     public String toString() {
-        return String.format("ResultDTO{partyId='%s', candidateId='%s', votes=%d, regionType='%s', regionId='%s'}",
-                partyId, candidateId, votes, regionType, regionId);
+        String type = candidateId == null ? "Party" : "Candidate";
+        return String.format("%s | PartyId: %s (%s) | CandidateId: %s | Votes: %d | Region: %s %s",
+                type, partyId, partyName, candidateId, votes, regionType, regionId);
     }
 }
