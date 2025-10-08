@@ -13,14 +13,17 @@ public class Poll {
         this.votes = new int[options.size()];
     }
 
+    // Pollvraag teruggeven
     public String getQuestion() {
         return question;
     }
 
+    // Lijst met antwoordopties teruggeven
     public List<String> getOptions() {
         return options;
     }
 
+    // Aantal stemmen per optie teruggeven
     public int[] getVotes() {
         return votes;
     }
