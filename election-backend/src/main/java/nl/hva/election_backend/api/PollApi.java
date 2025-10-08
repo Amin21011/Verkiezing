@@ -19,20 +19,33 @@ public class PollApi {
         pollController.createPoll("Wie is de betere partij?", Arrays.asList("VVD", "D66", "CDA"));
     }
 
+    /**
+     * Haalt alle polls op.
+     */
     @GetMapping
     public List<Poll> getAllPolls() {
         return pollController.getAllPolls();
     }
 
+    /**
+     * Het toevoegen van een stem aan een poll.
+     */
     @PostMapping("/{pollIndex}/vote/{optionIndex}")
     public void vote(@PathVariable int pollIndex, @PathVariable int optionIndex) {
         pollController.voteOnPoll(pollIndex, optionIndex);
     }
 
+    /**
+     * Haalt een stem weg.
+     */
     @PutMapping("/{pollIndex}/reset/{optionIndex}")
     public void resetVote(@PathVariable int pollIndex, @PathVariable int optionIndex) {
         pollController.resetVote(pollIndex, optionIndex);
     }
+
+    /**
+     * Verwijdert alle polls.
+     */
     @DeleteMapping("/clear")
     public void clearPolls() {
         pollController.clearAllPolls();
