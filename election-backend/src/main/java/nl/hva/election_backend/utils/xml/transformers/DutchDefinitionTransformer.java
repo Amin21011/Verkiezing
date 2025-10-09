@@ -1,33 +1,73 @@
 package nl.hva.election_backend.utils.xml.transformers;
-
 import nl.hva.election_backend.model.Election;
+import nl.hva.election_backend.model.Party;
 import nl.hva.election_backend.utils.xml.DefinitionTransformer;
-
+import nl.hva.election_backend.utils.xml.TagAndAttributeNames;
+import nl.hva.election_backend.model.Region;
 import java.util.Map;
 
 /**
- * Just prints to content of electionData to the standard output.>br/>
- * <b>This class needs heavy modification!</b>
+ * Parses Dutch EML "Definition" XML files and registers regions (kieskringen)
+ * and parties inside the given Election model.
  */
+
 public class DutchDefinitionTransformer implements DefinitionTransformer {
+
+    private static final String KR_NAMESPACE = "http://www.kiesraad.nl/extensions";
     private final Election election;
 
-    /**
-     * Creates a new transformer for handling the structure of the constituencies, municipalities and the parties.
-     * It expects an instance of Election that can be used for storing the results.
-     * @param election the election in which the votes wil be stored.
-     */
     public DutchDefinitionTransformer(Election election) {
         this.election = election;
     }
-    
+
+    /**
+     * Registers a region (Kieskring, gemeente, etc.) based on XML attributes.
+     */
     @Override
     public void registerRegion(Map<String, String> electionData) {
-        System.out.println("Committee: " + electionData);
+        String regionId = electionData.get(TagAndAttributeNames.ID);
+        String regionNumber = electionData.get(TagAndAttributeNames.REGION_NUMBER);
+        String regionName = electionData.get(TagAndAttributeNames.REGION_NAME);
+
+        if ((regionId == null && regionNumber == null) || regionName == null) {
+            System.err.println("Region data incomplete: " + electionData);
+            return;
+        }
+
+        // Loggen voor debug
+        System.out.printf("Registered region -> ID: %s, Number: %s, Name: %s%n",
+                regionId != null ? regionId : "unknown",
+                regionNumber != null ? regionNumber : "unknown",
+                regionName);
+        Region region = new Region(regionId, regionNumber, regionName);
+         election.addRegion(region);
     }
+
 
     @Override
     public void registerParty(Map<String, String> electionData) {
-        System.out.println("Party: " + electionData);
+        String partyId = electionData.get(TagAndAttributeNames.ID);
+        String name = electionData.get(TagAndAttributeNames.REGISTERED_APPELLATION);
+
+        if (partyId != null && name != null && !name.isBlank()) {
+            Party party = new Party(partyId, name, "", 0, "");
+            election.addParty(party);
+            System.out.printf("Registered party: %s (%s)%n", name, partyId);
+        } else {
+            System.err.println("Party registration failed. Data: " + electionData);
+        }
     }
+
+//    public Election transform(String fileName) {
+//        DutchPartyParser parser = new DutchPartyParser();
+//        List<PartyDTO> parties = parser.parseParties(fileName);
+//        List<RegionDTO> regions = parser.parseRegions(fileName);
+//
+//        parties.forEach(election::addParty);
+//        regions.forEach(election::addRegion);
+//
+//        return election; // volledig gevuld object voor site
+//
+//
+//    }
 }
