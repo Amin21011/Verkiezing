@@ -6,7 +6,7 @@ import GridSection from './GridSection.vue'
 import NieuwsContent from './NieuwsContent.vue'
 import StatistiekenContent from './StatistiekenContent.vue'
 import PartijenContent from './PartijenContent.vue'
-import PollContent from './PollContent.vue'
+import PollView from '../views/PollView.vue'
 
 const eersteGrid = [
   { title: 'Latest News', component: NieuwsContent },
@@ -15,7 +15,7 @@ const eersteGrid = [
 
 const tweedeGrid = [
   { title: 'Top Parties', component: PartijenContent },
-  { title: 'Quiz', component: PollContent }
+  { title: 'Poll', component: PollView  }
 ]
 </script>
 
