@@ -9,5 +9,4 @@ public class ElectionBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ElectionBackendApplication.class, args);
 	}
-
 }
