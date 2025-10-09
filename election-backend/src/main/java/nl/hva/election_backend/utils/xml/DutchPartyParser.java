@@ -16,7 +16,7 @@ public class DutchPartyParser {
 
     public List<Party> parseParties(String fileName) {
         List<Party> parties = new ArrayList<>();
-        try (InputStream is = getClass().getResourceAsStream("/" + fileName)) {
+        try (InputStream is = DutchPartyParser.class.getResourceAsStream("/" + fileName)) {
             if (is == null) throw new IllegalArgumentException("XML file not found: " + fileName);
 
             XMLInputFactory factory = XMLInputFactory.newInstance();

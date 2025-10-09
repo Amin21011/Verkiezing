@@ -21,12 +21,15 @@ public class Party {
 
     public String getId() { return id; }
     public String getName() { return name; }
+    // nieuw:
+    public String getLeaderName() { return leaderName; }
+    public String getWebsite() { return website; }
+
     public void setVoteCount(int voteCount) { this.voteCount = voteCount; }
-    public void addCandidate(Candidate candidate) { candidates.add(candidate); }
-
     public int getVoteCount() { return voteCount; }
-    public List<Candidate> getCandidates() { return candidates; }
 
+    public void addCandidate(Candidate candidate) { candidates.add(candidate); }
+    public List<Candidate> getCandidates() { return candidates; }
 
     @Override
     public String toString() {
