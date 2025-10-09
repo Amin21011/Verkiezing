@@ -1,6 +1,6 @@
 package nl.hva.election_backend.model;
 
-public class CandidateDTO {
+public class Candidate {
 
     private final String id;
     private final String shortCode;
@@ -9,7 +9,7 @@ public class CandidateDTO {
     private final String partyId; // koppeling naar PartyDTO
     private int votes;
 
-    public CandidateDTO(String id, String shortCode, String firstName, String lastName, String partyId) {
+    public Candidate(String id, String shortCode, String firstName, String lastName, String partyId) {
         this.id = id;
         this.shortCode = shortCode;
         this.firstName = firstName;

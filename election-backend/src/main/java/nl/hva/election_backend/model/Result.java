@@ -1,6 +1,6 @@
 package nl.hva.election_backend.model;
 
-public class ResultDTO {
+public class Result {
     private final String partyId;
     private final String candidateId;
     private int votes;
@@ -8,7 +8,7 @@ public class ResultDTO {
     private final String regionId;
     private String partyName; // extra veld
 
-    public ResultDTO(String partyId, String candidateId, int votes, String regionType, String regionId) {
+    public Result(String partyId, String candidateId, int votes, String regionType, String regionId) {
         this.partyId = partyId;
         this.candidateId = candidateId;
         this.votes = votes;

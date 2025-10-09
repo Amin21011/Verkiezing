@@ -4,12 +4,12 @@ package nl.hva.election_backend.model;
  * Represents a region in the Dutch election definition.
  */
 
-public class RegionDTO {
+public class Region {
     private final String number;
     private final String name;
     private final String category;
 
-    public RegionDTO(String number, String name, String category) {
+    public Region(String number, String name, String category) {
         this.number = number;
         this.name = name;
         this.category = category;
