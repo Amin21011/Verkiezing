@@ -17,9 +17,9 @@ public class PartyService {
         //TODO: ZET EEN LANGER DESCRIPTION!!!!
         parties = new ArrayList<>();
         parties.add(new Party(1L, "PVV", "Partij voor de Vrijheid — rechts-populistische partij, nadruk op immigratie, veiligheid en soevereiniteit.", "https://images1.persgroep.net/rcs/bYB1FmwuazV7vEXY4P2KPouYdgc/diocontent/139923768/_fitwidth/763?appId=93a17a8fd81db0de025c8abd1cca1279&quality=0.8"));
-        parties.add(new Party(2L, "GROENLINKS / PvdA", "Samenwerking tussen GroenLinks en PvdA — progressief, aandacht voor milieu en sociale gelijkheid.", "https://www.hoekschnieuws.nl/wp-content/uploads/2018/02/GROENLINKS-LOGO-COMPACT-RGB.png"));
+        parties.add(new Party(2L, "GROENLINKS / PvdA", "Samenwerking tussen GroenLinks en PvdA — progressief, aandacht voor milieu en sociale gelijkheid.", "https://www.pvda.nl/wp-content/uploads/cache/_src76a3dc83068392a10c06822d83c002c6_par55c0ad92b1f69156a79ff6266dd30586_dat1697628464.jpeg"));
         parties.add(new Party(3L, "VVD", "Volkspartij voor Vrijheid en Democratie — liberaal-conservatief, focus op economie en individuele vrijheid.", "https://www.maxvandaag.nl/wp-content/uploads/2017/03/Logo_VVD.jpg"));
-        parties.add(new Party(4L, "Nieuw Sociaal Contract (NSC)", "Nieuw Sociaal Contract — gericht op een sociaal-maatschappelijk pact en hervormingen.", "https://seeklogo.com/images/N/nsc-partij-logo-6EBB23625B-seeklogo.com.png"));
+        parties.add(new Party(4L, "Nieuw Sociaal Contract (NSC)", "Nieuw Sociaal Contract — gericht op een sociaal-maatschappelijk pact en hervormingen.", "https://storage.googleapis.com/groep-pieter-website/_1200x630_fit_center-center_82_none/NSC_Social_Logo_Navy_Back.png?mtime=1695752534"));
         parties.add(new Party(5L, "D66", "Democraten 66 — liberaal-progressief met nadruk op onderwijs, innovatie en Europese samenwerking.", "https://kids.kiddle.co/images/thumb/e/e9/D66_logo_(2019%E2%80%93present).svg/500px-D66_logo_(2019%E2%80%93present).svg.png"));
         parties.add(new Party(6L, "BBB", "BoerBurgerBeweging — belangen van de plattelandsgemeenschappen en agrarische sector centraal.", "https://www.aaenmaas.nl/publish/pages/2831/bbb-logo.png"));
         parties.add(new Party(7L, "CDA", "Christen-Democratisch Appèl — middenpartij met focus op gemeenschapszin, gezin en duurzaamheid.", "https://www.pw.nl/afbeeldingen/politiek/CDAlogo.jpg/image"));
@@ -41,7 +41,7 @@ public class PartyService {
         parties.add(new Party(23L, "Vrij Verbond", "Vrij Verbond — partij die de vrije samenleving, autonomie en keuzevrijheid hoog houdt.", "https://tse3.mm.bing.net/th/id/OIP.qd1VWOLpFgRCqDyTPHH_lQAAAA?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"));
         parties.add(new Party(24L, "DE LINIE", "DE LINIE — regionale partij, actief in specifieke kieskringen met lokaal beleid.", "https://deliniepartij.nl/wp-content/uploads/2025/08/LOGO.png"));
         parties.add(new Party(25L, "NL PLAN", "NL PLAN — planmatige partij, resoluties gebaseerd op lange termijn visie.", "https://irp.cdn-website.com/e843fd98/dms3rep/multi/nlplan_logo_2023-01.png"));
-        parties.add(new Party(26L, "ELLECT", "ELLECT — jonge politieke beweging, gericht op vernieuwing en burgerparticipatie.", "https://example.com/ellect.jpg"));
+        parties.add(new Party(26L, "ELLECT", "ELLECT — jonge politieke beweging, gericht op vernieuwing en burgerparticipatie.", "https://www.ellect.eu/uploads/YgoQRJ4Q/87x0_87x0/logoklein_356__msi___png.webp"));
         parties.add(new Party(27L, "Partij voor de Rechtsstaat", "Partij voor de Rechtsstaat — nadruk op recht, rechtszekerheid en rechtsorde.", "https://tse1.mm.bing.net/th/id/OIP.4s8hG1Ol4vTPQ9amJsTwFQHaCA?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"));
     }
     // partijen ophalen in andere volgorde
