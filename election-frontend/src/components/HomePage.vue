@@ -63,9 +63,5 @@ const tweedeGrid = [
   color: #1c1c1c;
 }
 
-
-@media (min-width: 768px) {
-  .grid-layout { grid-template-columns: repeat(2, 1fr); } }
-
 footer { width: 100%; max-width: 1600px; margin-top: 2rem; padding: 1rem; text-align: center; color: #4b5563; }
 </style>

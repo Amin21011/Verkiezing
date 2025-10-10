@@ -11,7 +11,7 @@ defineEmits<{
 
 <template>
   <div class="poll-container">
-    <h2 class="text-xl font-semibold mb-4 text-center">🗳️ Huidige Polls</h2>
+<!--    <h2 class="text-xl font-semibold mb-4 text-center">🗳️ Huidige Polls</h2>-->
 
     <!-- Melding -->
     <div v-if="message" class="text-center bg-yellow-100 text-yellow-800 p-2 mb-4 rounded-lg">

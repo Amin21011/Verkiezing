@@ -4,7 +4,6 @@ import nl.hva.election_backend.model.Election;
 import nl.hva.election_backend.model.Party;
 import nl.hva.election_backend.model.Result;
 import nl.hva.election_backend.repository.ResultRepository;
-import nl.hva.election_backend.utils.xml.DutchPartyParser;
 import nl.hva.election_backend.utils.xml.transformers.ResultLoader;
 import org.springframework.stereotype.Service;
 
