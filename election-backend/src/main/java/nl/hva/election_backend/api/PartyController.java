@@ -1,7 +1,7 @@
 package nl.hva.election_backend.api;
 
-import nl.hva.election_backend.model.Party;
-import nl.hva.election_backend.service.PartyService;
+import nl.hva.election_backend.model.Party1;
+import nl.hva.election_backend.service.PartyService1;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -9,19 +9,19 @@ import java.util.List;
 @RequestMapping("/api/parties")
 @CrossOrigin(origins = "*")
 public class PartyController {
-    private final PartyService partyService;
+    private final PartyService1 partyService1;
 
-    public PartyController(PartyService partyService) {
-        this.partyService = partyService;
+    public PartyController(PartyService1 partyService1) {
+        this.partyService1 = partyService1;
     }
 
     @GetMapping
-    public List<Party> getAllParties() {
-        return partyService.getAllPartiesRandomized();
+    public List<Party1> getAllParties() {
+        return partyService1.getAllPartiesRandomized();
     }
 
     @GetMapping("/{id}")
-    public Party getPartyById(@PathVariable Long id) {
-        return partyService.getPartyById(id);
+    public Party1 getPartyById(@PathVariable Long id) {
+        return partyService1.getPartyById(id);
     }
 }

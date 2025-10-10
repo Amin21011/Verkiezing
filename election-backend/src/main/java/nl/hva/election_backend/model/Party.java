@@ -1,26 +1,38 @@
 package nl.hva.election_backend.model;
-// TODO: connect to db in sprint 2
-public class Party {
-    private Long id;
-    private String name;
-    private String description;
-    private String imageUrl;
 
-    public Party(Long id, String name, String description, String imageUrl) {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Party {
+    private final String id;
+    private final String name;
+    private final String leaderName;
+    private int voteCount;
+    private final String website;
+    private final List<Candidate> candidates = new ArrayList<>();
+
+    public Party(String id, String name, String leaderName, int voteCount, String website) {
         this.id = id;
         this.name = name;
-        this.description = description;
-        this.imageUrl = imageUrl;
+        this.leaderName = leaderName;
+        this.voteCount = voteCount;
+        this.website = website;
     }
 
-    // Getters en setters
-    public Long getId() { return id; }
+    public String getId() { return id; }
     public String getName() { return name; }
-    public String getDescription() { return description; }
-    public String getImageUrl() { return imageUrl; }
+    // nieuw:
+    public String getLeaderName() { return leaderName; }
+    public String getWebsite() { return website; }
 
-    public void setId(Long id) { this.id = id; }
-    public void setName(String name) { this.name = name; }
-    public void setDescription(String description) { this.description = description; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public void setVoteCount(int voteCount) { this.voteCount = voteCount; }
+    public int getVoteCount() { return voteCount; }
+
+    public void addCandidate(Candidate candidate) { candidates.add(candidate); }
+    public List<Candidate> getCandidates() { return candidates; }
+
+    @Override
+    public String toString() {
+        return name + " (leider: " + leaderName + ") - stemmen: " + voteCount + " - site: " + website;
+    }
 }
