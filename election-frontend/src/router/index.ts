@@ -27,6 +27,11 @@ const router = createRouter({
       name: 'polls',
       component: () => import('../views/PollView.vue'),
     },
+    {
+      path: `/latest-news`,
+      name: `latest-news`,
+      component: () => import(`../views/NewsView.vue`)
+    }
   ],
 })
 
