@@ -2,10 +2,6 @@
 import NavBar from './NavBar.vue';
 import FooterComp from './FooterComp.vue';
 import GridSection from './GridSection.vue';
-import NieuwsContent from './NieuwsContent.vue';
-import StatistiekenContent from './StatistiekenContent.vue';
-import PartijenContent from './PartijenContent.vue';
-import QuizContent from './QuizContent.vue';
 
 // const hero = {
 //   title: 'VERKIEZINGEN 2025',
