@@ -1,34 +1,50 @@
 package nl.hva.election_backend.service;
 
+import nl.hva.election_backend.model.Election;
 import nl.hva.election_backend.model.Party;
+import nl.hva.election_backend.model.Result;
 import nl.hva.election_backend.repository.ResultRepository;
+import nl.hva.election_backend.utils.xml.DutchPartyParser;
+import nl.hva.election_backend.utils.xml.transformers.ResultLoader;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
 public class ResultService {
-
     private final ResultRepository resultRepository;
 
     public ResultService(ResultRepository resultRepository) {
         this.resultRepository = resultRepository;
     }
 
-     // Haal de top "x" partijen op, eventueel per verkiezingsjaar.
-     // (filteren op jaar als Result klasse een 'year'-veld krijgt)
+    public List<Party> getTopParties(int limit) {
+        try {
+            Election election = new Election("TK2023");
+            ResultLoader.loadResults(election, resultRepository);
 
-    public List<Party> getTopPartiesByYear(int year, int limit) {
+            // bereken totale stemmen per partij
+            for (Party party : election.getParties()) {
+                int totalVotes = resultRepository.getAll().stream()
+                        .filter(r -> party.getId().equals(r.getPartyId()))
+                        .mapToInt(Result::getVotes)
+                        .sum();
+                party.setVoteCount(totalVotes);
+            }
 
-        return resultRepository.findTopParties(limit);
+            return election.getParties().stream()
+                    .sorted(Comparator.comparingInt(Party::getVoteCount).reversed())
+                    .limit(limit)
+                    .toList();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
     }
 
-    /**
-     * Haalt alle partijen op uit de repository.
-     */
-
     public List<Party> getAllPartiesByYear(int year) {
-        // In de toekomst kun je hier filtering per jaar of regio toevoegen.
         return resultRepository.findTopParties(Integer.MAX_VALUE);
     }
 }
