@@ -1,18 +1,21 @@
 package nl.hva.election_backend.repository;
-import nl.hva.election_backend.model.PartyDTO;
+import nl.hva.election_backend.model.Party;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PartyRepository {
-    private final List<PartyDTO> parties = new ArrayList<>();
 
-    public void saveAll(List<PartyDTO> partyList) {
+@Repository
+public class PartyRepository {
+    private final List<Party> parties = new ArrayList<>();
+
+    public void saveAll(List<Party> partyList) {
         parties.clear();
         parties.addAll(partyList);
     }
 
-    public List<PartyDTO> getAll() {
+    public List<Party> getAll() {
         return new ArrayList<>(parties);
     }
 }

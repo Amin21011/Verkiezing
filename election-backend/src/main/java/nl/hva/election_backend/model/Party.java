@@ -3,15 +3,15 @@ package nl.hva.election_backend.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PartyDTO {
+public class Party {
     private final String id;
     private final String name;
     private final String leaderName;
     private int voteCount;
     private final String website;
-    private final List<CandidateDTO> candidates = new ArrayList<>();
+    private final List<Candidate> candidates = new ArrayList<>();
 
-    public PartyDTO(String id, String name, String leaderName, int voteCount, String website) {
+    public Party(String id, String name, String leaderName, int voteCount, String website) {
         this.id = id;
         this.name = name;
         this.leaderName = leaderName;
@@ -21,10 +21,15 @@ public class PartyDTO {
 
     public String getId() { return id; }
     public String getName() { return name; }
+    // nieuw:
+    public String getLeaderName() { return leaderName; }
+    public String getWebsite() { return website; }
+
     public void setVoteCount(int voteCount) { this.voteCount = voteCount; }
     public int getVoteCount() { return voteCount; }
-    public List<CandidateDTO> getCandidates() { return candidates; }
-    public void addCandidate(CandidateDTO candidate) { candidates.add(candidate); }
+
+    public void addCandidate(Candidate candidate) { candidates.add(candidate); }
+    public List<Candidate> getCandidates() { return candidates; }
 
     @Override
     public String toString() {

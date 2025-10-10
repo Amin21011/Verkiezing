@@ -35,11 +35,12 @@ public class DutchElectionService {
         );
 
         try {
-            // Assuming the election data is somewhere on the class-path it should be found.
             // Please note that you can also specify an absolute path to the folder!
+
             electionParser.parseResults(electionId, PathUtils.getResourcePath("/%s".formatted(folderName)));
-            // Do what ever you like to do
+
             System.out.println("Dutch Election results: " + election);
+
             // Now is also the time to send the election information to a database for example.
 
             return election;

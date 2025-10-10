@@ -1,82 +1,74 @@
 package nl.hva.election_backend.repository;
 
-import nl.hva.election_backend.model.PartyDTO;
-import nl.hva.election_backend.model.ResultDTO;
+import nl.hva.election_backend.model.Party;
+import nl.hva.election_backend.model.Result;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Repository
 public class ResultRepository {
 
-    private final List<ResultDTO> results = new ArrayList<>();
-    private final Map<String, String> partyNames = new HashMap<>();
+    private final List<Result> results = new ArrayList<>();
+    private final Map<String, Party> partiesById = new HashMap<>();
 
-    public void saveAll(List<ResultDTO> resultList) {
+    // Overschrijf oude resultaten door nieuwe (vermijdt duplicates bij meerdere parses)
+    public void saveAll(List<Result> resultList) {
+        results.clear();
         if (resultList != null) {
             results.addAll(resultList);
         }
     }
 
-    public List<ResultDTO> getAll() {
+    public void clearAll() {
+        results.clear();
+    }
+
+    public List<Result> getAll() {
         return new ArrayList<>(results);
     }
 
-    /** Find all results for a specific party */
-    public List<ResultDTO> findByPartyId(String partyId) {
-        if (partyId == null) return List.of();
-        return results.stream()
-                .filter(r -> partyId.equals(r.getPartyId()))
-                .collect(Collectors.toList());
-    }
-
-    public void setPartyNames(List<PartyDTO> parties) {
-        partyNames.clear();
-        for (PartyDTO p : parties) {
-            partyNames.put(p.getId(), p.getName());
+    public void registerParties(List<Party> parties) {
+        partiesById.clear();
+        if (parties != null) {
+            for (Party p : parties) {
+                partiesById.put(p.getId(), p);
+            }
         }
     }
 
-    public String getPartyName(String partyId) {
-        return partyNames.getOrDefault(partyId, "Onbekende partij");
+    // Vind top partijen op basis van opgetelde stemmen
+    public List<Party> findTopParties(int limit) {
+        if (results.isEmpty()) return List.of();
+
+        // sommeer stemmen per partyId
+        Map<String, Integer> votesByParty = new HashMap<>();
+        for (Result r : results) {
+            if (r.getPartyId() == null) continue;
+            votesByParty.merge(r.getPartyId(), r.getVotes(), Integer::sum);
+        }
+
+        return votesByParty.entrySet().stream()
+                .sorted(Map.Entry.<String,Integer>comparingByValue().reversed())
+                .limit(limit)
+                .map(entry -> {
+                    String id = entry.getKey();
+                    int votes = entry.getValue();
+                    Party base = partiesById.get(id);
+                    String name = base != null ? base.getName() : "Onbekende partij";
+                    String leader = base != null ? base.getLeaderName() : "";
+                    String website = base != null ? base.getWebsite() : "";
+                    Party p = new Party(id, name, leader, votes, website);
+                    p.setVoteCount(votes);
+                    return p;
+                })
+                .collect(Collectors.toList());
     }
 
-//    public void save(ResultDTO result) {
-//        if (result != null) {
-//            results.add(result);
-//        }
-//    }
-
-//    public void clear() {
-//        results.clear();
-//    }
-//
-//    /** Find all results for a specific candidate */
-//    public List<ResultDTO> findByCandidateId(String candidateId) {
-//        if (candidateId == null) return List.of();
-//        return results.stream()
-//                .filter(r -> candidateId.equals(r.getCandidateId()))
-//                .collect(Collectors.toList());
-//    }
-//
-//    public Map<String, String> getPartyNames() {
-//        return Collections.unmodifiableMap(partyNames);
-//    }
-//
-//
-//    /** Print all stored results */
-//    public void printAll() {
-//        for (ResultDTO result : results) {
-//            String type = result.getCandidateId() == null ? "Party" : "Candidate";
-//            String partyName = getPartyName(result.getPartyId());
-//            System.out.printf("%s | PartyId: %s (%s) | CandidateId: %s | Votes: %d | Region: %s %s%n",
-//                    type,
-//                    result.getPartyId(),
-//                    partyName,
-//                    result.getCandidateId(),
-//                    result.getVotes(),
-//                    result.getRegionType(),
-//                    result.getRegionId());
-//        }
-//    }
-
+    public String getPartyName(String partyId) {
+        if (partyId == null) return "Onbekende partij";
+        Party party = partiesById.get(partyId);
+        return (party != null) ? party.getName() : "Onbekende partij";
+    }
 }
