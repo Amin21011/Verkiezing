@@ -5,7 +5,7 @@ import GridSection from './GridSection.vue';
 import NieuwsContent from './NieuwsContent.vue';
 import StatistiekenContent from './StatistiekenContent.vue';
 import PartijenContent from './PartijenContent.vue';
-import QuizContent from './QuizContent.vue';
+import PollView from '../views/PollView.vue'
 
 // const hero = {
 //   title: 'VERKIEZINGEN 2025',
@@ -14,10 +14,6 @@ import QuizContent from './QuizContent.vue';
 //   date: '10 oktober 2025'
 // };
 
-import NieuwsContent from './NieuwsContent.vue'
-import StatistiekenContent from './StatistiekenContent.vue'
-import PartijenContent from './PartijenContent.vue'
-import PollView from '../views/PollView.vue'
 
 const eersteGrid = [
   { title: 'Laatste Nieuws', component: NieuwsContent },
