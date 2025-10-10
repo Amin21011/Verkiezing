@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import GridCard from './GridCard.vue'
+import GridCard from './GridCard.vue';
+import type { Component } from 'vue'
 
 defineProps<{
-  cards: { title: string; component: typeof GridCard }
-  }>()
+  cards: { title: string; component: Component; props?: Record<string, any> }[];
+}>();
 </script>
 
 <template>
@@ -14,7 +15,7 @@ defineProps<{
         :key="index"
         :title="card.title"
       >
-        <component :is="card.component" />
+        <component :is="card.component" v-bind="card.props ?? {}" />
       </GridCard>
     </div>
   </section>
@@ -23,23 +24,24 @@ defineProps<{
 <style scoped>
 .grid-section {
   width: 100%;
-  margin-top: 2rem;
+  padding: 2rem 1rem;
   display: flex;
   justify-content: center;
+  background-color: #fdfcf7;
 }
 
 .grid-layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: 2rem;
   width: 100%;
   max-width: 1200px;
 }
 
-/* Vanaf medium schermen (tablet en groter) -> 2 kolommen */
 @media (min-width: 768px) {
   .grid-layout {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 </style>
