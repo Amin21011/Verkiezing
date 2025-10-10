@@ -40,7 +40,7 @@ public class DutchDefinitionTransformer implements DefinitionTransformer {
                 regionNumber != null ? regionNumber : "unknown",
                 regionName);
         Region region = new Region(regionId, regionNumber, regionName);
-         election.addRegion(region);
+        election.addRegion(region);
     }
 
 
