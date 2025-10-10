@@ -14,6 +14,10 @@ import QuizContent from './QuizContent.vue';
 //   date: '10 oktober 2025'
 // };
 
+import NieuwsContent from './NieuwsContent.vue'
+import StatistiekenContent from './StatistiekenContent.vue'
+import PartijenContent from './PartijenContent.vue'
+import PollView from '../views/PollView.vue'
 
 const eersteGrid = [
   { title: 'Laatste Nieuws', component: NieuwsContent },
@@ -21,9 +25,9 @@ const eersteGrid = [
 ];
 
 const tweedeGrid = [
-  { title: 'Top Partijen', component: PartijenContent },
-  { title: 'Quiz', component: QuizContent }
-];
+  { title: 'Top Parties', component: PartijenContent },
+  { title: 'Poll', component: PollView  }
+]
 </script>
 <template>
   <div class="page-container">
