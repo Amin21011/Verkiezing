@@ -1,14 +1,11 @@
 package nl.hva.election_backend.model;
 
-import java.time.OffsetDateTime;
 
 public class NewsItem {
     private String title;
     private String link;
     private String description;
     private String publishedAt;
-
-    public NewsItem() {}
 
     public NewsItem(String title, String link, String description, String publishedAt) {
         this.title = title;
