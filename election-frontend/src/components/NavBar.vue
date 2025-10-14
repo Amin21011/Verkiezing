@@ -221,4 +221,45 @@ const ticker = [
 .ticker-item { margin-right: 4rem; font-weight: 700; text-transform: uppercase; }
 @keyframes tickerScroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
+
+.offcanvas-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 9999;
+}
+
+.offcanvas {
+  background: white;
+  color: white;
+  width: 280px;
+  height: 100%;
+  padding: 1.5rem;
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.close-btn {
+  font-size: 1.5rem;
+  color: black;
+  background: none;
+  border: none;
+  cursor: pointer;
+  float: right;
+  font-weight: 700;
+}
+
+.offcanvas a {
+  background-color: transparent;
+  display: block;
+  color: black;
+  text-decoration: none;
+  margin: 1.5rem 0;
+  font-weight: 700;
+}
+
 </style>
