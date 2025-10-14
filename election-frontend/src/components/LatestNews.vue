@@ -37,7 +37,7 @@ async function loadNews() {
 
   try {
     const res = await fetch(API_URL);
-    if (!res.ok) throw new Error(`HTTP fout: ${res.status}`);
+    if (!res.ok)  new Error(`HTTP fout: ${res.status}`);
 
     const raw: NewsItem[] = await res.json();
 
