@@ -9,7 +9,6 @@ interface NewsItem {
 }
 
 const API_URL = `${import.meta.env.VITE_API_URL}news/rijksoverheid?limit=6`;
-console.log('API_URL =', API_URL);
 
 
 const newsItems = ref<NewsItem[]>([]);

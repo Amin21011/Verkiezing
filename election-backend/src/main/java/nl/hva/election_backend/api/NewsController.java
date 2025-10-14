@@ -19,10 +19,10 @@ public class NewsController {
         this.newsService = newsService;
     }
 
-    @GetMapping
-    public List<NewsItem> getNews(@RequestParam String url) {
-        return newsService.fetch(url);
+    @GetMapping("/rijksoverheid")
+    public List<NewsItem> rijksoverheid(@RequestParam int limit) {
+        String feed = "https://feeds.rijksoverheid.nl/regering/nieuws.rss";
+        return newsService.fetch(feed).stream().limit(limit).toList();
     }
-
 }
 
