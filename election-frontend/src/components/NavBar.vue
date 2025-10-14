@@ -1,8 +1,8 @@
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
 const isScrolled = ref(false);
+const showOffcanvas = ref(false);
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 50;
@@ -12,20 +12,24 @@ onMounted(() => {
   window.addEventListener('scroll', handleScroll);
 });
 
+function toggleOffcanvas() {
+  showOffcanvas.value = !showOffcanvas.value;
+}
+
 const ticker = [
   'Laatste peilingen tonen verrassende wending',
   'Nieuwe partij groeit explosief in stedelijke gebieden',
   'Quiz: Hoe goed ken jij de top-partijen?'
 ];
-
 </script>
 
 <template>
   <header :class="['navbar', { scrolled: isScrolled }]">
-
+    <!-- Top bar met menu -->
     <div class="top-bar">
       <div class="left-buttons">
-        <button class="icon-btn" title="Menu">☰</button>
+        <!-- Hamburger knop -->
+        <button class="icon-btn" title="Menu" @click="toggleOffcanvas">☰</button>
         <button class="icon-btn" title="Dark Mode">🌙</button>
       </div>
 
@@ -51,6 +55,21 @@ const ticker = [
         <span v-for="(item, i) in ticker" :key="i" class="ticker-item">{{ item }}</span>
       </div>
     </section>
+
+    <!-- Offcanvas menu -->
+    <teleport to="body">
+      <div v-if="showOffcanvas" class="offcanvas-overlay" @click.self="toggleOffcanvas">
+        <div class="offcanvas">
+          <button class="close-btn" @click="toggleOffcanvas">✕</button>
+          <a href="/">Laatste Nieuws</a>
+          <a href="/">Trending</a>
+          <a href="/">Forum</a>
+          <a href="/">Quiz</a>
+          <a href="/">Kandidaten</a>
+          <a href="/">FAQ</a>
+        </div>
+      </div>
+    </teleport>
   </header>
 </template>
 
