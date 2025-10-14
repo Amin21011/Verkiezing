@@ -10,13 +10,13 @@ import GridSection from './GridSection.vue';
 //   date: '10 oktober 2025'
 // };
 
-import NieuwsContent from './NieuwsContent.vue'
 import StatistiekenContent from './StatistiekenContent.vue'
 import PartijenContent from './PartijenContent.vue'
 import PollView from '../views/PollView.vue'
+import HomePageNews from '@/components/HomePageNews.vue'
 
 const eersteGrid = [
-  { title: 'Laatste Nieuws', component: NieuwsContent },
+  { title: 'Laatste Nieuws', component: HomePageNews },
   { title: 'Hete Statistieken', component: StatistiekenContent }
 ];
 
