@@ -234,7 +234,7 @@ const ticker = [
   color: white;
   width: 280px;
   height: 100%;
-  padding: 1.5rem;
+  padding: 24px;
   animation: slideIn 0.3s ease forwards;
 }
 
@@ -244,7 +244,7 @@ const ticker = [
 }
 
 .close-btn {
-  font-size: 1.5rem;
+  font-size: 25px;
   color: black;
   background: none;
   border: none;
@@ -258,7 +258,7 @@ const ticker = [
   display: block;
   color: black;
   text-decoration: none;
-  margin: 1.5rem 0;
+  margin: 35px 0;
   font-weight: 700;
 }
 
