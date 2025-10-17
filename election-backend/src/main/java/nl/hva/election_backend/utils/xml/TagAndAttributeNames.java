@@ -90,7 +90,6 @@ public interface TagAndAttributeNames {
     String UNCOUNTED_VOTES = "UncountedVotes";
     String VALID_VOTES = "ValidVotes";
     String VOTING_METHOD = "VotingMethod";
-
     // These are the actual keys used for these specific tags
     String CANDIDATE_IDENTIFIER_ID = String.format("%s-%s", CANDIDATE_IDENTIFIER, "Id");
     String CANDIDATE_IDENTIFIER_SHORT_CODE = String.format("%s-%s", CANDIDATE_IDENTIFIER, "ShortCode");
