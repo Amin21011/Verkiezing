@@ -6,7 +6,12 @@ public class Result {
     private int votes;
     private final String regionType;
     private final String regionId;
-    private String partyName; // extra veld
+    private String partyName;
+    private String shortCode;
+
+    public String getShortCode() { return shortCode; }
+    public void setShortCode(String shortCode) { this.shortCode = shortCode; }
+
 
     public Result(String partyId, String candidateId, int votes, String regionType, String regionId) {
         this.partyId = partyId;
