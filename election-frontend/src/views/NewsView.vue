@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import LatestNews from '@/components/LatestNews.vue'
+import NewsComponent from '@/components/NewsComponent.vue'
 </script>
 
 <template>
   <main>
-    <latest-news />
+    <news-component />
   </main>
 </template>
 
