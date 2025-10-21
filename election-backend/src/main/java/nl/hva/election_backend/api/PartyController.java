@@ -16,12 +16,6 @@ public class PartyController {
         this.partyService = partyService;
     }
 
-    // Alle partijen
-    @GetMapping("/parties")
-    public List<Party> getAllParties() {
-        return partyService.getAllParties();
-    }
-
     // Top partijen op basis van stemmen
     @GetMapping("/top")
     public List<Party> getTopParties(@RequestParam(defaultValue = "3") int limit) {
