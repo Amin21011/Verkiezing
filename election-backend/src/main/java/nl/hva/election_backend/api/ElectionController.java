@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
  * Demo controller for showing how you could load the election data in the backend.
  */
 @RestController
-@RequestMapping("elections")
+@RequestMapping("/elections")
 public class ElectionController {
     private final DutchElectionService electionService;
 
@@ -25,7 +25,7 @@ public class ElectionController {
      * Just the general data about the election should be sent back to the front-end!<br/>
      * <i>If you want to return something else please feel free to do so!</i>
      */
-    @PostMapping("{electionId}")
+    @PostMapping("/{electionId}")
     public Election readResults(@PathVariable String electionId, @RequestParam(required = false) String folderName) {
         if (folderName == null) {
             return electionService.readResults(electionId, electionId);
