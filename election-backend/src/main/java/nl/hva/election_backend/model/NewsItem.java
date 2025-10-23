@@ -1,12 +1,18 @@
 package nl.hva.election_backend.model;
 
+import jakarta.persistence.*;
+
 import java.time.OffsetDateTime;
 
+@Entity
 public class NewsItem {
+    @Id
+    @GeneratedValue
     private String title;
     private String link;
     private String description;
     private OffsetDateTime publishedAt;
+
 
     public NewsItem() {}
 
