@@ -1,12 +1,18 @@
 package nl.hva.election_backend.model;
 
-public class Candidate {
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 
-    private final String id;
-    private final String shortCode;
-    private final String firstName;
-    private final String lastName;
-    private final String partyId; // koppeling naar PartyDTO
+@Entity
+public class Candidate {
+    @Id
+    @GeneratedValue
+    private  String id;
+    private  String shortCode;
+    private  String firstName;
+    private  String lastName;
+    private  String partyId; // koppeling naar PartyDTO
     private int votes;
 
     public Candidate(String id, String shortCode, String firstName, String lastName, String partyId) {
@@ -17,6 +23,8 @@ public class Candidate {
         this.partyId = partyId;
         this.votes = 0;
     }
+
+    public Candidate() {}
 
     // Getters & setters
     public String getId() { return id; }
