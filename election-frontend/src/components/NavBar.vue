@@ -255,11 +255,29 @@ const ticker = [
 
 .offcanvas a {
   background-color: transparent;
-  display: block;
+  display: flex;
+  align-items: center;
   color: black;
   text-decoration: none;
   margin: 35px 0;
   font-weight: 700;
+  font-size: 1.2rem;
+  position: relative;
+  padding-left: 1.5rem;
 }
+
+.offcanvas a::before {
+  content: '▶';
+  position: absolute;
+  left: 0;
+  font-size: 0.9rem;
+  color: black;
+  transition: transform 0.2s ease;
+}
+
+.offcanvas a:hover::before {
+  transform: translateX(4px);
+}
+
 
 </style>
