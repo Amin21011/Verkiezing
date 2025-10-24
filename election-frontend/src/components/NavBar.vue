@@ -1,6 +1,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const goToRegister = () => router.push('/register')
+const goToHome = () => router.push('/')
 
 const isScrolled = ref(false);
 
@@ -21,7 +25,8 @@ const ticker = [
 </script>
 
 <template>
-  <header :class="['navbar', { scrolled: isScrolled }]">
+<!--  <header :class="['navbar', { scrolled: isScrolled }]">-->
+    <header :class="['sticky top-0 z-50 bg-paper border-b-8 border-ink shadow-[0_4px_20px_rgba(0,0,0,0.1)]', { scrolled: isScrolled }]">
 
     <div class="top-bar">
       <div class="left-buttons">
@@ -34,13 +39,13 @@ const ticker = [
           <input type="text" placeholder="Zoeken..." class="search-input" />
           <span class="search-icon">🔍</span>
         </div>
-        <button class="icon-btn" title="Images">
+        <button class="icon-btn" @click="goToRegister">
           <img src="../assets/img/images.png" class="navIcon" />
         </button>
       </div>
     </div>
 
-    <div class="title-section">
+    <div class="title-section" @click="goToHome">
       <h1 class="main-title">VERKIEZINGEN 2025 <span>✏️</span></h1>
       <div class="subtitle-banner">Alles wat je moet weten voordat je stemt.</div>
       <div class="divider"></div>
@@ -105,7 +110,6 @@ const ticker = [
 }
 
 .icon-btn:hover {
-  transform: scale(1.2);
   color: darkslateblue;
 }
 
@@ -113,12 +117,9 @@ const ticker = [
   width: 32px;
   height: 32px;
   object-fit: contain;
-  transition: transform 0.2s ease;
 }
 
-.navIcon:hover {
-  transform: scale(1.1);
-}
+
 
 .search-wrapper {
   position: relative;
@@ -154,6 +155,13 @@ const ticker = [
   text-align: center;
   color: #111827;
   margin-top: 1rem;
+  cursor: pointer; /* toont handje bij hover */
+  transition: transform 0.2s ease, color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.title-section:hover {
+  transform: scale(1.01);
+  text-shadow: 0 2px 5px rgba(77, 0, 0, 0.15); /* subtiele gloed */
 }
 
 .main-title {
