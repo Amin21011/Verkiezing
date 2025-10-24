@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomepageView from '@/views/HomepageView.vue'
-import PartyListView from '../views/PartyListView.vue'
+import LoginView from '@/views/LoginView.vue'
+import RegisterView from '@/views/RegisterView.vue'
+import PartyListView from '@/views/PartyListView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,10 +12,11 @@ const router = createRouter({
       name: 'home',
       component: HomepageView,
     },
-  {
+    {
       path: '/parties',
       name: 'parties',
-      component: () => import('../views/PartyListView.vue'),    },
+      component: PartyListView,
+    },
     {
       path: '/polls',
       name: 'polls',
@@ -22,13 +25,18 @@ const router = createRouter({
     {
       path: `/latest-news`,
       name: `latest-news`,
-      component: () => import(`../views/NewsView.vue`)
+      component: () => import(`../views/NewsView.vue`),
     },
     {
       path: `/register`,
       name: `register`,
-      component: () => import(`../views/RegisterView.vue`)
-    }
+      component: RegisterView
+    },
+    {
+      path: `/login`,
+      name: `login`,
+      component: LoginView
+    },
   ],
 })
 
