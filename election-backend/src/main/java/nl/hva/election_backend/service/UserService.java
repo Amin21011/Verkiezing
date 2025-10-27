@@ -8,11 +8,11 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private final UserRepository repository;
+    private static UserRepository repository = null;
     private final BCryptPasswordEncoder passwordEncoder;
 
     public UserService(UserRepository repository) {
-        this.repository = repository;
+        UserService.repository = repository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
@@ -28,7 +28,7 @@ public class UserService {
         return repository.save(user);
     }
 
-    public Optional<User> findByEmail(String email) {
+    public static Optional<User> findByEmail(String email) {
         return repository.findByEmail(email);
     }
 }
