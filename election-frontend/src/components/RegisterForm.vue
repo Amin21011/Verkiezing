@@ -1,64 +1,38 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from "vue"
+import { register } from "../services/authService"
 
-const name = ref('');
-const email = ref('');
-const password = ref('');
-const confirmPassword = ref('');
+const name = ref("")
+const email = ref("")
+const password = ref("")
+const confirmPassword = ref("")
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (password.value !== confirmPassword.value) {
-    alert('Wachtwoorden komen niet overeen!');
-    return;
+    return alert("Wachtwoorden komen niet overeen!")
   }
-  console.log('Registratie:', { name: name.value, email: email.value });
-};
+
+  try {
+    await register(name.value, email.value, password.value)
+    alert("Account aangemaakt! Je kunt nu inloggen.")
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error: unknown) {
+    alert("Fout bij registratie.")
+  }
+}
+
 </script>
 
 <template>
-  <div class="register-form">
-    <h2 class="title">Registreer Hier</h2>
-    <form @submit.prevent="handleSubmit" class="form">
-      <input type="text" v-model="name" placeholder="Name" required />
-      <input type="email" v-model="email" placeholder="Email" required />
-      <input type="password" v-model="password" placeholder="Password" required />
-      <input type="password" v-model="confirmPassword" placeholder="Confirm password" required />
-      <button type="submit" class="submit-btn">Submit</button>
-    </form>
-  </div>
-</template>
+  <form @submit.prevent="handleSubmit" class="w-full max-w-md bg-white border-4 border-ink shadow-press p-8 flex flex-col gap-4">
+    <h2 class="text-3xl font-headline font-bold uppercase text-center mb-6 border-b-2 border-graymain pb-2 text-left">Registreer</h2>
 
-<style scoped>
-.register-form {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  width: 100%;
-  max-width: 350px;
-}
-.title {
-  font-size: 1.5rem;
-  font-family: 'Merriweather', serif;
-  margin-bottom: 1.5rem;
-  color: #1c1c1c;
-}
-.form input {
-  width: 100%;
-  padding: 0.6rem;
-  margin-bottom: 1rem;
-  border: none;
-  background: #e6e6e6;
-}
-.submit-btn {
-  background-color: #3b4c91;
-  color: white;
-  padding: 0.6rem 1.2rem;
-  border-radius: 20px;
-  border: none;
-  font-weight: 600;
-}
-.submit-btn:hover {
-  background-color: #2e3b73;
-}
-</style>
+    <input v-model="name" type="text" placeholder="Naam" class="input-field" required />
+    <input v-model="email" type="email" placeholder="E-mail" class="input-field" required />
+    <input v-model="password" type="password" placeholder="Wachtwoord" class="input-field" required />
+    <input v-model="confirmPassword" type="password" placeholder="Bevestig wachtwoord" class="input-field" required />
+
+    <button type="submit" class="btn-primary w-full text-center mt-2">
+      Maak Account</button>
+  </form>
+</template>
