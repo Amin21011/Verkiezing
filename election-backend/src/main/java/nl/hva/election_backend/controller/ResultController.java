@@ -6,7 +6,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/electionresults")
-@CrossOrigin(origins = "*") // frontend mag vrij connecten
 public class ResultController {
 
     private final ResultService resultService;
