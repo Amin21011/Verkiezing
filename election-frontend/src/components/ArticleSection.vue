@@ -4,7 +4,7 @@ import ArticleGridCard from './ArticleGridCard.vue'
 const featuredArticle = {
   title: 'Generatie Z toch meer geïnteresseerd in de politiek dan de meeste tot nu toe dachten',
   summary:
-    'Jongeren keren zich massaal naar de stembus. Nu nog hopen dat dit het verschil gaat maken wat Nederland nodig had.',
+    'Jongeren keren zich massaal naar de stembus. Nu nog hopen dat dit het verschil gaat maken wat Nederland al die tijd al nodig had.',
   date: '10 okt 2025',
   category: 'Algemeen',
   image: '/src/assets/img/cover.webp'

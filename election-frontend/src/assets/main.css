@@ -68,3 +68,8 @@
   .text-ink{color:var(--ink);}
   .border-ink{border-color:var(--ink);}
 }
+
+@keyframes tickerScroll {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}

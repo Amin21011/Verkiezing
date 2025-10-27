@@ -1,213 +1,95 @@
-
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { authToken, getAuthUser, logout } from '@/services/authService'
+
 const router = useRouter()
-const goToRegister = () => router.push('/register')
+const isScrolled = ref(false)
+
 const goToHome = () => router.push('/')
 
-const isScrolled = ref(false);
-
 const handleScroll = () => {
-  isScrolled.value = window.scrollY > 50;
-};
+  isScrolled.value = window.scrollY > 50
+}
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
-});
+  window.addEventListener('scroll', handleScroll)
+})
+
+const user = ref(getAuthUser())
+
+function handleLogout() {
+  logout()
+  user.value = null
+}
+
+watch(authToken, () => {
+  user.value = getAuthUser()
+})
+
+const showMenu = ref(false)
+const toggleMenu = () => {
+  showMenu.value = !showMenu.value
+}
+
+const goToAccount = () => router.push('/account')
 
 const ticker = [
   'Laatste peilingen tonen verrassende wending',
   'Nieuwe partij groeit explosief in stedelijke gebieden',
-  'Quiz: Hoe goed ken jij de top-partijen?'
-];
-
+  'Quiz: Hoe goed ken jij de top-partijen?',
+]
 </script>
-
 <template>
-<!--  <header :class="['navbar', { scrolled: isScrolled }]">-->
-    <header :class="['sticky top-0 z-50 bg-paper border-b-8 border-ink shadow-[0_4px_20px_rgba(0,0,0,0.1)]', { scrolled: isScrolled }]">
-
-    <div class="top-bar">
-      <div class="left-buttons">
-        <button class="icon-btn" title="Menu">☰</button>
-        <button class="icon-btn" title="Dark Mode">🌙</button>
+  <header :class="['sticky top-0 z-50 bg-paper border-b-8 border-ink shadow-[0_4px_20px_rgba(0,0,0,0.1)] transition-all', isScrolled ? 'py-0' : 'py-0']">
+    <div class="flex justify-between items-center pb-4 px-6">
+      <div class="flex gap-3">
+        <button class="bg-transparent border-none cursor-pointer text-xl px-2 py-1 transition hover:text-indigo-700" title="Menu">
+          ☰
+        </button>
+        <button class="bg-transparent border-none cursor-pointer text-xl px-2 py-1 transition hover:text-indigo-700" title="Dark Mode">
+          🌙
+        </button>
       </div>
 
-      <div class="right-section">
-        <div class="search-wrapper">
-          <input type="text" placeholder="Zoeken..." class="search-input" />
-          <span class="search-icon">🔍</span>
+      <div v-if="user" class="relative">
+        <div class="w-[36px] h-[36px] rounded-full bg-[darkslateblue] text-white font-bold flex items-center justify-center cursor-pointer select-none" @click="toggleMenu">
+          {{ user.name.charAt(0).toUpperCase() }}
         </div>
-        <button class="icon-btn" @click="goToRegister">
-          <img src="../assets/img/images.png" class="navIcon" />
+
+        <div v-if="showMenu" class="absolute top-[45px] right-0 bg-white border border-gray-300 rounded-lg p-2 flex flex-col gap-[4px] z-50">
+          <button class="px-2 py-2 text-left rounded hover:bg-gray-100" @click="goToAccount">
+            Mijn Account
+          </button>
+          <button class="px-2 py-2 text-left rounded text-red-600 hover:bg-gray-100" @click="handleLogout">
+            Uitloggen
+          </button>
+        </div>
+      </div>
+
+      <div v-else>
+        <button class="cursor-pointer px-2 py-1" @click="() => router.push('/register')">
+          <img src="../assets/img/images.png" class="w-8 h-8 object-contain" />
         </button>
       </div>
     </div>
 
-    <div class="title-section" @click="goToHome">
-      <h1 class="main-title">VERKIEZINGEN 2025 <span>✏️</span></h1>
-      <div class="subtitle-banner">Alles wat je moet weten voordat je stemt.</div>
-      <div class="divider"></div>
+    <div @click="goToHome" class="text-center text-[#111827] mt-4 cursor-pointer transition hover:scale-[1.01] hover:[text-shadow:0_2px_5px_rgba(77,0,0,0.15)]">
+      <h1 class="font-[Playfair Display] font-black text-[3rem] md:text-[3.5rem] tracking-[2px] bg-gradient-to-r from-[#1c1c1c] to-[#4b5563] bg-clip-text text-transparent my-2">
+        VERKIEZINGEN 2025 ✏️</h1>
+
+      <div class="inline-block bg-[#fffae5] text-[#111827] font-semibold px-4 py-2 rounded-lg shadow-md mb-4">
+        Alles wat je moet weten voordat je stemt.</div>
+
     </div>
 
-    <section class="ticker">
-      <div class="ticker-track">
-        <span v-for="(item, i) in ticker" :key="i" class="ticker-item">{{ item }}</span>
+    <section class="bg-[#e5e5e5] overflow-hidden whitespace-nowrap border-y-[2px] border-[#1c1c1c] w-full mt-4">
+      <div class="inline-block py-2 animate-[tickerScroll_20s_linear_infinite]">
+        <span v-for="(item, i) in ticker" :key="i" class="mr-16 font-bold uppercase">
+          {{ item }}
+        </span>
       </div>
     </section>
   </header>
 </template>
 
-<style scoped>
-
-.navbar {
-  width: 100%;
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 1rem 2rem 3rem 2rem;
-  box-sizing: border-box;
-  position: sticky;
-  top: 0;
-  backdrop-filter: blur(6px);
-  background-color: #fdfcf7;
-  transition: all 0.3s ease;
-  z-index: 50;
-}
-
-.navbar.scrolled {
-  padding: 0.5rem 2rem 2rem 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 1rem;
-}
-
-.left-buttons {
-  display: flex;
-  gap: 0.75rem;
-}
-
-/* Right section */
-.right-section {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-/* Icon buttons */
-.icon-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.25rem;
-  padding: 0.25rem 0.5rem;
-  transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.icon-btn:hover {
-  color: darkslateblue;
-}
-
-.navIcon {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-}
-
-
-
-.search-wrapper {
-  position: relative;
-}
-
-.search-input {
-  border: none;
-  border-radius: 9999px;
-  padding: 0.5rem 2rem 0.5rem 1rem;
-  font-size: 0.875rem;
-  background-color: #f5f5f5;
-  transition: all 0.2s ease;
-  width: 160px;
-}
-
-.search-input:focus {
-  outline: none;
-  background-color: #fff;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
-}
-
-.search-icon {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: #888;
-  font-size: 1rem;
-}
-
-.title-section {
-  text-align: center;
-  color: #111827;
-  margin-top: 1rem;
-  cursor: pointer; /* toont handje bij hover */
-  transition: transform 0.2s ease, color 0.2s ease, text-shadow 0.2s ease;
-}
-
-.title-section:hover {
-  transform: scale(1.01);
-  text-shadow: 0 2px 5px rgba(77, 0, 0, 0.15); /* subtiele gloed */
-}
-
-.main-title {
-  font-family: 'Playfair Display', serif;
-  font-weight: 900;
-  font-size: 3rem;
-  letter-spacing: 2px;
-  background: linear-gradient(90deg, #1c1c1c 0%, #4b5563 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin: 0.5rem 0;
-}
-
-@media (min-width: 768px) {
-  .main-title {
-    font-size: 3.5rem;
-  }
-}
-
-.subtitle-banner {
-  display: inline-block;
-  background-color: #fffae5;
-  color: #111827;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
-  margin-bottom: 1rem;
-}
-
-.divider {
-  width: 100%;
-  height: 3px;
-  background-image: repeating-linear-gradient(
-    45deg,
-    #1c1c1c,
-    #1c1c1c 5px,
-    #4b5563 5px,
-    #4b5563 10px
-  );
-  margin-top: 1rem;
-}
-
-.ticker { background-color: #e5e5e5; overflow: hidden; white-space: nowrap; border-top: 2px solid #1c1c1c; border-bottom: 2px solid #1c1c1c; width: 100%; }
-.ticker-track { display: inline-block; padding: 0.5rem 0; animation: tickerScroll 20s linear infinite; }
-.ticker-item { margin-right: 4rem; font-weight: 700; text-transform: uppercase; }
-@keyframes tickerScroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
-</style>
