@@ -1,6 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomepageView from '@/views/HomepageView.vue'
-import PartyListView from '../views/PartyListView.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import HomepageView from '@/views/HomepageView.vue';
+import PartyListView from '@/views/PartyListView.vue';
+import CandidatesView from '@/views/CandidatesView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,29 +11,32 @@ const router = createRouter({
       name: 'home',
       component: HomepageView,
     },
-  {
+    {
       path: '/parties',
       name: 'parties',
-      component: () => import('../views/PartyListView.vue'),    },
+      component: PartyListView,
+    },
+    {
+      path: '/candidates',
+      name: 'candidates',
+      component: CandidatesView,
+    },
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      component: () => import('../views/AboutView.vue'), // lazy-loaded
     },
     {
       path: '/polls',
       name: 'polls',
-      component: () => import('../views/PollView.vue'),
+      component: () => import('../views/PollView.vue'), // lazy-loaded
     },
     {
-      path: `/latest-news`,
-      name: `latest-news`,
-      component: () => import(`../views/NewsView.vue`)
-    }
+      path: '/latest-news',
+      name: 'latest-news',
+      component: () => import('../views/NewsView.vue'), // lazy-loaded
+    },
   ],
-})
+});
 
-export default router
+export default router;
