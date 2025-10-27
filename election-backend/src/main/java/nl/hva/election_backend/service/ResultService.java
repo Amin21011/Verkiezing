@@ -40,8 +40,4 @@ public class ResultService {
             return List.of();
         }
     }
-
-    public List<Party> getAllPartiesByYear(int year) {
-        return resultRepository.getTopParties(Integer.MAX_VALUE);
-    }
 }

@@ -80,7 +80,6 @@ const ticker = [
 
       <div class="inline-block bg-[#fffae5] text-[#111827] font-semibold px-4 py-2 rounded-lg shadow-md mb-4">
         Alles wat je moet weten voordat je stemt.</div>
-
     </div>
 
     <section class="bg-[#e5e5e5] overflow-hidden whitespace-nowrap border-y-[2px] border-[#1c1c1c] w-full mt-4">

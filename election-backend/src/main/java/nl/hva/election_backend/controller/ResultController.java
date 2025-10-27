@@ -14,21 +14,11 @@ public class ResultController {
         this.resultService = resultService;
     }
 
-    /**
-     * /electionresults/parties/top
-     * Geeft de top 3 partijen met de meeste stemmen.
-     */
-
+    // top 3 partijen met aantal stemmen van elke gekozen kandidaat
     @GetMapping("/parties/top")
     public List<Party> getTopParties(
             @RequestParam(defaultValue = "3") int limit
     ) {
         return resultService.getTopParties(limit);
     }
-
-//    @GetMapping("/{year}/parties")
-//    public List<Party> getAllParties(@PathVariable int year) {
-//        return resultService.getAllPartiesByYear(year);
-//    }
-
 }
