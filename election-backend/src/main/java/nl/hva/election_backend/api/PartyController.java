@@ -7,7 +7,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/electionresults")
-@CrossOrigin(origins = "*")
 public class PartyController {
 
     private final PartyService partyService;
@@ -16,7 +15,7 @@ public class PartyController {
         this.partyService = partyService;
     }
 
-    // Top partijen op basis van stemmen
+    // Top partijnamen op basis van stemmen
     @GetMapping("/top")
     public List<Party> getTopParties(@RequestParam(defaultValue = "3") int limit) {
         return partyService.getTopParties(limit);
@@ -28,7 +27,7 @@ public class PartyController {
         return partyService.getPartyById(id);
     }
 
-    // Willekeurige volgorde (optioneel)
+    // Willekeurige volgorde
     @GetMapping("/random")
     public List<Party1> getAllPartiesRandomized() {
         return partyService.getAllPartiesRandomized();
