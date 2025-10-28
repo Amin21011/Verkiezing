@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { jwtDecode } from "jwt-decode";
+import type { AuthUser } from '@/types/IUser.ts'
 
 export const API_URL = 'http://localhost:8080/auth'
 export const authUser = ref<string | null>(null)
@@ -24,6 +25,7 @@ interface JwtPayload {
   sub: string // email
   name: string
   userId: number
+  role: "USER" | "ADMIN"
 }
 
 export async function login(email: string, password: string) {
@@ -37,7 +39,7 @@ export async function login(email: string, password: string) {
 
   const data = await res.json();
   authToken.value = data.token;
-  localStorage.setItem("token", data.token); // ✅ token opslaan
+  localStorage.setItem("token", data.token);
 
   return data;
 }
@@ -49,10 +51,29 @@ export function getAuthUser() {
   return {
     name: decoded.name,
     email: decoded.sub,
+    role: decoded.role
   };
 }
 
 export function logout() {
   authToken.value = null;
   localStorage.removeItem("token");
+}
+
+
+export async function getCurrentUser(): Promise<AuthUser | null> {
+  const token = localStorage.getItem('token')
+  if (!token) return null
+
+  const response = await fetch('http://localhost:8080/auth/me', {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+
+  if (!response.ok) return null
+  return await response.json() as AuthUser
+}
+
+
+export function getToken(): string | null {
+  return authToken.value ?? localStorage.getItem("token")
 }
