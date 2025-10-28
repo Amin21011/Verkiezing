@@ -1,32 +1,41 @@
 package nl.hva.election_backend.service;
-
 import nl.hva.election_backend.model.Party;
+import nl.hva.election_backend.model.Party1;
 import nl.hva.election_backend.repository.PartyRepository;
 import nl.hva.election_backend.repository.ResultRepository;
-import nl.hva.election_backend.utils.xml.DutchPartyParser;
 import org.springframework.stereotype.Service;
-
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 public class PartyService {
     private final PartyRepository repository;
-    private final ResultRepository resultRepository; // injecteren
-    private final DutchPartyParser transformer = new DutchPartyParser();
+    private final ResultRepository resultRepository;
 
     public PartyService(PartyRepository repository, ResultRepository resultRepository) {
         this.repository = repository;
         this.resultRepository = resultRepository;
     }
 
-    public void loadParties(String xmlFileName) {
-        List<Party> parsedParties = transformer.parseParties(xmlFileName);
-        repository.saveAll(parsedParties);
-        // partiesById zodat findTopParties de namen kan vinden
-        resultRepository.registerParties(parsedParties);
-    }
-
     public List<Party> getAllParties() {
         return repository.getAll();
+    }
+
+    public List<Party1> getAllPartiesRandomized() {
+        List<Party1> shuffled = new ArrayList<>(repository.getAllParties());
+        Collections.shuffle(shuffled);
+        return shuffled;
+    }
+
+    public Party getPartyById(String id) {
+        return repository.getAll().stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public List<Party> getTopParties(int limit) {
+        return resultRepository.getTopParties(limit);
     }
 }

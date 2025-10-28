@@ -21,7 +21,7 @@ public class Party {
 
     public String getId() { return id; }
     public String getName() { return name; }
-    // nieuw:
+
     public String getLeaderName() { return leaderName; }
     public String getWebsite() { return website; }
 

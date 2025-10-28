@@ -1,9 +1,7 @@
 package nl.hva.election_backend.controller;
-
 import nl.hva.election_backend.model.Party;
 import nl.hva.election_backend.service.ResultService;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -24,15 +22,14 @@ public class ResultController {
 
     @GetMapping("/parties/top")
     public List<Party> getTopParties(
-//            @PathVariable int year,
             @RequestParam(defaultValue = "3") int limit
     ) {
         return resultService.getTopParties(limit);
     }
 
-
 //    @GetMapping("/{year}/parties")
 //    public List<Party> getAllParties(@PathVariable int year) {
 //        return resultService.getAllPartiesByYear(year);
 //    }
+
 }

@@ -1,12 +1,10 @@
 package nl.hva.election_backend.service;
-
 import nl.hva.election_backend.model.Election;
 import nl.hva.election_backend.model.Party;
 import nl.hva.election_backend.model.Result;
 import nl.hva.election_backend.repository.ResultRepository;
 import nl.hva.election_backend.utils.xml.transformers.ResultLoader;
 import org.springframework.stereotype.Service;
-
 import java.util.Comparator;
 import java.util.List;
 
@@ -23,7 +21,7 @@ public class ResultService {
             Election election = new Election("TK2023");
             ResultLoader.loadResults(election, resultRepository);
 
-            // bereken totale stemmen per partij
+            // Calculates total votes of a party
             for (Party party : election.getParties()) {
                 int totalVotes = resultRepository.getAll().stream()
                         .filter(r -> party.getId().equals(r.getPartyId()))
@@ -44,6 +42,6 @@ public class ResultService {
     }
 
     public List<Party> getAllPartiesByYear(int year) {
-        return resultRepository.findTopParties(Integer.MAX_VALUE);
+        return resultRepository.getTopParties(Integer.MAX_VALUE);
     }
 }

@@ -6,7 +6,6 @@ import nl.hva.election_backend.model.Party;
 import nl.hva.election_backend.repository.ResultRepository;
 import nl.hva.election_backend.utils.xml.DutchCandidateParser;
 import nl.hva.election_backend.utils.xml.DutchPartyParser;
-
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
@@ -22,12 +21,12 @@ public class ResultLoader {
         List<Party> parties = partyParser.parseParties("Verkiezingsdefinitie_TK2023.eml.xml");
         election.getParties().addAll(parties);
 
-        // Kandidaten
+        // Candidates
         DutchCandidateParser candidateParser = new DutchCandidateParser();
-        List<Candidate> candidates = candidateParser.parseCandidates("Verkiezingsdefinitie_TK2023.eml.xml", parties);
+        List<Candidate> candidates = candidateParser.parseCandidates("Kandidatenlijsten_TK2023_Amsterdam.eml.xml", parties);
         candidates.forEach(election::addCandidate);
 
-        // Kandidaten koppelen
+        // Matching candidates
         for (Candidate candidate : candidates) {
             Party party = election.getParties().stream()
                     .filter(p -> p.getId().equals(candidate.getPartyId()))
@@ -38,11 +37,11 @@ public class ResultLoader {
 
         repository.registerParties(election.getParties());
 
-        // ResultTransformer initialiseren
+        // Initialise ResultTransformer
         DutchResultTransformer transformer = new DutchResultTransformer(election);
         transformer.setRepository(repository);
 
-        // Bestanden en regio’s
+        // Files and regions
         String[][] filesAndRegions = {
                 {"/Resultaat_TK2023.eml.xml", "landelijk", "NL"},
                 {"/Totaaltelling_TK2023.eml.xml", "landelijk", "NL"},
@@ -91,8 +90,6 @@ public class ResultLoader {
             }
             reader.close();
         }
-
-        transformer.flushResults();
     }
 
     private static String readElementText(XMLStreamReader reader) throws Exception {
