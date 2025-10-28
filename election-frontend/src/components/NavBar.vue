@@ -1,8 +1,8 @@
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
 const isScrolled = ref(false);
+const showOffcanvas = ref(false);
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 50;
@@ -12,20 +12,24 @@ onMounted(() => {
   window.addEventListener('scroll', handleScroll);
 });
 
+function toggleOffcanvas() {
+  showOffcanvas.value = !showOffcanvas.value;
+}
+
 const ticker = [
   'Laatste peilingen tonen verrassende wending',
   'Nieuwe partij groeit explosief in stedelijke gebieden',
   'Quiz: Hoe goed ken jij de top-partijen?'
 ];
-
 </script>
 
 <template>
   <header :class="['navbar', { scrolled: isScrolled }]">
-
+    <!-- Top bar met menu -->
     <div class="top-bar">
       <div class="left-buttons">
-        <button class="icon-btn" title="Menu">☰</button>
+        <!-- Hamburger knop -->
+        <button class="icon-btn" title="Menu" @click="toggleOffcanvas">☰</button>
         <button class="icon-btn" title="Dark Mode">🌙</button>
       </div>
 
@@ -51,6 +55,21 @@ const ticker = [
         <span v-for="(item, i) in ticker" :key="i" class="ticker-item">{{ item }}</span>
       </div>
     </section>
+
+    <!-- Offcanvas menu -->
+    <teleport to="body">
+      <div v-if="showOffcanvas" class="offcanvas-overlay" @click.self="toggleOffcanvas">
+        <div class="offcanvas">
+          <button class="close-btn" @click="toggleOffcanvas">✕</button>
+          <a href="/">Laatste Nieuws</a>
+          <a href="/">Trending</a>
+          <a href="/">Forum</a>
+          <a href="/">Quiz</a>
+          <a href="/">Kandidaten</a>
+          <a href="/">FAQ</a>
+        </div>
+      </div>
+    </teleport>
   </header>
 </template>
 
@@ -201,5 +220,64 @@ const ticker = [
 .ticker-track { display: inline-block; padding: 0.5rem 0; animation: tickerScroll 20s linear infinite; }
 .ticker-item { margin-right: 4rem; font-weight: 700; text-transform: uppercase; }
 @keyframes tickerScroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+
+.offcanvas-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 9999;
+}
+
+.offcanvas {
+  background: white;
+  color: white;
+  width: 280px;
+  height: 100%;
+  padding: 24px;
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.close-btn {
+  font-size: 25px;
+  color: black;
+  background: none;
+  border: none;
+  cursor: pointer;
+  float: right;
+  font-weight: 700;
+}
+
+.offcanvas a {
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  color: black;
+  text-decoration: none;
+  margin: 35px 0;
+  font-weight: 700;
+  font-size: 1.2rem;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.offcanvas a::before {
+  content: '▶';
+  position: absolute;
+  left: 0;
+  font-size: 0.9rem;
+  color: black;
+  transition: transform 0.2s ease;
+}
+
+.offcanvas a:hover::before {
+  transform: translateX(4px);
+}
+
 
 </style>
