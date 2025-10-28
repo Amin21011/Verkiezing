@@ -5,7 +5,6 @@ import { authToken, getAuthUser, logout } from '@/services/authService'
 
 const router = useRouter()
 const isScrolled = ref(false)
-
 const goToHome = () => router.push('/')
 
 const handleScroll = () => {
@@ -40,6 +39,8 @@ const ticker = [
   'Quiz: Hoe goed ken jij de top-partijen?',
 ]
 </script>
+
+
 <template>
   <header :class="['sticky top-0 z-50 bg-paper border-b-8 border-ink shadow-[0_4px_20px_rgba(0,0,0,0.1)] transition-all', isScrolled ? 'py-0' : 'py-0']">
     <div class="flex justify-between items-center pb-4 px-6">
@@ -74,12 +75,13 @@ const ticker = [
       </div>
     </div>
 
-    <div @click="goToHome" class="text-center text-[#111827] mt-4 cursor-pointer transition hover:scale-[1.01] hover:[text-shadow:0_2px_5px_rgba(77,0,0,0.15)]">
+    <div @click="goToHome" class="text-center text-[#111827] mt-4 cursor-pointer transition hover:scale-[1.01]">
       <h1 class="font-[Playfair Display] font-black text-[3rem] md:text-[3.5rem] tracking-[2px] bg-gradient-to-r from-[#1c1c1c] to-[#4b5563] bg-clip-text text-transparent my-2">
         VERKIEZINGEN 2025 ✏️</h1>
 
-      <div class="inline-block bg-[#fffae5] text-[#111827] font-semibold px-4 py-2 rounded-lg shadow-md mb-4">
-        Alles wat je moet weten voordat je stemt.</div>
+      <div class="font-semibold bg-yellow-100 px-4 py-2 rounded-lg mt-2">
+        Alles wat je moet weten voordat je stemt.
+      </div>
     </div>
 
     <section class="bg-[#e5e5e5] overflow-hidden whitespace-nowrap border-y-[2px] border-[#1c1c1c] w-full mt-4">

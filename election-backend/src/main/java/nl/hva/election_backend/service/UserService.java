@@ -28,7 +28,8 @@ public class UserService {
         return repository.save(user);
     }
 
-    public static Optional<User> findByEmail(String email) {
-        return repository.findByEmail(email);
+    public User findByEmail(String email) {
+        return repository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found: " + email));
     }
 }
