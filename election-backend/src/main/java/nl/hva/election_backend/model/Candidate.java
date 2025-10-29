@@ -2,13 +2,16 @@ package nl.hva.election_backend.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
 public class Candidate {
     @Id
-    @GeneratedValue
-    private  String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private  String CandidateId;
     private  String shortCode;
     private  String firstName;
     private  String lastName;
@@ -16,7 +19,7 @@ public class Candidate {
     private int votes;
 
     public Candidate(String id, String shortCode, String firstName, String lastName, String partyId) {
-        this.id = id;
+        this.CandidateId = id;
         this.shortCode = shortCode;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -27,7 +30,7 @@ public class Candidate {
     public Candidate() {}
 
     // Getters & setters
-    public String getId() { return id; }
+    public String getCandidateId() { return CandidateId; }
     public String getShortCode() { return shortCode; }
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }
