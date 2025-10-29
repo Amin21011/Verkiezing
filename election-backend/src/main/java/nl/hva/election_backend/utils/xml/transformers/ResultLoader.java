@@ -30,7 +30,7 @@ public class ResultLoader {
         // Kandidaten koppelen
         for (Candidate candidate : candidates) {
             Party party = election.getParties().stream()
-                    .filter(p -> p.getId().equals(candidate.getPartyId()))
+                    .filter(p -> p.getPartyId().equals(candidate.getPartyId()))
                     .findFirst()
                     .orElse(null);
             if (party != null) party.addCandidate(candidate);

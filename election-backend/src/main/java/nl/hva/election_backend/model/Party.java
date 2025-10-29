@@ -1,25 +1,37 @@
 package nl.hva.election_backend.model;
 
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "party")
 public class Party {
-    private final String id;
-    private final String name;
-    private final String leaderName;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private  String partyId;
+    private  String name;
+    private  String leaderName;
     private int voteCount;
-    private final String website;
+    private  String website;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private final List<Candidate> candidates = new ArrayList<>();
 
-    public Party(String id, String name, String leaderName, int voteCount, String website) {
-        this.id = id;
+    public Party() {}
+
+    public Party(String partyId, String name, String leaderName, int voteCount, String website) {
+        this.partyId = partyId;
         this.name = name;
         this.leaderName = leaderName;
         this.voteCount = voteCount;
         this.website = website;
     }
 
-    public String getId() { return id; }
+    public String getPartyId() { return partyId; }
     public String getName() { return name; }
     // nieuw:
     public String getLeaderName() { return leaderName; }

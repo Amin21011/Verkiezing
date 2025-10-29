@@ -26,7 +26,7 @@ public class ResultService {
             // bereken totale stemmen per partij
             for (Party party : election.getParties()) {
                 int totalVotes = resultRepository.getAll().stream()
-                        .filter(r -> party.getId().equals(r.getPartyId()))
+                        .filter(r -> party.getPartyId().equals(r.getPartyId()))
                         .mapToInt(Result::getVotes)
                         .sum();
                 party.setVoteCount(totalVotes);
