@@ -9,12 +9,14 @@ import java.util.List;
 @Service
 public class CandidateService {
 
+    // Om data op te halen
     private final CandidateRepository candidateRepository;
 
     public CandidateService(CandidateRepository candidateRepository) {
         this.candidateRepository = candidateRepository;
     }
 
+    // Haalt alle kandidaten op via de repository
     public List<Candidate> getAllCandidates() {
         return candidateRepository.findAll();
     }
