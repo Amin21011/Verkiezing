@@ -1,6 +1,6 @@
 package nl.hva.election_backend.api;
 
-import nl.hva.election_backend.controller.PollController;
+import nl.hva.election_backend.service.PollService;
 import nl.hva.election_backend.model.Poll;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,13 +10,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/polls")
 @CrossOrigin(origins = "http://localhost:5173")
-public class PollApi {
-    private final PollController pollController;
+public class PollController {
+    private final PollService pollService;
 
-    public PollApi() {
-        this.pollController = new PollController();
+    public PollController() {
+        this.pollService = new PollService();
 
-        pollController.createPoll("Wie is de betere partij?", Arrays.asList("VVD", "D66", "CDA"));
+        pollService.createPoll("Wie is de betere partij?", Arrays.asList("VVD", "D66", "CDA"));
     }
 
     /**
@@ -24,7 +24,7 @@ public class PollApi {
      */
     @GetMapping
     public List<Poll> getAllPolls() {
-        return pollController.getAllPolls();
+        return pollService.getAllPolls();
     }
 
     /**
@@ -32,7 +32,7 @@ public class PollApi {
      */
     @PostMapping("/{pollIndex}/vote/{optionIndex}")
     public void vote(@PathVariable int pollIndex, @PathVariable int optionIndex) {
-        pollController.voteOnPoll(pollIndex, optionIndex);
+        pollService.voteOnPoll(pollIndex, optionIndex);
     }
 
     /**
@@ -40,7 +40,7 @@ public class PollApi {
      */
     @PutMapping("/{pollIndex}/reset/{optionIndex}")
     public void resetVote(@PathVariable int pollIndex, @PathVariable int optionIndex) {
-        pollController.resetVote(pollIndex, optionIndex);
+        pollService.resetVote(pollIndex, optionIndex);
     }
 
     /**
@@ -48,7 +48,7 @@ public class PollApi {
      */
     @DeleteMapping("/clear")
     public void clearPolls() {
-        pollController.clearAllPolls();
+        pollService.clearAllPolls();
     }
 
 
