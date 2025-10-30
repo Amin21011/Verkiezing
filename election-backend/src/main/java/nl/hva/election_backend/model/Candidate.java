@@ -2,11 +2,12 @@ package nl.hva.election_backend.model;
 
 public class Candidate {
 
-    private final String id;
-    private final String shortCode;
-    private final String firstName;
-    private final String lastName;
-    private String partyId; // niet final, zodat setPartyId werkt
+    private String id;
+    private String shortCode;
+    private String firstName;
+    private String lastName;
+    private String partyId;
+    private String partyName;
     private int votes;
 
     public Candidate(String id, String shortCode, String firstName, String lastName, String partyId) {
@@ -24,12 +25,15 @@ public class Candidate {
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }
     public String getPartyId() { return partyId; }
-
-    public void setPartyId(String partyId) { this.partyId = partyId; }
-
-    public String getName() { return firstName + " " + lastName; }
-
+    public String getPartyName() { return partyName; }
     public int getVotes() { return votes; }
+
+    public void setId(String id) { this.id = id; }
+    public void setShortCode(String shortCode) { this.shortCode = shortCode; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+    public void setPartyId(String partyId) { this.partyId = partyId; }
+    public void setPartyName(String partyName) { this.partyName = partyName; }
     public void setVotes(int votes) { this.votes = votes; }
 
     @Override
