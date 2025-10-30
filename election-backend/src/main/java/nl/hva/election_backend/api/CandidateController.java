@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/candidates")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*")
 public class CandidateController {
 
     private final CandidateService candidateService;
@@ -23,9 +23,7 @@ public class CandidateController {
     }
 
     @GetMapping("/party/{partyId}")
-    public List<Candidate> getByParty(@PathVariable String partyId) {
+    public List<Candidate> getCandidatesByParty(@PathVariable String partyId) {
         return candidateService.getCandidatesByParty(partyId);
     }
-
-
 }
