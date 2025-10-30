@@ -1,32 +1,24 @@
 package nl.hva.election_backend.service;
 
 import nl.hva.election_backend.model.Quiz;
-import nl.hva.election_backend.model.Question;
-
-import java.util.List;
+import nl.hva.election_backend.utils.xml.QuizParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class QuizService {
 
+    private static final Logger logger = LoggerFactory.getLogger(QuizService.class);
+
+    private final QuizParser quizParser = new QuizParser();
+
     public Quiz getQuiz() {
-        // Dummyvragen
-        Question q1 = new Question(
-                "q1",
-                "Moeten de belastingen voor de rijken omhoog?",
-                List.of("Ja", "Nee", "Neutraal")
-        );
-
-        Question q2 = new Question(
-                "q2",
-                "Moeten scholen gratis zijn?",
-                List.of("Ja", "Nee")
-        );
-
-        Question q3 = new Question(
-                "q3",
-                "Moet er meer geld naar de gezondheidszorg?",
-                List.of("Ja", "Nee", "Weet ik niet")
-        );
-
-        return new Quiz(List.of(q1, q2, q3));
+        try {
+            Quiz quiz = quizParser.parseQuiz("/quiz.xml");
+            logger.info("Quiz geladen met {} vragen", quiz.getQuestions().size());
+            return quiz;
+        } catch (Exception e) {
+            logger.error("Fout bij het laden van de quiz", e);
+            throw new RuntimeException("Fout bij het laden van de quiz: " + e.getMessage(), e);
+        }
     }
 }
