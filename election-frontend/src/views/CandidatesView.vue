@@ -26,15 +26,15 @@
         <!-- Pagination -->
         <div class="flex justify-center mt-6 gap-2">
           <button
-            class="px-4 py-2 bg-blue-950 text-white rounded disabled:opacity-50"
+            class="px-4 py-2 bg-blue-950 text-white font-semibold rounded disabled:opacity-50"
             :disabled="currentPage === 1"
             @click="prevPage"
           >
             Vorige
           </button>
-          <span class="px-4 py-2">{{ currentPage }} / {{ totalPages }}</span>
+          <span class="px-4 py-2 text-black font-semibold">{{ currentPage }} / {{ totalPages }}</span>
           <button
-            class="px-4 py-2 bg-blue-950 text-white rounded disabled:opacity-50"
+            class="px-4 py-2 bg-blue-950 text-white font-semibold rounded disabled:opacity-50"
             :disabled="currentPage === totalPages"
             @click="nextPage"
           >
