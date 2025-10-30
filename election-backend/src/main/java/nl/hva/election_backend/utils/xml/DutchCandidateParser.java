@@ -2,6 +2,7 @@ package nl.hva.election_backend.utils.xml;
 
 import nl.hva.election_backend.model.Candidate;
 import nl.hva.election_backend.model.Party;
+import org.springframework.stereotype.Component;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -10,13 +11,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class DutchCandidateParser {
-
-    private static final String KR_NAMESPACE = "http://www.kiesraad.nl/extensions";
 
     /**
      * Parse candidates from the XML and link them to parties via AffiliationIdentifier.
-     * Deze versie is namespace-onafhankelijk.
+     * Namespace-aware parsing die xnl-prefix automatisch verwerkt.
      */
     public List<Candidate> parseCandidates(String fileName, List<Party> parties) {
         List<Candidate> candidates = new ArrayList<>();
@@ -50,26 +50,28 @@ public class DutchCandidateParser {
                         case "AffiliationIdentifier" -> {
                             partyId = reader.getAttributeValue(null, "Id");
                         }
-                        case "FirstName" -> firstName = reader.getElementText().trim();
-                        case "LastName" -> lastName = reader.getElementText().trim();
+                        case "FirstName", "LastName" -> {
+                            String value = reader.getElementText().trim();
+                            if ("FirstName".equals(localName)) {
+                                firstName = value;
+                            } else {
+                                lastName = value;
+                            }
+                        }
                     }
                 }
 
                 if (event == XMLStreamConstants.END_ELEMENT && "Candidate".equals(reader.getLocalName())) {
-                    if (shortCode != null && firstName != null && lastName != null) {
-                        // fallback: gebruik shortCode als ID als Id ontbreekt
+                    if ((candidateId != null || shortCode != null) && firstName != null && lastName != null) {
                         String idToUse = candidateId != null ? candidateId : shortCode;
 
                         candidates.add(new Candidate(
                                 idToUse,
-                                shortCode,
+                                shortCode != null ? shortCode : idToUse,
                                 firstName,
                                 lastName,
                                 partyId
                         ));
-
-                        // System.out.printf("Parsed candidate: %s %s (id=%s, shortCode=%s, party=%s)%n",
-                        //        firstName, lastName, idToUse, shortCode, partyId);
                     }
 
                     // reset voor volgende kandidaat

@@ -8,13 +8,14 @@ interface NewsItem {
   publishedAt: string | null;
 }
 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080"}/api/news/rijksoverheid?limit=6`;
+const API_URL = `${import.meta.env.VITE_API_URL}news/rijksoverheid?limit=6`;
+
 
 const newsItems = ref<NewsItem[]>([]);
 const loading = ref(true);
 const errorMsg = ref("");
 
-// Datum formatteren
+
 function formatDate(iso: string | null): string {
   if (!iso) return "";
   try {
@@ -35,8 +36,8 @@ async function loadNews() {
   errorMsg.value = "";
 
   try {
-    const res = await fetch(API_URL, { credentials: "include" });
-    if (!res.ok) throw new Error(`HTTP fout: ${res.status}`);
+    const res = await fetch(API_URL);
+    if (!res.ok)  new Error(`HTTP fout: ${res.status}`);
 
     const raw: NewsItem[] = await res.json();
 

@@ -1,25 +1,17 @@
 package nl.hva.election_backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-@Entity
 public class Candidate {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    private  String CandidateId;
-    private  String shortCode;
-    private  String firstName;
-    private  String lastName;
-    private  String partyId; // koppeling naar PartyDTO
+    private String id;
+    private String shortCode;
+    private String firstName;
+    private String lastName;
+    private String partyId;
+    private String partyName;
     private int votes;
 
     public Candidate(String id, String shortCode, String firstName, String lastName, String partyId) {
-        this.CandidateId = id;
+        this.id = id;
         this.shortCode = shortCode;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -27,18 +19,21 @@ public class Candidate {
         this.votes = 0;
     }
 
-    public Candidate() {}
-
     // Getters & setters
-    public String getCandidateId() { return CandidateId; }
+    public String getId() { return id; }
     public String getShortCode() { return shortCode; }
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }
     public String getPartyId() { return partyId; }
-
-    public String getName() { return firstName + " " + lastName; }
-
+    public String getPartyName() { return partyName; }
     public int getVotes() { return votes; }
+
+    public void setId(String id) { this.id = id; }
+    public void setShortCode(String shortCode) { this.shortCode = shortCode; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+    public void setPartyId(String partyId) { this.partyId = partyId; }
+    public void setPartyName(String partyName) { this.partyName = partyName; }
     public void setVotes(int votes) { this.votes = votes; }
 
     @Override
