@@ -1,18 +1,16 @@
 package nl.hva.election_backend.model;
 
-import nl.hva.election_backend.service.QuestionService;
-
 import java.util.List;
 
 public class Quiz {
-    private final List<QuestionService> questions;
+    private final List<Question> questions;
 
     // Constructor met List<Question>
-    public Quiz(List<QuestionService> questions) {
+    public Quiz(List<Question> questions) {
         this.questions = questions;
     }
 
-    public List<QuestionService> getQuestions() {
+    public List<Question> getQuestions() {
         return questions;
     }
 }
