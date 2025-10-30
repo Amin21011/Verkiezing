@@ -13,7 +13,6 @@ import java.util.List;
 @Repository
 public class CandidateRepository {
 
-    // Lijsten om alle kandidaten en partijen opslaan
     private final List<Candidate> candidates = new ArrayList<>();
     private final List<Party> parties = new ArrayList<>();
 
@@ -21,15 +20,25 @@ public class CandidateRepository {
     public void init() {
         try {
             Election election = new Election("Tweede Kamerverkiezingen 2023");
-
             ResultRepository repository = new ResultRepository();
 
-            // Laad verkiezingsresultaten van XML
+            // Laad verkiezingsdata (partijen + kandidaten)
             ResultLoader.loadResults(election, repository);
 
-            // Toevoegen geladen kandidaten/partijen toe aan lijsten
+            // Sla lokaal op
             candidates.addAll(election.getCandidates());
             parties.addAll(election.getParties());
+
+            // Voeg partijnaam toe aan elke kandidaat
+            for (Candidate c : candidates) {
+                Party p = parties.stream()
+                        .filter(party -> party.getId().equals(c.getPartyId()))
+                        .findFirst()
+                        .orElse(null);
+                if (p != null) {
+                    c.setPartyName(p.getName());
+                }
+            }
 
             System.out.println("✅ Parsed " + candidates.size() + " kandidaten en " + parties.size() + " partijen");
         } catch (Exception e) {
@@ -37,19 +46,16 @@ public class CandidateRepository {
         }
     }
 
-    // Geeft alle kandidaten terug
     public List<Candidate> findAll() {
         return candidates;
     }
 
-    // Geeft alle kandidaten van een specifieke partij terug
     public List<Candidate> findByPartyId(String partyId) {
         return candidates.stream()
                 .filter(c -> c.getPartyId().equals(partyId))
                 .toList();
     }
 
-    // Geeft alle partijen terug
     public List<Party> findAllParties() {
         return parties;
     }
