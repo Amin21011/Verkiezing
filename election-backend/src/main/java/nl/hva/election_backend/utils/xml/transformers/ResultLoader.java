@@ -19,12 +19,12 @@ public class ResultLoader {
 
     public static void loadResults(Election election, ResultRepository repository) throws Exception {
         DutchPartyParser partyParser = new DutchPartyParser();
-        List<Party> parties = partyParser.parseParties("Verkiezingsdefinitie_TK2023.eml.xml");
+        List<Party> parties = partyParser.parseParties("TK2023_HvA_UvA/Verkiezingsdefinitie_TK2023.eml.xml");
         election.getParties().addAll(parties);
 
         // Kandidaten
         DutchCandidateParser candidateParser = new DutchCandidateParser();
-        List<Candidate> candidates = candidateParser.parseCandidates("Verkiezingsdefinitie_TK2023.eml.xml", parties);
+        List<Candidate> candidates = candidateParser.parseCandidates("TK2023_HvA_UvA/Kandidatenlijsten_TK2023_Amsterdam.eml.xml", parties);
         candidates.forEach(election::addCandidate);
 
         // Kandidaten koppelen
