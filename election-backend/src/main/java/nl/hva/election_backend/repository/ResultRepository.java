@@ -78,4 +78,9 @@ public class ResultRepository {
     public void setPartyNames(List<Party> parties) {
         registerParties(parties);
     }
+
+    public synchronized void clear() {
+        results.clear();
+        partiesById.clear();
+    }
 }
