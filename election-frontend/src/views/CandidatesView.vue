@@ -20,6 +20,9 @@
             <p class="font-semibold text-black">
               {{ candidate.firstName }} {{ candidate.lastName }}
             </p>
+            <p class="text-gray-600 text-sm">
+              Partij: {{ candidate.partyName }}
+            </p>
           </li>
         </ul>
 
@@ -56,6 +59,7 @@ interface Candidate {
   firstName: string;
   lastName: string;
   partyId: string;
+  partyName: string;
   votes: number;
 }
 
