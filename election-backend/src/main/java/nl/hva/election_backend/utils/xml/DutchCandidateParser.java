@@ -15,8 +15,7 @@ import java.util.List;
 public class DutchCandidateParser {
 
     /**
-     * Parse candidates from the XML and link them to parties via AffiliationIdentifier.
-     * Namespace-aware parsing die xnl-prefix automatisch verwerkt.
+     * Parse candidates from XML, including all candidates under each Affiliation.
      */
     public List<Candidate> parseCandidates(String fileName, List<Party> parties) {
         List<Candidate> candidates = new ArrayList<>();
@@ -30,11 +29,11 @@ public class DutchCandidateParser {
             factory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, true);
             XMLStreamReader reader = factory.createXMLStreamReader(is);
 
+            String currentPartyId = null;
             String candidateId = null;
             String shortCode = null;
             String firstName = null;
             String lastName = null;
-            String partyId = null;
 
             while (reader.hasNext()) {
                 int event = reader.next();
@@ -43,39 +42,38 @@ public class DutchCandidateParser {
                     String localName = reader.getLocalName();
 
                     switch (localName) {
+                        case "AffiliationIdentifier" -> {
+                            currentPartyId = reader.getAttributeValue(null, "Id");
+                        }
                         case "CandidateIdentifier" -> {
                             candidateId = reader.getAttributeValue(null, "Id");
                             shortCode = reader.getAttributeValue(null, "ShortCode");
                         }
-                        case "AffiliationIdentifier" -> {
-                            partyId = reader.getAttributeValue(null, "Id");
-                        }
-                        case "FirstName", "LastName" -> {
-                            String value = reader.getElementText().trim();
-                            if ("FirstName".equals(localName)) {
-                                firstName = value;
-                            } else {
-                                lastName = value;
-                            }
-                        }
+                        case "FirstName" -> firstName = reader.getElementText().trim();
+                        case "LastName" -> lastName = reader.getElementText().trim();
                     }
                 }
 
-                if (event == XMLStreamConstants.END_ELEMENT && "Candidate".equals(reader.getLocalName())) {
-                    if ((candidateId != null || shortCode != null) && firstName != null && lastName != null) {
-                        String idToUse = candidateId != null ? candidateId : shortCode;
+                if (event == XMLStreamConstants.END_ELEMENT) {
+                    String localName = reader.getLocalName();
 
-                        candidates.add(new Candidate(
-                                idToUse,
-                                shortCode != null ? shortCode : idToUse,
-                                firstName,
-                                lastName,
-                                partyId
-                        ));
+                    if ("Candidate".equals(localName)) {
+                        if (candidateId != null && firstName != null && lastName != null && currentPartyId != null) {
+                            String idToUse = candidateId != null ? candidateId : shortCode;
+                            candidates.add(new Candidate(
+                                    idToUse,
+                                    shortCode != null ? shortCode : idToUse,
+                                    firstName,
+                                    lastName,
+                                    currentPartyId
+                            ));
+                        }
+                        // reset voor volgende kandidaat
+                        candidateId = shortCode = firstName = lastName = null;
+                    } else if ("Affiliation".equals(localName)) {
+                        // Klaar met deze partij → reset partyId
+                        currentPartyId = null;
                     }
-
-                    // reset voor volgende kandidaat
-                    candidateId = shortCode = firstName = lastName = partyId = null;
                 }
             }
 

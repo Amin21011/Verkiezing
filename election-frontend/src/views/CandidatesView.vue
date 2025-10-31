@@ -1,9 +1,25 @@
 <template>
   <div class="min-h-screen bg-[#FEFDF9] py-10 px-6">
     <div class="max-w-5xl mx-auto">
-      <h1 class="text-4xl font-serif font-bold text-center mb-6 text-black">
-        Kandidatenlijst
-      </h1>
+      <div class="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
+        <h1 class="text-4xl font-serif font-bold mb--4 text-black text-center sm:text-left">
+          Kandidatenlijst
+        </h1>
+
+        <select
+          v-model="selectedParty"
+          class="border border-gray-300 rounded-lg px-4 py-2 text-black bg-white"
+        >
+          <option value="">Alle partijen</option>
+          <option
+            v-for="party in uniqueParties"
+            :key="party"
+            :value="party"
+          >
+            {{ party }}
+          </option>
+        </select>
+      </div>
 
       <div class="bg-[#FFFDF7] shadow-md rounded-2xl p-6 border border-gray-100">
         <div v-if="paginatedCandidates.length === 0" class="text-gray-500 text-center py-6">
@@ -66,6 +82,7 @@ interface Candidate {
 const candidates = ref<Candidate[]>([]);
 const currentPage = ref(1);
 const ITEMS_PER_PAGE = 18;
+const selectedParty = ref('');
 
 const API_URL = `${import.meta.env.VITE_API_URL}candidates`;
 
@@ -78,12 +95,26 @@ onMounted(async () => {
   }
 });
 
-const totalPages = computed(() => Math.ceil(candidates.value.length / ITEMS_PER_PAGE));
+const uniqueParties = computed(() => {
+  const names = candidates.value.map((c) => c.partyName);
+  return [...new Set(names)].filter((n) => n);
+});
+
+const filteredCandidates = computed(() => {
+  if (!selectedParty.value) return candidates.value;
+  return candidates.value.filter(
+    (c) => c.partyName === selectedParty.value
+  );
+});
+
+const totalPages = computed(() =>
+  Math.ceil(filteredCandidates.value.length / ITEMS_PER_PAGE)
+);
 
 const paginatedCandidates = computed(() => {
   const start = (currentPage.value - 1) * ITEMS_PER_PAGE;
   const end = start + ITEMS_PER_PAGE;
-  return candidates.value.slice(start, end);
+  return filteredCandidates.value.slice(start, end);
 });
 
 const nextPage = () => {

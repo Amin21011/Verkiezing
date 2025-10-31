@@ -5,7 +5,10 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
-  candidate: Object
-});
+interface Candidate {
+  getName: () => string;
+}
+defineProps<{
+  candidate: Candidate;
+}>()
 </script>
