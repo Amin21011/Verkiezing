@@ -11,12 +11,12 @@ public class NewsItem {
     private String title;
     private String link;
     private String description;
-    private OffsetDateTime publishedAt;
+    private String publishedAt;
 
 
     public NewsItem() {}
 
-    public NewsItem(String title, String link, String description, OffsetDateTime publishedAt) {
+    public NewsItem(String title, String link, String description, String publishedAt) {
         this.title = title;
         this.link = link;
         this.description = description;
@@ -45,11 +45,11 @@ public class NewsItem {
         this.description = description;
     }
 
-    public OffsetDateTime getPublishedAt() {
+    public String getPublishedAt() {
         return publishedAt;
     }
 
-    public void setPublishedAt(OffsetDateTime publishedAt) {
+    public void setPublishedAt(String publishedAt) {
         this.publishedAt = publishedAt;
     }
 }
