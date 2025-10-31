@@ -1,8 +1,15 @@
 package nl.hva.election_backend.model;
 
-public class Candidate {
+import jakarta.persistence.*;
 
-    private String id;
+@Entity
+@Table(name = "candidates")
+public class Candidate {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String candidateId;
     private String shortCode;
     private String firstName;
     private String lastName;
@@ -10,8 +17,10 @@ public class Candidate {
     private String partyName;
     private int votes;
 
+    public Candidate() {}
+
     public Candidate(String id, String shortCode, String firstName, String lastName, String partyId) {
-        this.id = id;
+        this.candidateId = id;
         this.shortCode = shortCode;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -20,7 +29,7 @@ public class Candidate {
     }
 
     // Getters & setters
-    public String getId() { return id; }
+    public String getCandidateId() { return candidateId; }
     public String getShortCode() { return shortCode; }
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }
@@ -28,7 +37,7 @@ public class Candidate {
     public String getPartyName() { return partyName; }
     public int getVotes() { return votes; }
 
-    public void setId(String id) { this.id = id; }
+    public void setCandidateId(String id) { this.candidateId = id; }
     public void setShortCode(String shortCode) { this.shortCode = shortCode; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
