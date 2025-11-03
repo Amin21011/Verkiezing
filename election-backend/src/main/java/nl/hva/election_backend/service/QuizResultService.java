@@ -14,18 +14,31 @@ public class QuizResultService {
 
         public QuizResult calculateResult(Map<String, String> userAnswers) {
             Quiz quiz = quizService.getQuiz();
-            Map<String, Integer> scores = new HashMap<>();
+            Map<String, Double> scores = new HashMap<>();
 
             for (Question question : quiz.getQuestions()) {
                 String userAnswer = userAnswers.get(question.getId());
-                if (userAnswer != null) continue;
+                if (userAnswer == null) continue;
 
                 for (Map.Entry<String, String> entry : question.getPartyPositions().entrySet()) {
                     String party = entry.getKey();
                     String partyAnswer = entry.getValue();
 
                     if (partyAnswer.equalsIgnoreCase(userAnswer)) {
-                        scores.put(party, scores.getOrDefault(party, 0) + 1);
+                        // Exact dezelfde mening → +1 punt
+                        scores.put(party, scores.getOrDefault(party, 0.0) + 1.0);
+                    } else if (
+                            partyAnswer.equalsIgnoreCase("Neutraal") &&
+                                    userAnswer.equalsIgnoreCase("Neutraal")
+                    ) {
+                        // Beide neutraal → +1 punt
+                        scores.put(party, scores.getOrDefault(party, 0.0) + 1.0);
+                    } else if (
+                            partyAnswer.equalsIgnoreCase("Neutraal") ||
+                                    userAnswer.equalsIgnoreCase("Neutraal")
+                    ) {
+                        // Eén van de twee neutraal → halve match
+                        scores.put(party, scores.getOrDefault(party, 0.0) + 0.5);
                     }
                 }
             }

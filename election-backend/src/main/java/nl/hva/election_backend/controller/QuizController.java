@@ -22,6 +22,9 @@ public class QuizController {
 
     @PostMapping("/result")
     public QuizResult getResult(@RequestBody Map<String, String> userAnswers) {
+        if (userAnswers == null || userAnswers.isEmpty()) {
+            throw new IllegalArgumentException("Er zijn geen antwoorden ontvangen.");
+        }
         return resultService.calculateResult(userAnswers);
     }
 }

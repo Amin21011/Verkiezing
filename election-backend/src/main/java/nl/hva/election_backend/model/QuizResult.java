@@ -4,9 +4,9 @@ import java.util.Map;
 
 public class QuizResult {
     private final String bestMatchingParty;
-    private final Map<String, Integer> partyScores;
+    private final Map<String, Double> partyScores;
 
-    public QuizResult(String bestMatchingParty, Map<String, Integer> partyScores) {
+    public QuizResult(String bestMatchingParty, Map<String, Double> partyScores) {
         this.bestMatchingParty = bestMatchingParty;
         this.partyScores = partyScores;
     }
@@ -15,7 +15,7 @@ public class QuizResult {
         return bestMatchingParty;
     }
 
-    public Map<String, Integer> getPartyScores() {
+    public Map<String, Double> getPartyScores() {
         return partyScores;
     }
 }
