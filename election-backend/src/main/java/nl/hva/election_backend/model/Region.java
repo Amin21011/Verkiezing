@@ -1,13 +1,20 @@
 package nl.hva.election_backend.model;
 
+import jakarta.persistence.*;
+
 /**
  * Represents a region in the Dutch election definition.
  */
-
+@Entity
+@Table(name = "region")
 public class Region {
-    private final String number;
-    private final String name;
-    private final String category;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private  String number;
+    private  String name;
+    private  String category;
+
+    public Region() {}
 
     public Region(String number, String name, String category) {
         this.number = number;

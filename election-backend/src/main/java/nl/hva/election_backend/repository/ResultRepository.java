@@ -1,5 +1,6 @@
 package nl.hva.election_backend.repository;
 
+import nl.hva.election_backend.model.Candidate;
 import nl.hva.election_backend.model.Party;
 import nl.hva.election_backend.model.Result;
 import org.springframework.stereotype.Repository;
@@ -13,7 +14,6 @@ public class ResultRepository {
     private final List<Result> results = new ArrayList<>();
     private final Map<String, Party> partiesById = new HashMap<>();
 
-    // Overschrijf oude resultaten door nieuwe (vermijdt duplicates bij meerdere parses)
     public void saveAll(List<Result> resultList) {
         results.clear();
         if (resultList != null) {
@@ -33,16 +33,14 @@ public class ResultRepository {
         partiesById.clear();
         if (parties != null) {
             for (Party p : parties) {
-                partiesById.put(p.getId(), p);
+                partiesById.put(p.getPartyId(), p);
             }
         }
     }
 
-    // Vind top partijen op basis van opgetelde stemmen
     public List<Party> findTopParties(int limit) {
         if (results.isEmpty()) return List.of();
 
-        // sommeer stemmen per partyId
         Map<String, Integer> votesByParty = new HashMap<>();
         for (Result r : results) {
             if (r.getPartyId() == null) continue;
@@ -70,5 +68,14 @@ public class ResultRepository {
         if (partyId == null) return "Onbekende partij";
         Party party = partiesById.get(partyId);
         return (party != null) ? party.getName() : "Onbekende partij";
+    }
+
+    /**
+     * Geeft alle kandidaten van alle partijen terug.
+     */
+    public List<Candidate> getAllCandidates() {
+        return partiesById.values().stream()
+                .flatMap(p -> p.getCandidates().stream())
+                .toList();
     }
 }

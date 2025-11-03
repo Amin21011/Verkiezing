@@ -1,6 +1,7 @@
 package nl.hva.election_backend.service;
 
 import nl.hva.election_backend.model.*;
+import nl.hva.election_backend.repository.ElectionRepository;
 import nl.hva.election_backend.utils.PathUtils;
 import nl.hva.election_backend.utils.xml.*;
 import nl.hva.election_backend.utils.xml.transformers.*;
@@ -18,6 +19,12 @@ import java.io.IOException;
  */
 @Service
 public class DutchElectionService {
+
+    private final ElectionRepository electionRepository;
+
+    public DutchElectionService(ElectionRepository electionRepository) {
+        this.electionRepository = electionRepository;
+    }
 
     public Election readResults(String electionId, String folderName) {
         System.out.println("Processing files...");
@@ -38,6 +45,7 @@ public class DutchElectionService {
             // Please note that you can also specify an absolute path to the folder!
 
             electionParser.parseResults(electionId, PathUtils.getResourcePath("/%s".formatted(folderName)));
+            electionRepository.save(election);
 
             System.out.println("Dutch Election results: " + election);
 
