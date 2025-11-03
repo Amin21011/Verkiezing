@@ -30,6 +30,14 @@ public class QuizController {
         if (userAnswers == null || userAnswers.isEmpty()) {
             throw new IllegalArgumentException("Er zijn geen antwoorden ontvangen.");
         }
+
+        // Controleer of antwoorden overeenkomen met bestaande vragen
+        int totalQuestions = quizService.getQuiz().getQuestions().size();
+        if (userAnswers.size() != totalQuestions) {
+            throw new IllegalArgumentException("Niet alle vragen zijn beantwoord (" +
+                    userAnswers.size() + " van " + totalQuestions + ").");
+        }
+
         return resultService.calculateResult(userAnswers);
     }
 
