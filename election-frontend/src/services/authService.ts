@@ -1,8 +1,9 @@
 import { ref } from 'vue'
 import { jwtDecode } from "jwt-decode";
 import type { AuthUser } from '@/types/IUser.ts'
+import { authFetch } from '@/helpers/authFetch.ts'
 
-export const API_URL = 'http://localhost:8080/auth'
+export const API_URL = `${import.meta.env.VITE_API_URL}/auth`
 export const authUser = ref<string | null>(null)
 export const authToken = ref<string | null>(localStorage.getItem("token"));
 
@@ -60,19 +61,15 @@ export function logout() {
   localStorage.removeItem("token");
 }
 
-
 export async function getCurrentUser(): Promise<AuthUser | null> {
   const token = localStorage.getItem('token')
   if (!token) return null
 
-  const response = await fetch('http://localhost:8080/auth/me', {
-    headers: { Authorization: `Bearer ${token}` }
-  })
+  const response = await authFetch(`${API_URL}/me`)
 
   if (!response.ok) return null
   return await response.json() as AuthUser
 }
-
 
 export function getToken(): string | null {
   return authToken.value ?? localStorage.getItem("token")
