@@ -20,6 +20,8 @@ const user = ref(getAuthUser())
 function handleLogout() {
   logout()
   user.value = null
+  goToHome();
+
 }
 
 watch(authToken, () => {
@@ -32,7 +34,6 @@ const toggleMenu = () => {
 }
 
 const goToAccount = () => router.push('/account')
-
 const ticker = [
   'Laatste peilingen tonen verrassende wending',
   'Nieuwe partij groeit explosief in stedelijke gebieden',
@@ -40,17 +41,14 @@ const ticker = [
 ]
 </script>
 
-
 <template>
   <header :class="['sticky top-0 z-50 bg-paper border-b-8 border-ink shadow-[0_4px_20px_rgba(0,0,0,0.1)] transition-all', isScrolled ? 'py-0' : 'py-0']">
     <div class="flex justify-between items-center pb-4 px-6">
       <div class="flex gap-3">
         <button class="bg-transparent border-none cursor-pointer text-xl px-2 py-1 transition hover:text-indigo-700" title="Menu">
-          ☰
-        </button>
+          ☰ </button>
         <button class="bg-transparent border-none cursor-pointer text-xl px-2 py-1 transition hover:text-indigo-700" title="Dark Mode">
-          🌙
-        </button>
+          🌙 </button>
       </div>
 
       <div v-if="user" class="relative">
@@ -76,8 +74,8 @@ const ticker = [
     </div>
 
     <div @click="goToHome" class="text-center text-[#111827] mt-4 cursor-pointer transition hover:scale-[1.01]">
-      <h1 class="font-[Playfair Display] font-black text-[3rem] md:text-[3.5rem] tracking-[2px] bg-gradient-to-r from-[#1c1c1c] to-[#4b5563] bg-clip-text text-transparent my-2">
-        VERKIEZINGEN 2025 ✏️</h1>
+      <h1 class="font-[Playfair Display] font-black text-[3rem] md:text-[3.5rem] tracking-[2px] bg-gradient-to-r from-[#1c1c1c] to-[#1c1c1c] bg-clip-text text-transparent my-2">
+        VERKIEZINGEN 2025</h1>
 
       <div class="font-semibold bg-yellow-100 px-4 py-2 rounded-lg mt-2">
         Alles wat je moet weten voordat je stemt.
@@ -93,4 +91,5 @@ const ticker = [
     </section>
   </header>
 </template>
+
 

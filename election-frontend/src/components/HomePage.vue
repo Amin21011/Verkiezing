@@ -6,10 +6,12 @@ import GridSection from '@/components/GridSection.vue'
 import PartijenContent from '@/components/PartijenContent.vue'
 import PollView from '@/views/PollView.vue'
 import FooterComp from '@/components/FooterComp.vue'
+import StatistiekenContent from '@/components/StatistiekenContent.vue'
 
 const tweedeGrid = [
   { title: 'Top Parties', component: PartijenContent },
-  { title: 'Jouw Stem', component: PollView }
+  { title: 'Jouw Stem', component: PollView },
+  { title: 'Hete Statistieken', component: StatistiekenContent }
 ]
 </script>
 
