@@ -4,51 +4,36 @@
       Politieke Partij Quiz ✏️
     </h1>
 
+    <!-- Laden -->
     <div v-if="loading" class="text-gray-700 text-lg">Laden...</div>
 
+    <!-- Quiz -->
     <div v-else class="w-full max-w-3xl">
-      <form @submit.prevent="submitQuiz" class="space-y-6">
-        <!-- Elke vraag -->
+      <form @submit.prevent="submitQuiz" class="space-y-8">
         <div
           v-for="question in questions"
           :key="question.id"
           class="bg-[#a0a0a0] border border-gray-600 rounded-lg shadow-md p-5 hover:shadow-lg transition"
         >
-          <p class="text-lg font-semibold text-gray-800 mb-3">{{ question.text }}</p>
+          <p class="font-semibold text-gray-800">{{ question.text }}</p>
 
-          <div class="answers flex gap-8 text-gray-900">
+          <div class="answers flex gap-6 mt-3">
             <label class="flex items-center gap-2">
-              <input
-                type="radio"
-                :name="question.id"
-                value="Ja"
-                v-model="answers[question.id]"
-                class="accent-gray-800"
-              />
+              <input type="radio" :name="question.id" value="Ja" v-model="answers[question.id]" class="accent-gray-800" />
               Ja
             </label>
             <label class="flex items-center gap-2">
-              <input
-                type="radio"
-                :name="question.id"
-                value="Nee"
-                v-model="answers[question.id]"
-                class="accent-gray-800"
-              />
+              <input type="radio" :name="question.id" value="Nee" v-model="answers[question.id]" class="accent-gray-800" />
               Nee
             </label>
             <label class="flex items-center gap-2">
-              <input
-                type="radio"
-                :name="question.id"
-                value="Neutraal"
-                v-model="answers[question.id]"
-                class="accent-gray-800"
-              />
+              <input type="radio" :name="question.id" value="Neutraal" v-model="answers[question.id]" class="accent-gray-800" />
               Neutraal
             </label>
           </div>
         </div>
+
+        <p v-if="errorMessage" class="text-red-700 text-center font-semibold">{{ errorMessage }}</p>
 
         <div class="flex justify-center">
           <button
@@ -66,20 +51,18 @@
         class="mt-10 bg-[#a0a0a0] border border-gray-600 rounded-lg p-6 shadow-md text-center"
       >
         <h2 class="text-2xl font-bold text-gray-800 mb-4">
-          Beste match: {{ result.bestMatchingParty }}
+          Beste match: {{ sortedResults[0]?.party }}
         </h2>
 
         <p class="text-gray-700 mb-3 italic">Score per partij:</p>
-        <div
-          class="bg-white border border-gray-300 rounded-md text-left max-h-60 overflow-y-auto p-4"
-        >
+        <div class="bg-white border border-gray-300 rounded-md text-left max-h-60 overflow-y-auto p-4">
           <div
-            v-for="(score, party) in result.partyScores"
-            :key="party"
+            v-for="item in sortedResults"
+            :key="item.party"
             class="flex justify-between border-b border-gray-200 py-1"
           >
-            <span class="font-medium text-gray-800">{{ party }}</span>
-            <span class="text-gray-700">{{ score.toFixed(1) }}</span>
+            <span class="font-medium text-gray-800">{{ item.party }}</span>
+            <span class="text-gray-700">{{ item.score.toFixed(1) }}</span>
           </div>
         </div>
 
@@ -95,12 +78,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 
 const questions = ref([]);
 const answers = ref({});
 const result = ref(null);
 const loading = ref(true);
+const errorMessage = ref("");
 
 async function loadQuiz() {
   try {
@@ -114,6 +98,14 @@ async function loadQuiz() {
 }
 
 async function submitQuiz() {
+  // Validatie
+  const unanswered = questions.value.filter((q) => !answers.value[q.id]);
+  if (unanswered.length > 0) {
+    errorMessage.value = "Beantwoord alle vragen voordat je doorgaat.";
+    return;
+  }
+  errorMessage.value = "";
+
   try {
     const response = await fetch("http://localhost:8080/quiz/result", {
       method: "POST",
@@ -126,20 +118,22 @@ async function submitQuiz() {
   }
 }
 
+// Sorteer de partijen op hoogste score
+const sortedResults = computed(() => {
+  if (!result.value) return [];
+  return Object.entries(result.value.partyScores)
+    .map(([party, score]) => ({ party, score }))
+    .sort((a, b) => b.score - a.score);
+});
+
 function resetQuiz() {
   answers.value = {};
   result.value = null;
 }
-
 onMounted(() => loadQuiz());
 </script>
 
 <style scoped>
-/* Scroll behavior consistent met andere pagina’s */
-* {
-  -webkit-overflow-scrolling: touch;
-}
-
 .answers input[type="radio"] {
   width: 18px;
   height: 18px;
