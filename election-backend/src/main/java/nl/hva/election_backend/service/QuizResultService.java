@@ -43,13 +43,22 @@ public class QuizResultService {
                 }
             }
 
-            String bestParty = scores.entrySet()
+            int totalQuestions = quiz.getQuestions().size();
+            Map<String, Double> percentages = new HashMap<>();
+
+            for (Map.Entry<String, Double> entry : scores.entrySet()) {
+                double percent = (entry.getValue() / totalQuestions) * 100;
+                percentages.put(entry.getKey(), percent);
+
+            }
+
+            String bestParty = percentages.entrySet()
                     .stream()
                     .max(Map.Entry.comparingByValue())
                     .map(Map.Entry::getKey)
                     .orElse("Geen partij gevonden");
 
-            return new QuizResult(bestParty, scores);
+            return new QuizResult(bestParty, percentages);
 
         }
 }

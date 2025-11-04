@@ -1,3 +1,6 @@
+@import '@/assets/base.css';
+@import "tailwindcss";
+
 <template>
   <div class="quiz-container min-h-screen bg-[#d9d9d9] flex flex-col items-center font-sans p-6">
     <h1 class="text-4xl font-serif font-bold text-gray-800 mb-6 border-b-2 border-gray-500 pb-2">
@@ -62,7 +65,7 @@
             class="flex justify-between border-b border-gray-200 py-1"
           >
             <span class="font-medium text-gray-800">{{ item.party }}</span>
-            <span class="text-gray-700">{{ item.score.toFixed(1) }}</span>
+            <span class="text-gray-700">{{ item.score.toFixed(1) }}%</span>
           </div>
         </div>
 
