@@ -16,7 +16,6 @@ const handleLogin = async () => {
     alert("Login mislukt.");
   }
 };
-
 </script>
 
 <template>
@@ -26,9 +25,7 @@ const handleLogin = async () => {
 
     <form @submit.prevent="handleLogin" class="flex flex-col gap-4 text-left">
       <input v-model="email" type="email" placeholder="E-mail" class="input-field" required />
-
       <input v-model="password" type="password" placeholder="Wachtwoord" class="input-field" required />
-
       <button type="submit" class="btn-primary uppercase font-bold tracking-widest mt-4">
         Login</button>
     </form>

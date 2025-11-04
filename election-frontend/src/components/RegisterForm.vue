@@ -20,7 +20,6 @@ const handleSubmit = async () => {
     alert("Fout bij registratie.")
   }
 }
-
 </script>
 
 <template>
@@ -32,7 +31,6 @@ const handleSubmit = async () => {
     <input v-model="password" type="password" placeholder="Wachtwoord" class="input-field" required />
     <input v-model="confirmPassword" type="password" placeholder="Bevestig wachtwoord" class="input-field" required />
 
-    <button type="submit" class="btn-primary w-full text-center mt-2">
-      Maak Account</button>
+    <button type="submit" class="btn-primary w-full text-center mt-2">Maak Account</button>
   </form>
 </template>

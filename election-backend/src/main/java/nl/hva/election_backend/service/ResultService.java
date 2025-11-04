@@ -18,6 +18,7 @@ public class ResultService {
 
     public List<Party> getTopParties(int limit) {
         try {
+            resultRepository.clear();
             Election election = new Election("TK2023");
             ResultLoader.loadResults(election, resultRepository);
 

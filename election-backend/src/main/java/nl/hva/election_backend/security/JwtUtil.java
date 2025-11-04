@@ -16,7 +16,6 @@ public class JwtUtil {
     private static final String SECRET = "ThisIsAVeryStrongSecretKey123456789!!!";
     private static final byte[] SECRET_BYTES =
             Base64.getEncoder().encode(SECRET.getBytes());
-
     private static final long EXPIRATION_TIME = 3600 * 1000;
 
     public String generateToken(User user) {
@@ -26,6 +25,7 @@ public class JwtUtil {
 
         return Jwts.builder()
                 .setClaims(claims)
+                .claim("role", user.getRole())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(new SecretKeySpec(
