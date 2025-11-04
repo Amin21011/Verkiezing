@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:16
+    container_name: election-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: electiondb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: election-backend
+    container_name: election-backend
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    restart: on-failure
+
+volumes:
+  postgres_data:

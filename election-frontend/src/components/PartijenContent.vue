@@ -11,19 +11,15 @@ onMounted(() => {
 
 <template>
 
-    <p v-if="message" class="message">{{ message }}</p>
+  <p v-if="message" class="message">{{ message }}</p>
 
-    <ul v-else class="party-list">
-      <li
-        v-for="(party, index) in topParties"
-        :key="party.id"
-        class="party-item"
-      >
-        <span class="rank">{{ index + 1 }}.</span>
-        <span class="name">{{ party.name }}</span>
-        <span class="votes">{{ party.voteCount.toLocaleString() }} stemmen</span>
-      </li>
-    </ul>
+  <ul v-else class="party-list">
+    <li v-for="(party, index) in topParties" :key="party.id" class="party-item">
+      <span class="rank">{{ index + 1 }}.</span>
+      <span class="name">{{ party.name }}</span>
+      <span class="votes">{{ party.voteCount.toLocaleString() }} stemmen</span>
+    </li>
+  </ul>
 
 </template>
 

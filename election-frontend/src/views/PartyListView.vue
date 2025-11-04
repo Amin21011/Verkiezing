@@ -1,4 +1,4 @@
-@import '@/assets/base.css';
+@import '@/assets/main.css';
 @import "tailwindcss";
 
 <template>
@@ -61,7 +61,7 @@
 </template>
 
 
-<script>
+<script lang="ts">
 import { ref, onMounted } from 'vue'
 
 export default {

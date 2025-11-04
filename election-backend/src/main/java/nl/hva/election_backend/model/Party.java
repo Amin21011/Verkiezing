@@ -33,7 +33,7 @@ public class Party {
 
     public String getPartyId() { return partyId; }
     public String getName() { return name; }
-    // nieuw:
+
     public String getLeaderName() { return leaderName; }
     public String getWebsite() { return website; }
 

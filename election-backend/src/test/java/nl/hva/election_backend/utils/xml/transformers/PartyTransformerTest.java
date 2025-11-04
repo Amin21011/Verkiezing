@@ -5,7 +5,6 @@ import nl.hva.election_backend.model.Region;
 import nl.hva.election_backend.utils.xml.DutchPartyParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

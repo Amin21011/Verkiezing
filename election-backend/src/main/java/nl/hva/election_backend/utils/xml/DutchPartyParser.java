@@ -1,8 +1,6 @@
 package nl.hva.election_backend.utils.xml;
-
 import nl.hva.election_backend.model.Party;
 import nl.hva.election_backend.model.Region;
-
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;

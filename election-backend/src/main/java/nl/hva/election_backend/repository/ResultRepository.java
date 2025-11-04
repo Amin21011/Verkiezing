@@ -1,63 +1,68 @@
 package nl.hva.election_backend.repository;
-
-import nl.hva.election_backend.model.Candidate;
 import nl.hva.election_backend.model.Party;
 import nl.hva.election_backend.model.Result;
 import org.springframework.stereotype.Repository;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
 public class ResultRepository {
-
-    private final List<Result> results = new ArrayList<>();
+    private final List<Result> results = Collections.synchronizedList(new ArrayList<>());
     private final Map<String, Party> partiesById = new HashMap<>();
 
-    public void saveAll(List<Result> resultList) {
-        results.clear();
-        if (resultList != null) {
-            results.addAll(resultList);
+    public synchronized void addResult(Result result) {
+        if (result == null) return;
+
+        Optional<Result> existing = results.stream()
+                .filter(r ->
+                        Objects.equals(r.getPartyId(), result.getPartyId()) &&
+                                Objects.equals(r.getCandidateId(), result.getCandidateId()) &&
+                                Objects.equals(r.getRegionId(), result.getRegionId()) &&
+                                Objects.equals(r.getRegionType(), result.getRegionType()))
+                .findFirst();
+
+        if (existing.isPresent()) {
+            existing.get().setVotes(existing.get().getVotes() + result.getVotes());
+        } else {
+            results.add(result);
         }
     }
 
-    public void clearAll() {
-        results.clear();
-    }
-
     public List<Result> getAll() {
-        return new ArrayList<>(results);
+        synchronized (results) {
+            return new ArrayList<>(results);
+        }
     }
 
     public void registerParties(List<Party> parties) {
         partiesById.clear();
         if (parties != null) {
             for (Party p : parties) {
-                partiesById.put(p.getPartyId(), p);
+                partiesById.put(p.getId(), p);
             }
         }
     }
 
-    public List<Party> findTopParties(int limit) {
+    public List<Party> getTopParties(int limit) {
         if (results.isEmpty()) return List.of();
 
         Map<String, Integer> votesByParty = new HashMap<>();
         for (Result r : results) {
-            if (r.getPartyId() == null) continue;
-            votesByParty.merge(r.getPartyId(), r.getVotes(), Integer::sum);
+            if (r.getPartyId() != null) {
+                votesByParty.merge(r.getPartyId(), r.getVotes(), Integer::sum);
+            }
         }
 
         return votesByParty.entrySet().stream()
-                .sorted(Map.Entry.<String,Integer>comparingByValue().reversed())
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                 .limit(limit)
                 .map(entry -> {
                     String id = entry.getKey();
                     int votes = entry.getValue();
                     Party base = partiesById.get(id);
-                    String name = base != null ? base.getName() : "Onbekende partij";
-                    String leader = base != null ? base.getLeaderName() : "";
-                    String website = base != null ? base.getWebsite() : "";
-                    Party p = new Party(id, name, leader, votes, website);
+                    if (base == null)
+                        return new Party(id, "Onbekende partij", "", votes, "");
+                    Party p = new Party(id, base.getName(), base.getLeaderName(), votes, base.getWebsite());
                     p.setVoteCount(votes);
                     return p;
                 })
@@ -66,16 +71,16 @@ public class ResultRepository {
 
     public String getPartyName(String partyId) {
         if (partyId == null) return "Onbekende partij";
-        Party party = partiesById.get(partyId);
-        return (party != null) ? party.getName() : "Onbekende partij";
+        Party p = partiesById.get(partyId);
+        return (p != null) ? p.getName() : "Onbekende partij";
     }
 
-    /**
-     * Geeft alle kandidaten van alle partijen terug.
-     */
-    public List<Candidate> getAllCandidates() {
-        return partiesById.values().stream()
-                .flatMap(p -> p.getCandidates().stream())
-                .toList();
+    public void setPartyNames(List<Party> parties) {
+        registerParties(parties);
+    }
+
+    public synchronized void clear() {
+        results.clear();
+        partiesById.clear();
     }
 }
