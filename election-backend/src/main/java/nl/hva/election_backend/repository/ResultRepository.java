@@ -21,6 +21,12 @@ public class ResultRepository {
         }
     }
 
+    public void addResult(Result result) {
+        if (result != null) {
+            results.add(result);
+        }
+    }
+
     public void clearAll() {
         results.clear();
     }

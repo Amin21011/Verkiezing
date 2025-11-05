@@ -71,4 +71,8 @@ public class DutchResultTransformer implements VotesTransformer {
             return 0;
         }
     }
+
+    public void flushResults() {
+
+    }
 }
