@@ -5,6 +5,10 @@ import { authToken, getAuthUser, logout } from '@/services/authService'
 
 const router = useRouter()
 const isScrolled = ref(false)
+const user = ref(getAuthUser())
+const showMenu = ref(false)
+const showOffcanvas = ref(false)
+
 const goToHome = () => router.push('/')
 
 const handleScroll = () => {
@@ -15,37 +19,38 @@ onMounted(() => {
   window.addEventListener('scroll', handleScroll)
 })
 
-const user = ref(getAuthUser())
-
 function handleLogout() {
   logout()
   user.value = null
-  goToHome();
-
+  goToHome()
 }
 
 watch(authToken, () => {
   user.value = getAuthUser()
 })
 
-const showMenu = ref(false)
 const toggleMenu = () => {
   showMenu.value = !showMenu.value
 }
 
 const goToAccount = () => router.push('/account')
+
 const ticker = [
   'Laatste peilingen tonen verrassende wending',
   'Nieuwe partij groeit explosief in stedelijke gebieden',
   'Quiz: Hoe goed ken jij de top-partijen?',
 ]
+
+function toggleOffcanvas() {
+  showOffcanvas.value = !showOffcanvas.value
+}
 </script>
 
 <template>
   <header :class="['sticky top-0 z-50 bg-paper border-b-8 border-ink shadow-[0_4px_20px_rgba(0,0,0,0.1)] transition-all', isScrolled ? 'py-0' : 'py-0']">
     <div class="flex justify-between items-center pb-4 px-6">
       <div class="flex gap-3">
-        <button class="bg-transparent border-none cursor-pointer text-xl px-2 py-1 transition hover:text-indigo-700" title="Menu">
+        <button @click="toggleOffcanvas" class="bg-transparent border-none cursor-pointer text-xl px-2 py-1 transition hover:text-indigo-700" title="Menu">
           ☰ </button>
         <button class="bg-transparent border-none cursor-pointer text-xl px-2 py-1 transition hover:text-indigo-700" title="Dark Mode">
           🌙 </button>
@@ -90,6 +95,78 @@ const ticker = [
       </div>
     </section>
   </header>
+
+  <teleport to="body">
+    <div v-if="showOffcanvas" class="offcanvas-overlay" @click.self="toggleOffcanvas">
+      <div class="offcanvas">
+        <button class="close-btn" @click="toggleOffcanvas">✕</button>
+        <router-link to="/">Laatste Nieuws</router-link>
+        <router-link to="/">Trending</router-link>
+        <router-link to="/">Forum</router-link>
+        <router-link to="/">Quiz</router-link>
+        <router-link to="/candidates">Kandidaten</router-link>
+        <router-link to="/">FAQ</router-link>
+      </div>
+    </div>
+  </teleport>
 </template>
 
+<style scoped>
+.offcanvas-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 9999;
+}
 
+.offcanvas {
+  background: white;
+  color: white;
+  width: 280px;
+  height: 100%;
+  padding: 24px;
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.close-btn {
+  font-size: 25px;
+  color: black;
+  background: none;
+  border: none;
+  cursor: pointer;
+  float: right;
+  font-weight: 700;
+}
+
+.offcanvas a {
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  color: black;
+  text-decoration: none;
+  margin: 35px 0;
+  font-weight: 700;
+  font-size: 1.2rem;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+
+.offcanvas a::before {
+  content: '▶';
+  position: absolute;
+  left: 0;
+  font-size: 0.9rem;
+  color: black;
+  transition: transform 0.2s ease;
+}
+
+.offcanvas a:hover::before {
+  transform: translateX(4px);
+}
+</style>
