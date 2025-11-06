@@ -78,9 +78,10 @@ function toggleOffcanvas() {
       </div>
     </div>
 
-    <div @click="goToHome" class="text-center text-[#111827] mt-4 cursor-pointer transition hover:scale-[1.01]">
-      <h1 class="font-[Playfair Display] font-black text-[3rem] md:text-[3.5rem] tracking-[2px] bg-gradient-to-r from-[#1c1c1c] to-[#1c1c1c] bg-clip-text text-transparent my-2">
-        VERKIEZINGEN 2025</h1>
+    <div @click="goToHome" class="text-center text-[#111827] mt-4 cursor-pointer">
+      <h1 class="font-[Playfair Display] font-black text-[3rem] md:text-[3.5rem] tracking-[2px] bg-gradient-to-r from-[#1c1c1c] to-[#1c1c1c] bg-clip-text text-transparent my-2 transition hover:scale-105 inline-block">
+        VERKIEZINGEN 2025
+      </h1>
 
       <div class="font-semibold bg-yellow-100 px-4 py-2 rounded-lg mt-2">
         Alles wat je moet weten voordat je stemt.
