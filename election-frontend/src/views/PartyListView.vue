@@ -3,27 +3,6 @@
 
 <template>
 <div class="min-h-screen w-full bg-[#d9d9d9] flex flex-col font-sans">
-    <!-- FULL WIDTH NAVBAR -->
-    <header class="w-full bg-[#d9d9d9] py-4 border-b border-gray-400">
-      <!-- Top bar -->
-      <div class="flex justify-between items-center px-6 mb-4">
-        <div class="flex gap-3">
-          <button class="icon-btn text-gray-800">☰</button>
-          <button class="icon-btn text-gray-800">🌙</button>
-        </div>
-        <div class="flex gap-3 items-center">
-          <input type="text" placeholder="Zoeken..." class="search-input border border-gray-600 text-gray-800"/>
-          <button class="icon-btn text-gray-800">👤</button>
-        </div>
-      </div>
-      <!-- Title section -->
-      <div class="text-center px-6">
-        <div class="divider mb-2"></div>
-        <h1 class="main-title text-4xl font-serif font-bold text-gray-800">VERKIEZINGEN 2025 <span>✏️</span></h1>
-        <p class="subtitle text-gray-700 text-sm mt-1 italic">Alles wat je moet weten voordat je stemt.</p>
-        <div class="divider mt-2"></div>
-      </div>
-    </header>
 
     <!-- PARTIJEN GRID -->
 <main class="w-full max-w-none flex-1 py-10 px-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 place-items-center">

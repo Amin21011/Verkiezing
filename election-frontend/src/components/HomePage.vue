@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import NavBar from '@/components/NavBar.vue'
 import HeroSection from '@/components/HeroSection.vue'
 import ArticleSection from '@/components/ArticleSection.vue'
 import GridSection from '@/components/GridSection.vue'
@@ -16,7 +15,6 @@ const tweedeGrid = [
 </script>
 
 <template>
-    <NavBar/>
     <HeroSection/>
     <ArticleSection/>
     <GridSection :cards="tweedeGrid" />

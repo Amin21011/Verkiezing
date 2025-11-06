@@ -36,6 +36,6 @@ public class PartyService {
     }
 
     public List<Party> getTopParties(int limit) {
-        return resultRepository.getTopParties(limit);
+        return resultRepository.findTopParties(limit);
     }
 }

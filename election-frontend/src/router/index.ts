@@ -1,5 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomepageView from '../views/HomepageView.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import HomepageView from '@/views/HomepageView.vue';
+import CandidatesView from '@/views/CandidatesView.vue';
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import PartyListView from '../views/PartyListView.vue'
@@ -19,14 +20,24 @@ const router = createRouter({
       component: PartyListView,
     },
     {
+      path: '/candidates',
+      name: 'candidates',
+      component: CandidatesView,
+    },
+    // {
+    //   path: '/about',
+    //   name: 'about',
+    //   component: () => import('../views/AboutView.vue'), // lazy-loaded
+    // },
+    {
       path: '/polls',
       name: 'polls',
-      component: () => import('../views/PollView.vue'),
+      component: () => import('../views/PollView.vue'), // lazy-loaded
     },
     {
-      path: `/latest-news`,
-      name: `latest-news`,
-      component: () => import(`../views/NewsView.vue`),
+      path: '/latest-news',
+      name: 'latest-news',
+      component: () => import('../views/NewsView.vue'), // lazy-loaded
     },
     {
       path: `/register`,
@@ -45,8 +56,7 @@ const router = createRouter({
       meta: { requiresAuth: true }
     }
   ],
-})
-
+});
 
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
@@ -59,4 +69,4 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-export default router
+export default router;

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 defineProps<{
   polls: { question: string; options: string[]; votes: number[] }[];
   message: string;
@@ -7,11 +8,21 @@ defineProps<{
 defineEmits<{
   (e: "vote", pollIndex: number, optionIndex: number): void;
 }>();
+
+function getTotalVotes(votes: number[]) {
+  return votes.reduce((a, b) => a + b, 0);
+}
+
+function getPercentage(votes: number[], i: number) {
+  const total = getTotalVotes(votes);
+  return total > 0 ? ((votes[i] / total) * 100).toFixed(0) : 0;
+}
 </script>
+
 
 <template>
   <div class="poll-container">
-<!--    <h2 class="text-xl font-semibold mb-4 text-center">🗳️ Huidige Polls</h2>-->
+    <h2 class="text-xl font-semibold mb-4 text-center">🗳️ Huidige Polls</h2>
 
     <!-- Melding -->
     <div v-if="message" class="text-center bg-yellow-100 text-yellow-800 p-2 mb-4 rounded-lg">
@@ -23,31 +34,27 @@ defineEmits<{
       Er zijn nog geen polls beschikbaar.
     </div>
 
-    <!-- Polls lijst -->
-    <div v-else v-for="(poll, pollIndex) in polls" :key="pollIndex" class="bg-white p-4 rounded-lg shadow mb-6">
+    <div v-else v-for="(poll, pollIndex) in polls" :key="pollIndex" class="bg-white p-4 rounded-lg shadow mb-6 w-full max-w-xl">
       <h3 class="text-lg font-semibold mb-2 border-b pb-1">{{ poll.question }}</h3>
 
       <!-- Opties -->
       <div class="space-y-2">
-        <button
+        <div
           v-for="(option, optionIndex) in poll.options || []"
           :key="optionIndex"
+          class="relative w-full cursor-pointer"
           @click="$emit('vote', pollIndex, optionIndex)"
-          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-left hover:bg-green-50"
         >
-          {{ option }}
-        </button>
-      </div>
+          <!-- Achtergrond balk -->
+          <div class="absolute top-0 left-0 h-full bg-blue-950 rounded-l-lg"
+               :style="{ width: getPercentage(poll.votes, optionIndex) + '%' }"></div>
 
-      <!-- Stemverdeling -->
-      <div class="mt-3 bg-gray-50 p-2 rounded-lg text-sm">
-        <p class="font-bold mb-2">📊 Stemverdeling:</p>
-        <ul>
-          <li v-for="(v, i) in poll.votes || []" :key="i" class="flex justify-between">
-            <span>{{ poll.options?.[i] }}</span>
-            <span>{{ v }} stemmen</span>
-          </li>
-        </ul>
+          <!-- Tekst -->
+          <div class="relative flex justify-between px-3 py-2 border text-black border-gray-300 rounded-lg">
+            <span>{{ option }}</span>
+            <span>{{ getPercentage(poll.votes, optionIndex) }}%</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
