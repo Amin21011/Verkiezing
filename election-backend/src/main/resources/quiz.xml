@@ -360,4 +360,184 @@
             <party name="De Linie">Ja</party>
         </positions>
     </question>
+
+    <question id="13">
+        <text>Sociale media apps moeten stoppen met het gebruik van algoritmes die je zo lang mogelijk online houden.</text>
+        <positions>
+            <party name="VVD">Ja</party>
+            <party name="GroenLinks-PvdA">Ja</party>
+            <party name="D66">Ja</party>
+            <party name="PVV">Ja</party>
+            <party name="CDA">Ja</party>
+            <party name="FvD">Ja</party>
+            <party name="BIJ1">Ja</party>
+            <party name="PvdD">Ja</party>
+            <party name="ChristenUnie">Ja</party>
+            <party name="SP">Ja</party>
+            <party name="50Plus">Ja</party>
+            <party name="DENK">Ja</party>
+            <party name="FNP">Neutraal</party>
+            <party name="Vrede voor Dieren">Ja</party>
+            <party name="JA21">Ja</party>
+            <party name="Volt">Neutraal</party>
+            <party name="SGP">Ja</party>
+            <party name="BBB">Ja</party>
+            <party name="NSC">Ja</party>
+            <party name="BVNL">Nee</party>
+            <party name="LP">Ja</party>
+            <party name="PiratenPartij">Nee</party>
+            <party name="Vrij Verbond">Nee</party>
+            <party name="De Linie">Nee</party>
+        </positions>
+    </question>
+
+    <question id="14">
+        <text>Alle schoolboeken en benodigdheden gratis (ook mbo/hbo/uni).</text>
+        <positions>
+            <party name="VVD">Nee</party>
+            <party name="GroenLinks-PvdA">Ja</party>
+            <party name="D66">Ja</party>
+            <party name="PVV">Nee</party>
+            <party name="CDA">Neutraal</party>
+            <party name="FvD">Nee</party>
+            <party name="BIJ1">Ja</party>
+            <party name="PvdD">Ja</party>
+            <party name="ChristenUnie">Ja</party>
+            <party name="SP">Ja</party>
+            <party name="50Plus">Ja</party>
+            <party name="DENK">Ja</party>
+            <party name="FNP">Ja</party>
+            <party name="Vrede voor Dieren">Ja</party>
+            <party name="JA21">Nee</party>
+            <party name="Volt">Ja</party>
+            <party name="SGP">Ja</party>
+            <party name="BBB">Nee</party>
+            <party name="NSC">Neutraal</party>
+            <party name="BVNL">Nee</party>
+            <party name="LP">Nee</party>
+            <party name="PiratenPartij">Ja</party>
+            <party name="Vrij Verbond">Nee</party>
+            <party name="De Linie">Nee</party>
+        </positions>
+    </question>
+
+    <question id="15">
+        <text>Verbieden van dieren in kleine kooien (legbatterijen).</text>
+        <positions>
+            <party name="VVD">Neutraal</party>
+            <party name="GroenLinks-PvdA">Ja</party>
+            <party name="D66">Ja</party>
+            <party name="PVV">Nee</party>
+            <party name="CDA">Ja</party>
+            <party name="FvD">Nee</party>
+            <party name="BIJ1">Ja</party>
+            <party name="PvdD">Ja</party>
+            <party name="ChristenUnie">Ja</party>
+            <party name="SP">Ja</party>
+            <party name="50Plus">Ja</party>
+            <party name="DENK">Ja</party>
+            <party name="FNP">Ja</party>
+            <party name="Vrede voor Dieren">Ja</party>
+            <party name="JA21">Nee</party>
+            <party name="Volt">Ja</party>
+            <party name="SGP">Ja</party>
+            <party name="BBB">Nee</party>
+            <party name="NSC">Ja</party>
+            <party name="BVNL">Nee</party>
+            <party name="LP">Nee</party>
+            <party name="PiratenPartij">Ja</party>
+            <party name="Vrij Verbond">Nee</party>
+            <party name="De Linie">Nee</party>
+        </positions>
+    </question>
+
+    <question id="16">
+        <text>De overheid moet burgers en bedrijven meer vrijheid geven en zich met minder zaken bemoeien.</text>
+        <positions>
+            <party name="VVD">Ja</party>
+            <party name="GroenLinks-PvdA">Nee</party>
+            <party name="D66">Ja</party>
+            <party name="PVV">Nee</party>
+            <party name="CDA">Neutraal</party>
+            <party name="FvD">Ja</party>
+            <party name="BIJ1">Nee</party>
+            <party name="PvdD">Nee</party>
+            <party name="ChristenUnie">Neutraal</party>
+            <party name="SP">Nee</party>
+            <party name="50Plus">Nee</party>
+            <party name="DENK">Nee</party>
+            <party name="FNP">Ja</party>
+            <party name="Vrede voor Dieren">Ja</party>
+            <party name="JA21">Ja</party>
+            <party name="Volt">Nee</party>
+            <party name="SGP">Nee</party>
+            <party name="BBB">Ja</party>
+            <party name="NSC">Neutraal</party>
+            <party name="BVNL">Ja</party>
+            <party name="LP">Ja</party>
+            <party name="PiratenPartij">Ja</party>
+            <party name="Vrij Verbond">Ja</party>
+            <party name="De Linie">Ja</party>
+        </positions>
+    </question>
+
+    <question id="17">
+        <text>Nederland moet meer samenwerken en bevoegdheden overdragen aan de Europese Unie (EU).</text>
+        <positions>
+            <party name="VVD">Ja</party>
+            <party name="GroenLinks-PvdA">Ja</party>
+            <party name="D66">Ja</party>
+            <party name="PVV">Nee</party>
+            <party name="CDA">Ja</party>
+            <party name="FvD">Nee</party>
+            <party name="BIJ1">Neutraal</party>
+            <party name="PvdD">Ja</party>
+            <party name="ChristenUnie">Neutraal</party>
+            <party name="SP">Nee</party>
+            <party name="50Plus">Nee</party>
+            <party name="DENK">Nee</party>
+            <party name="FNP">Nee</party>
+            <party name="Vrede voor Dieren">Ja</party>
+            <party name="JA21">Nee</party>
+            <party name="Volt">Ja</party>
+            <party name="SGP">Nee</party>
+            <party name="BBB">Nee</party>
+            <party name="NSC">Neutraal</party>
+            <party name="BVNL">Nee</party>
+            <party name="LP">Nee</party>
+            <party name="PiratenPartij">Ja</party>
+            <party name="Vrij Verbond">Nee</party>
+            <party name="De Linie">Nee</party>
+        </positions>
+    </question>
+
+    <question id="18">
+        <text>De overheid moet huurwoningen voor jongeren goedkoper maken door verhuurders te verplichten de huur te verlagen.</text>
+        <positions>
+            <party name="VVD">Ja</party>
+            <party name="GroenLinks-PvdA">Ja</party>
+            <party name="D66">Ja</party>
+            <party name="PVV">Ja</party>
+            <party name="CDA">Ja</party>
+            <party name="FvD">Nee</party>
+            <party name="BIJ1">Ja</party>
+            <party name="PvdD">Ja</party>
+            <party name="ChristenUnie">Ja</party>
+            <party name="SP">Ja</party>
+            <party name="50Plus">Ja</party>
+            <party name="DENK">Ja</party>
+            <party name="FNP">Ja</party>
+            <party name="Vrede voor Dieren">Ja</party>
+            <party name="JA21">Nee</party>
+            <party name="Volt">Ja</party>
+            <party name="SGP">Nee</party>
+            <party name="BBB">Ja</party>
+            <party name="NSC">Ja</party>
+            <party name="BVNL">Nee</party>
+            <party name="LP">Nee</party>
+            <party name="PiratenPartij">Ja</party>
+            <party name="Vrij Verbond">Nee</party>
+            <party name="De Linie">Nee</party>
+        </positions>
+    </question>
 </quiz>
