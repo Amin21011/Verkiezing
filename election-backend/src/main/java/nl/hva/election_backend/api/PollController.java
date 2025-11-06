@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/polls")
+@RequestMapping("api/polls")
 @CrossOrigin(origins = "http://localhost:5173")
 public class PollController {
     private final PollService pollService;

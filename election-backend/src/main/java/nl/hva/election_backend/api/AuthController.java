@@ -7,12 +7,11 @@ import nl.hva.election_backend.service.UserService;
 import nl.hva.election_backend.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("api/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -39,14 +38,8 @@ public class AuthController {
         String email = body.get("email");
         String password = body.get("password");
 
+        String token = authService.authenticate(email, password);
         User user = userService.findByEmail(email);
-
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if (!encoder.matches(password, user.getPassword())) {
-            return ResponseEntity.status(401).body(Map.of("error", "Ongeldige login"));
-        }
-
-        String token = jwtUtil.generateToken(user);
 
         return ResponseEntity.ok(Map.of(
                 "token", token,

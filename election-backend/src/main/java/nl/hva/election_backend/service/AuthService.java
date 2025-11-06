@@ -5,6 +5,7 @@ import nl.hva.election_backend.repository.UserRepository;
 import nl.hva.election_backend.security.JwtUtil;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.NoSuchElementException;
 
 @Service
 public class AuthService {
@@ -12,18 +13,20 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final UserService userService;
 
-    public AuthService(UserRepository userRepository, JwtUtil jwtUtil) {
+    public AuthService(UserRepository userRepository, JwtUtil jwtUtil,  UserService userService) {
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
+        this.userService = userService;
     }
 
     public String authenticate(String email, String password) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Gebruiker niet gevonden"));
+                .orElseThrow(() -> new NoSuchElementException("Geen gebruiker gevonden met dit e-mailadres."));
 
         if (!encoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Onjuist wachtwoord");
+            throw new IllegalArgumentException("Het ingevoerde wachtwoord is onjuist.");
         }
 
         return jwtUtil.generateToken(user);
@@ -31,14 +34,13 @@ public class AuthService {
 
     public User register(String name, String email, String password) {
         if (userRepository.findByEmail(email).isPresent()) {
-            throw new RuntimeException("Email bestaat al!");
+            throw new IllegalStateException("Dit e-mailadres is al geregistreerd.");
         }
 
-        User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        user.setPassword(encoder.encode(password));
+        if (password.length() < 8) {
+            throw new IllegalArgumentException("Het wachtwoord moet minimaal 8 tekens lang zijn.");
+        }
 
-        return userRepository.save(user);
+        return userService.registerUser(name, email, password);
     }
 }

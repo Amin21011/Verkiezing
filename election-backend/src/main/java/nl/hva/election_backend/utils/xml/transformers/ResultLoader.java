@@ -21,12 +21,12 @@ public class ResultLoader {
         List<Party> parties = partyParser.parseParties("Verkiezingsdefinitie_TK2023.eml.xml");
         election.getParties().addAll(parties);
 
-        // Candidates
+        // Kandidaten
         DutchCandidateParser candidateParser = new DutchCandidateParser();
-        List<Candidate> candidates = candidateParser.parseCandidates("Kandidatenlijsten_TK2023_Amsterdam.eml.xml", parties);
+        List<Candidate> candidates = candidateParser.parseCandidates("TK2023_HvA_UvA/Kandidatenlijsten_TK2023_Amsterdam.eml.xml", parties);
         candidates.forEach(election::addCandidate);
 
-        // Matching candidates
+        // Kandidaten koppelen
         for (Candidate candidate : candidates) {
             Party party = election.getParties().stream()
                     .filter(p -> p.getId().equals(candidate.getPartyId()))

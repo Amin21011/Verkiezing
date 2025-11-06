@@ -47,12 +47,12 @@ public class DutchElectionParser {
 
         log.info("Loading election data from folder: {}", folderName);
 
-        parseFiles(folderName, "Verkiezingsdefinitie_%s".formatted(electionId), new EMLHandler(definitionTransformer));
-        parseFiles(folderName, "Kandidatenlijsten_%s".formatted(electionId), new EMLHandler(candidateTransformer));
-        parseFiles(folderName, "Resultaat_%s".formatted(electionId), new EMLHandler(resultTransformer));
-        parseFiles(folderName, "Totaaltelling_%s".formatted(electionId), new EMLHandler(nationalVotesTransformer));
-        parseFiles(folderName, "Telling_%s_kieskring".formatted(electionId), new EMLHandler(constituencyVotesTransformer));
-        parseFiles(folderName, "Telling_%s_gemeente".formatted(electionId), new EMLHandler(municipalityVotesTransformer));
+        parseFiles(folderName, "Verkiezingsdefinitie_" + electionId, new EMLHandler(definitionTransformer));
+        parseFiles(folderName, "Kandidatenlijsten_" + electionId, new EMLHandler(candidateTransformer));
+        parseFiles(folderName, "Resultaat_" + electionId, new EMLHandler(resultTransformer));
+        parseFiles(folderName, "Totaaltelling_" + electionId, new EMLHandler(nationalVotesTransformer));
+        parseFiles(folderName, "Telling_" + electionId + "_kieskring", new EMLHandler(constituencyVotesTransformer));
+        parseFiles(folderName, "Telling_" + electionId + "_gemeente", new EMLHandler(municipalityVotesTransformer));
 
         log.info("Election {} parsed successfully: [Definition, Candidates, Results✔]", electionId);
     }
