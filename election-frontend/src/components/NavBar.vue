@@ -105,7 +105,7 @@ function toggleOffcanvas() {
         <router-link to="/latest-news">Laatste Nieuws</router-link>
         <router-link to="/">Trending</router-link>
         <router-link to="/">Forum</router-link>
-        <router-link to="/">Quiz</router-link>
+        <router-link to="/quiz">Quiz</router-link>
         <router-link to="/candidates">Kandidaten</router-link>
         <router-link to="/">FAQ</router-link>
       </div>
