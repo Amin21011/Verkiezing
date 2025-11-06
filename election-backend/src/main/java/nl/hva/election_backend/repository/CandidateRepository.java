@@ -40,9 +40,9 @@ public class CandidateRepository {
                 }
             }
 
-            System.out.println("✅ Parsed " + candidates.size() + " kandidaten en " + parties.size() + " partijen");
+            System.out.println("Parsed " + candidates.size() + " kandidaten en " + parties.size() + " partijen");
         } catch (Exception e) {
-            System.err.println("❌ Fout bij inladen kandidaten: " + e.getMessage());
+            System.err.println("Fout bij inladen kandidaten: " + e.getMessage());
         }
     }
 
