@@ -1,5 +1,4 @@
 import { ref } from 'vue'
-import { jwtDecode } from "jwt-decode";
 import type { AuthUser } from '@/types/IUser.ts'
 import { authFetch } from '@/helpers/authFetch.ts'
 
