@@ -3,6 +3,8 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterView } from 'vue-router'
 import './assets/main.css'
 import NavBar from '@/components/NavBar.vue'
+import FlashContainer from '@/components/FlashContainer.vue'
+import FooterComp from '@/components/FooterComp.vue'
 
 const showButton = ref(false)
 
@@ -21,20 +23,18 @@ onMounted(() => window.addEventListener('scroll', handleScroll))
 onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 </script>
 
-
-
 <template>
-  <NavBar/>
-  <div class="min-h-screen w-full bg-paper text-ink font-body relative">
-    <div class="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/newsprint.png')]"></div>
-    <RouterView class="relative z-10" />
+  <div class="flex flex-col min-h-screen bg-paper text-ink font-body relative">
+    <NavBar />
+    <FlashContainer />
+    <main class="flex-grow relative">
+      <div class="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/newsprint.png')]"></div>
+      <RouterView class="relative z-10" />
+    </main>
+    <FooterComp/>
+    <button v-if="showButton" @click="scrollToTop" class="fixed bottom-4 right-4 p-2 bg-black text-white rounded-full w-10 h-10 cursor-pointer hover:bg-blue-950 z-50 transition-opacity">
+      🡩
+    </button>
   </div>
-  <button
-    v-if="showButton"
-    @click="scrollToTop"
-    class="fixed bottom-4 right-4 p-2 bg-black text-white rounded-full w-10 h-10 cursor-pointer hover:bg-blue-950 z-50 transition-opacity"
-  >
-    🡩
-  </button>
-
 </template>
+
