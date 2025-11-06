@@ -47,7 +47,7 @@ function toggleOffcanvas() {
 </script>
 
 <template>
-  <header :class="['sticky top-0 z-50 bg-paper border-b-8 border-ink shadow-[0_4px_20px_rgba(0,0,0,0.1)] transition-all', isScrolled ? 'py-0' : 'py-0']">
+  <header class="w-full py-4 border-b ">
     <div class="flex justify-between items-center pb-4 px-6">
       <div class="flex gap-3">
         <button @click="toggleOffcanvas" class="bg-transparent border-none cursor-pointer text-xl px-2 py-1 transition hover:text-indigo-700" title="Menu">
