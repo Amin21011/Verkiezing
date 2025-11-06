@@ -84,4 +84,8 @@ public class ResultRepository {
                 .flatMap(p -> p.getCandidates().stream())
                 .toList();
     }
+
+    public void setPartyNames(List<Party> parties) {
+        registerParties(parties);
+    }
 }

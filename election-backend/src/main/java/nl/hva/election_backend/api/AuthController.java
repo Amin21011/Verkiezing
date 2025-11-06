@@ -12,7 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("api/auth")
 public class AuthController {
 
     private final AuthService authService;

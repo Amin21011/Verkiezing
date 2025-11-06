@@ -8,7 +8,7 @@ interface Poll {
   votes: number[];
 }
 
-const API_URL = `${import.meta.env.VITE_API_URL}polls`;
+const API_URL = `${import.meta.env.VITE_API_URL}/polls`;
 
 const polls = ref<Poll[]>([]);
 const message = ref("");
