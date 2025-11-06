@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { authToken, getAuthUser, logout } from '@/services/authService'
+import { showToast } from '@/helpers/useFlash.ts'
 
 const router = useRouter()
 const isScrolled = ref(false)
@@ -23,6 +24,7 @@ function handleLogout() {
   logout()
   user.value = null
   goToHome()
+  showToast("Succesvol uitgelogd!", "success")
 }
 
 watch(authToken, () => {
@@ -80,8 +82,7 @@ function toggleOffcanvas() {
 
     <div @click="goToHome" class="text-center text-[#111827] mt-4 cursor-pointer">
       <h1 class="font-[Playfair Display] font-black text-[3rem] md:text-[3.5rem] tracking-[2px] bg-gradient-to-r from-[#1c1c1c] to-[#1c1c1c] bg-clip-text text-transparent my-2 transition hover:scale-105 inline-block">
-        VERKIEZINGEN 2025
-      </h1>
+        VERKIEZINGEN 2025</h1>
 
       <div class="font-semibold bg-yellow-100 px-4 py-2 rounded-lg mt-2">
         Alles wat je moet weten voordat je stemt.
@@ -101,7 +102,7 @@ function toggleOffcanvas() {
     <div v-if="showOffcanvas" class="offcanvas-overlay" @click.self="toggleOffcanvas">
       <div class="offcanvas">
         <button class="close-btn" @click="toggleOffcanvas">✕</button>
-        <router-link to="/">Laatste Nieuws</router-link>
+        <router-link to="/latest-news">Laatste Nieuws</router-link>
         <router-link to="/">Trending</router-link>
         <router-link to="/">Forum</router-link>
         <router-link to="/">Quiz</router-link>
