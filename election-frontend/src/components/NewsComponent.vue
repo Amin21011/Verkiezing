@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import FooterComp from '@/components/FooterComp.vue'
 
 interface NewsItem {
   title: string;
@@ -8,7 +9,7 @@ interface NewsItem {
   publishedAt: string | null;
 }
 
-const API_URL = `${import.meta.env.VITE_API_URL}news/rijksoverheid?limit=6`;
+const API_URL = `${import.meta.env.VITE_API_URL}/news/rijksoverheid?limit=6`;
 
 
 const newsItems = ref<NewsItem[]>([]);
@@ -60,17 +61,6 @@ onMounted(loadNews);
 
 <template>
   <div class="min-h-screen bg-[#F8F7F3] py-10 px-6">
-    <!-- Titel -->
-    <h1
-      class="text-[3rem] font-black tracking-[2px] text-center font-['Playfair_Display'] bg-gradient-to-r from-[#1c1c1c] to-[#4b5563] bg-clip-text text-transparent my-2"
-    >
-      VERKIEZINGEN 2025
-    </h1>
-
-    <p class="text-center text-gray-500 mb-8">
-      Alles wat je moet weten voordat je stemt.
-    </p>
-
     <!-- Nieuws sectie -->
     <section
       class="max-w-5xl mx-auto bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden"
@@ -115,24 +105,9 @@ onMounted(loadNews);
       </div>
     </section>
 
-    <!-- Footer -->
-    <div class="max-w-5xl mx-auto mt-10">
-      <div class="h-px bg-gray-300"></div>
-      <div class="h-px bg-gray-300 mt-1"></div>
-
-      <div
-        class="flex flex-wrap items-center justify-center gap-10 text-sm text-gray-600 mt-6"
-      >
-        <a href="#" class="hover:underline">About Us</a>
-        <a href="#" class="hover:underline">Contact</a>
-        <a href="#" class="hover:underline">FAQ</a>
-      </div>
-    </div>
   </div>
+  <FooterComp/>
 </template>
-
-
-
 
 <style scoped>
 </style>

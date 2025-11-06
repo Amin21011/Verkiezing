@@ -1,5 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomepageView from '../views/HomepageView.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import HomepageView from '@/views/HomepageView.vue';
+import CandidatesView from '@/views/CandidatesView.vue';
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import PartyListView from '../views/PartyListView.vue'
@@ -16,7 +17,12 @@ const router = createRouter({
     {
       path: '/parties',
       name: 'parties',
-      component: () => import('../views/PartyListView.vue'),
+      component: PartyListView,
+    },
+    {
+      path: '/candidates',
+      name: 'candidates',
+      component: CandidatesView,
     },
     {
       path: '/polls',
@@ -29,14 +35,14 @@ const router = createRouter({
       component: () => import('../views/NewsView.vue'),
     },
     {
-      path: '/register',
-      name: 'register',
-      component: RegisterView,
+      path: `/register`,
+      name: `register`,
+      component: RegisterView
     },
     {
-      path: '/login',
-      name: 'login',
-      component: LoginView,
+      path: `/login`,
+      name: `login`,
+      component: LoginView
     },
     {
       path: '/account',
@@ -50,7 +56,7 @@ const router = createRouter({
       component: () => import('../views/QuizView.vue'),
     },
   ],
-})
+});
 
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')

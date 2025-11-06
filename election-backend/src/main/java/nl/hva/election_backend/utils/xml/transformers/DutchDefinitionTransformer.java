@@ -12,8 +12,6 @@ import java.util.Map;
  */
 
 public class DutchDefinitionTransformer implements DefinitionTransformer {
-
-    private static final String KR_NAMESPACE = "http://www.kiesraad.nl/extensions";
     private final Election election;
 
     public DutchDefinitionTransformer(Election election) {
@@ -57,17 +55,4 @@ public class DutchDefinitionTransformer implements DefinitionTransformer {
             System.err.println("Party registration failed. Data: " + electionData);
         }
     }
-
-//    public Election transform(String fileName) {
-//        DutchPartyParser parser = new DutchPartyParser();
-//        List<PartyDTO> parties = parser.parseParties(fileName);
-//        List<RegionDTO> regions = parser.parseRegions(fileName);
-//
-//        parties.forEach(election::addParty);
-//        regions.forEach(election::addRegion);
-//
-//        return election; // volledig gevuld object voor site
-//
-//
-//    }
 }

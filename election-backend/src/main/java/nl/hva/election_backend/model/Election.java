@@ -64,13 +64,15 @@ public class Election {
     public void addCandidate(Candidate c) {
         if (c == null) return;
 
-        if (!candidatesById.containsKey(c.getId())) {
-            candidates.add(c);
-            candidatesById.put(c.getId(), c);
-            if (c.getShortCode() != null && !c.getShortCode().isBlank()) {
-                candidatesByShortCode.put(c.getShortCode(), c);
-            }
+        // Voeg elke kandidaat toe, ook als ID al voorkomt
+        candidates.add(c);
+
+// Alleen eerste keer opslaan in de lookup maps (om crashes te voorkomen)
+        candidatesById.putIfAbsent(c.getId(), c);
+        if (c.getShortCode() != null && !c.getShortCode().isBlank()) {
+            candidatesByShortCode.putIfAbsent(c.getShortCode(), c);
         }
+
     }
 
     public Optional<Candidate> getCandidateByShortCode(String shortCode) {

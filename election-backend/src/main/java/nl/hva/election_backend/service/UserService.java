@@ -3,16 +3,15 @@ import nl.hva.election_backend.model.User;
 import nl.hva.election_backend.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
 
 @Service
 public class UserService {
 
-    private static UserRepository repository = null;
+    private final UserRepository repository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     public UserService(UserRepository repository) {
-        UserService.repository = repository;
+        this.repository = repository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 

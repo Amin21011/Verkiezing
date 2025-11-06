@@ -51,8 +51,9 @@ const subArticles = [
       </div>
 
       <div class="grid w-full max-w-7xl gap-8 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-        <ArticleGridCard v-for="(article, i) in subArticles" :key="i" v-bind="article" />
+        <ArticleGridCard v-for="(article, i) in subArticles" :key="i" v-bind="article"/>
       </div>
+
       <div class="w-full h-[6px] bg-gradient-to-r from-accent via-yellow-400 to-blue-500 mt-16"></div>
   </section>
 </template>
