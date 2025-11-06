@@ -4,7 +4,6 @@ import ArticleSection from '@/components/ArticleSection.vue'
 import GridSection from '@/components/GridSection.vue'
 import PartijenContent from '@/components/PartijenContent.vue'
 import PollView from '@/views/PollView.vue'
-import FooterComp from '@/components/FooterComp.vue'
 import StatistiekenContent from '@/components/StatistiekenContent.vue'
 
 const tweedeGrid = [
@@ -18,5 +17,4 @@ const tweedeGrid = [
     <HeroSection/>
     <ArticleSection/>
     <GridSection :cards="tweedeGrid" />
-    <FooterComp/>
 </template>

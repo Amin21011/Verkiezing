@@ -24,11 +24,6 @@ const router = createRouter({
       name: 'candidates',
       component: CandidatesView,
     },
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   component: () => import('../views/AboutView.vue'), // lazy-loaded
-    // },
     {
       path: '/polls',
       name: 'polls',
