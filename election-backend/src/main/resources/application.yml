@@ -3,10 +3,9 @@ spring:
     name: election-backend
   profiles:
     active: prod
-
 app:
-  frontend.url: http://localhost:5173
-
+  frontend:
+      url: http://localhost:5173
 ---
 spring:
   config:
