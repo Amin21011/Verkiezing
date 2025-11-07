@@ -7,32 +7,36 @@ import nl.hva.election_backend.utils.xml.CandidateTransformer;
 import java.util.Map;
 
 /**
- * Just prints to content of electionData to the standard output.
+ * Registreert kandidaten correct met zowel Id als ShortCode.
  */
-
 public class DutchCandidateTransformer implements CandidateTransformer {
+
     private final Election election;
 
-    /**
-     * Creates a new transformer for handling the candidate lists. It expects an instance of Election that can
-     * be used for storing the candidates lists.
-     * @param election the election in which the candidate lists wil be stored.
-     */
     public DutchCandidateTransformer(Election election) {
         this.election = election;
     }
 
     @Override
     public void registerCandidate(Map<String, String> electionData) {
-        String candidateId = electionData.get("CandidateIdentifier");
+        String candidateId = electionData.get("CandidateIdentifier-Id");
+        String shortCode = electionData.get("CandidateIdentifier-ShortCode");
         String firstName = electionData.get("FirstName");
         String lastName = electionData.get("LastName");
-        String partyId = electionData.get("AffiliationIdentifier");
+        String partyId = electionData.get("AffiliationIdentifier-Id");
 
-        if (candidateId != null && firstName != null && lastName != null) {
-            election.addCandidate(new Candidate(candidateId, candidateId, firstName, lastName, partyId));
-        } else {
+        if (candidateId == null || firstName == null || lastName == null) {
             System.out.println("Incomplete candidate data: " + electionData);
+            return;
         }
+
+        // Gebruik shortCode indien aanwezig, anders fallback op candidateId
+        String finalShortCode = (shortCode != null && !shortCode.isBlank()) ? shortCode : candidateId;
+
+        Candidate candidate = new Candidate(candidateId, finalShortCode, firstName, lastName, partyId);
+        election.addCandidate(candidate);
+
+        System.out.printf("Candidate toegevoegd: %s %s (Id=%s, ShortCode=%s, PartyId=%s)%n",
+                firstName, lastName, candidateId, finalShortCode, partyId);
     }
 }

@@ -42,9 +42,7 @@ public class DutchCandidateParser {
                     String localName = reader.getLocalName();
 
                     switch (localName) {
-                        case "AffiliationIdentifier" -> {
-                            currentPartyId = reader.getAttributeValue(null, "Id");
-                        }
+                        case "AffiliationIdentifier" -> currentPartyId = reader.getAttributeValue(null, "Id");
                         case "CandidateIdentifier" -> {
                             candidateId = reader.getAttributeValue(null, "Id");
                             shortCode = reader.getAttributeValue(null, "ShortCode");
@@ -59,19 +57,18 @@ public class DutchCandidateParser {
 
                     if ("Candidate".equals(localName)) {
                         if (candidateId != null && firstName != null && lastName != null && currentPartyId != null) {
-                            String idToUse = candidateId != null ? candidateId : shortCode;
-                            candidates.add(new Candidate(
-                                    idToUse,
-                                    shortCode != null ? shortCode : idToUse,
-                                    firstName,
-                                    lastName,
-                                    currentPartyId
-                            ));
+                            // Gebruik echte ShortCode indien aanwezig
+                            String finalShortCode = (shortCode != null && !shortCode.isBlank())
+                                    ? shortCode
+                                    : (firstName.substring(0, 1) + lastName).replaceAll("\\s+", "");
+
+                            Candidate c = new Candidate(candidateId, finalShortCode, firstName, lastName, currentPartyId);
+                            c.setPartyId(currentPartyId);
+                            candidates.add(c);
                         }
                         // reset voor volgende kandidaat
                         candidateId = shortCode = firstName = lastName = null;
                     } else if ("Affiliation".equals(localName)) {
-                        // Klaar met deze partij → reset partyId
                         currentPartyId = null;
                     }
                 }
