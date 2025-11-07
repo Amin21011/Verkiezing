@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import FooterComp from '@/components/FooterComp.vue'
 
 interface NewsItem {
   title: string;
@@ -106,7 +105,6 @@ onMounted(loadNews);
     </section>
 
   </div>
-  <FooterComp/>
 </template>
 
 <style scoped>
