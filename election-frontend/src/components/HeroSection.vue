@@ -3,7 +3,6 @@
     <div class="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/newsprint.png')]"></div>
 
     <div class="relative z-10 space-y-6 md:w-1/2">
-      <p class="font-mono uppercase text-graymain">Editie 2025 • Amsterdam</p>
 
       <h2 class="text-5xl md:text-6xl font-extrabold leading-tight text-ink uppercase">
         <span class="block text-[3.5rem] text-accent border-r-[3px] border-accent pr-2 animate-typing">Niet stemmen?</span>

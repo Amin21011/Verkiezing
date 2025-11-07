@@ -59,69 +59,87 @@ onMounted(() => loadQuiz());
 </script>
 
 <template>
-  <div class="quiz-container min-h-screen bg-[#d9d9d9] flex flex-col items-center font-sans p-6">
-    <h1 class="text-4xl font-serif font-bold text-gray-800 mb-6 border-b-2 border-gray-500 pb-2">
-      PartyMatcher 🤓
-    </h1>
+  <div class="min-h-screen w-full bg-paper text-ink font-body flex flex-col items-center py-16 px-6 relative">
+    <!-- Achtergrondpatroon -->
+    <div class="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/newsprint.png')]"></div>
+
+    <!-- Titel -->
+    <div class="relative z-10 text-center max-w-2xl">
+      <h1 class="text-5xl font-headline font-bold mb-4 tracking-tight text-ink drop-shadow-sm">
+        Welke partij past het beste bij jou? 🤓
+      </h1>
+      <p class="text-lg text-gray-700 italic mb-10 leading-relaxed">
+        Ontdek met een paar korte vragen welke politieke partij het dichtst bij
+        jouw mening staat. Geen stress — gewoon eerlijk invullen!
+      </p>
+    </div>
 
     <!-- Laden -->
-    <div v-if="loading" class="text-gray-700 text-lg">Laden...</div>
+    <div v-if="loading" class="text-gray-600 text-lg animate-pulse mt-10">
+      Even geduld... de quiz wordt geladen.
+    </div>
 
     <!-- Quiz -->
-    <div v-else class="w-full max-w-3xl">
-      <form @submit.prevent="submitQuiz" class="space-y-8">
-        <div v-for="question in questions"
-          :key="question.id" class="bg-[#a0a0a0] border border-gray-600 rounded-lg shadow-md p-5 hover:shadow-lg transition">
-          <p class="font-semibold text-gray-800">{{ question.text }}</p>
+    <div v-else class="w-full max-w-3xl relative z-10">
+      <form @submit.prevent="submitQuiz"
+        class="space-y-8 bg-white/70 backdrop-blur-sm border border-gray-300 rounded-xl shadow-lg p-8">
+        <div v-for="question in questions" :key="question.id"
+             class="border-b border-gray-300 pb-4 last:border-none">
+          <p class="font-semibold text-xl text-ink mb-3">
+            {{ question.text }}
+          </p>
 
-          <div class="answers flex gap-6 mt-3">
-            <label class="flex items-center gap-2">
-              <input type="radio" :name="question.id" value="Ja" v-model="answers[question.id]" class="accent-gray-800" />
-              Ja
+          <div class="flex gap-6 text-gray-800">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" :name="question.id" value="Ja"
+                v-model="answers[question.id]" class="accent-indigo-600"/> Ja
             </label>
-            <label class="flex items-center gap-2">
-              <input type="radio" :name="question.id" value="Nee" v-model="answers[question.id]" class="accent-gray-800" />
-              Nee
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" :name="question.id" value="Nee" v-model="answers[question.id]"
+                     class="accent-indigo-600" /> Nee
             </label>
-            <label class="flex items-center gap-2">
-              <input type="radio" :name="question.id" value="Neutraal" v-model="answers[question.id]" class="accent-gray-800" />
-              Neutraal
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" :name="question.id" value="Neutraal" v-model="answers[question.id]"
+                     class="accent-indigo-600" /> Neutraal
             </label>
           </div>
         </div>
 
-        <p v-if="errorMessage" class="text-red-700 text-center font-semibold">{{ errorMessage }}</p>
+        <p v-if="errorMessage" class="text-red-700 text-center font-semibold bg-red-50 border border-red-200 rounded-md py-2">
+          {{ errorMessage }}
+        </p>
 
         <div class="flex justify-center">
-          <button type="submit" class="bg-gray-800 text-white px-6 py-2 rounded-md text-lg hover:bg-black transition">
-            Bekijk resultaat
+          <button type="submit" class="bg-indigo-700 text-white px-8 py-3 rounded-lg text-lg hover:bg-indigo-800 transition shadow-md">
+            Bekijk mijn resultaat
           </button>
         </div>
       </form>
 
       <!-- Resultaat -->
-      <div v-if="result"
-        class="mt-10 bg-[#a0a0a0] border border-gray-600 rounded-lg p-6 shadow-md text-center">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">
-          Beste match: {{ sortedResults[0]?.party }}
+      <div v-if="result" class="mt-10 bg-white/80 backdrop-blur-sm border border-gray-300 rounded-xl shadow-lg p-8 text-center">
+        <h2 class="text-3xl font-bold text-ink mb-3">
+        Jouw beste match: <span class="text-indigo-700">{{ sortedResults[0]?.party }} 🎉 </span>
         </h2>
 
-        <p class="text-gray-700 mb-3 italic">Score per partij:</p>
-        <div class="bg-white border border-gray-300 rounded-md text-left max-h-60 overflow-y-auto p-4">
-          <div v-for="item in sortedResults"
-            :key="item.party" class="flex justify-between border-b border-gray-200 py-1">
-            <span class="font-medium text-gray-800">{{ item.party }}</span>
+        <p class="text-gray-700 mb-4 italic">Bekijk hoe de andere partijen scoren:</p>
+        <div class="bg-gray-50 border border-gray-200 rounded-md text-left max-h-60 overflow-y-auto p-4">
+          <div v-for="item in sortedResults" :key="item.party"
+               class="flex justify-between border-b border-gray-200 py-1">
+            <span class="font-medium text-ink">{{ item.party }}</span>
             <span class="text-gray-700">{{ item.score.toFixed(1) }}%</span>
           </div>
         </div>
 
-        <button @click="resetQuiz" class="mt-6 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-black transition">
+        <button @click="resetQuiz"
+          class="mt-6 bg-indigo-700 text-white px-5 py-2 rounded-lg hover:bg-indigo-800 transition shadow-md">
           Opnieuw proberen
         </button>
       </div>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .answers input[type="radio"] {
