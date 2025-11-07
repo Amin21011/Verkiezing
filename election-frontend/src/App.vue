@@ -5,6 +5,7 @@ import './assets/main.css'
 import NavBar from '@/components/NavBar.vue'
 import FlashContainer from '@/components/FlashContainer.vue'
 import FooterComp from '@/components/FooterComp.vue'
+import { getAuthUser } from '@/services/authService.ts'
 
 const showButton = ref(false)
 
@@ -21,6 +22,12 @@ function handleScroll() {
 
 onMounted(() => window.addEventListener('scroll', handleScroll))
 onUnmounted(() => window.removeEventListener('scroll', handleScroll))
+onMounted(() => {
+  const user = getAuthUser();
+  if (user) {
+    console.log('Herstelde gebruiker:', user);
+  }
+});
 </script>
 
 <template>

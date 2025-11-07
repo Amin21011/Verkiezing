@@ -5,3 +5,12 @@ export interface Party {
   leaderName?: string;
   website?: string;
 }
+
+export interface Candidate {
+  id: string;
+  shortCode: string;
+  firstName: string;
+  lastName: string;
+  partyId: string;
+  votes: number;
+}
