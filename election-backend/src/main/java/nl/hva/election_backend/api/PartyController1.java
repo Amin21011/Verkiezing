@@ -8,10 +8,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/parties")
 @CrossOrigin(origins = "*")
-public class PartyController {
+public class PartyController1 {
     private final PartyService1 partyService1;
 
-    public PartyController(PartyService1 partyService1) {
+    public PartyController1(PartyService1 partyService1) {
         this.partyService1 = partyService1;
     }
 
