@@ -7,7 +7,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/parties")
-@CrossOrigin(origins = "*")
 public class PartyController1 {
     private final PartyService1 partyService1;
 
