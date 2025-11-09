@@ -1,14 +1,12 @@
-package nl.hva.election_backend.controller;
-
+package nl.hva.election_backend.api;
+import nl.hva.election_backend.model.Candidate;
 import nl.hva.election_backend.model.Party;
 import nl.hva.election_backend.service.ResultService;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/electionresults")
-@CrossOrigin(origins = "*") // frontend mag vrij connecten
 public class ResultController {
 
     private final ResultService resultService;
@@ -17,22 +15,19 @@ public class ResultController {
         this.resultService = resultService;
     }
 
-    /**
-     * /electionresults/parties/top
-     * Geeft de top 3 partijen met de meeste stemmen.
-     */
-
+    // top 3 partijen met aantal stemmen van elke gekozen kandidaat
     @GetMapping("/parties/top")
     public List<Party> getTopParties(
-//            @PathVariable int year,
             @RequestParam(defaultValue = "3") int limit
     ) {
         return resultService.getTopParties(limit);
     }
 
-
-//    @GetMapping("/{year}/parties")
-//    public List<Party> getAllParties(@PathVariable int year) {
-//        return resultService.getAllPartiesByYear(year);
-//    }
+    @GetMapping("/candidates/top")
+    public List<Candidate> getTopCandidatesByParty(
+            @RequestParam(required = false) String partyId,
+            @RequestParam(defaultValue = "5") int limit
+    ) {
+        return resultService.getTopCandidatesByParty(partyId, limit);
+    }
 }

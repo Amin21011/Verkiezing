@@ -1,58 +1,35 @@
 <script setup lang="ts">
-defineProps<{
-  title: string
-}>()
+defineProps<{ title: string }>();
 </script>
 
 <template>
-  <div class="grid-card">
-    <h3 class="grid-card-title">{{ title }}</h3>
-    <div class="grid-card-content">
+  <div class="relative bg-retro-paper border-[3px] border-retro-ink p-8 rounded-none shadow-[4px_4px_0_var(--ink)] hover:shadow-[-8px_8px_0_var(--ink)] transition-all duration-300 flex flex-col overflow-hidden">
+    <div class="absolute inset-0 opacity-[0.06] bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] pointer-events-none"
+    ></div>
+
+    <h3 class="relative font-retroHead text-3xl font-bold text-retro-ink tracking-tight border-b-[3px] border-retro-ink/40 pb-3 mb-5 leading-tight">
+      {{ title }}
+    </h3>
+
+    <div class="relative flex-grow font-retroBody text-[15px] leading-relaxed text-[#333] tracking-wide">
       <slot></slot>
     </div>
+
+    <div class="absolute bottom-0 left-0 w-full h-[4px] bg-gradient-to-r from-retro-red via-retro-gold to-retro-blue opacity-80"></div>
   </div>
 </template>
 
 <style scoped>
-.grid-card {
-  background: linear-gradient(145deg, #ffffff, #fffbf0);
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  padding: 1.5rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  display: flex;
-  flex-direction: column;
+.font-retroHead {
+  font-family: "Playfair Display", serif;
 }
-
-.grid-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+.font-retroBody {
+  font-family: "Merriweather", serif;
 }
-
-.grid-card-title {
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  color: #1c1c1c;
-  border-bottom: 2px solid #e0d8c0;
-  padding-bottom: 0.5rem;
+.bg-retro-paper {
+  background-color: var(--paper, #fdfcf7);
 }
-
-.grid-card-content {
-  font-family: 'Merriweather', serif;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: #333;
-}
-
-.grid-card-content a {
-  color: darkslateblue;
-  text-decoration: underline;
-  transition: color 0.2s ease;
-}
-
-.grid-card-content a:hover {
-  color: #1c1c1c;
+.text-retro-ink {
+  color: var(--ink, #1a1a1a);
 }
 </style>
