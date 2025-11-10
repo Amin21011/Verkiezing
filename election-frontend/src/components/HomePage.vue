@@ -4,19 +4,19 @@ import ArticleSection from '@/components/ArticleSection.vue'
 import GridSection from '@/components/GridSection.vue'
 import PartijenContent from '@/components/PartijenContent.vue'
 import PollView from '@/views/PollView.vue'
-import FooterComp from '@/components/FooterComp.vue'
-import StatistiekenContent from '@/components/StatistiekenContent.vue'
+import ChartContainer from '@/components/ChartContainer.vue'
+import BannerSection from '@/components/BannerSection.vue'
 
 const tweedeGrid = [
   { title: 'Top Parties', component: PartijenContent },
   { title: 'Jouw Stem', component: PollView },
-  { title: 'Hete Statistieken', component: StatistiekenContent }
 ]
 </script>
 
 <template>
-    <HeroSection/>
-    <ArticleSection/>
-    <GridSection :cards="tweedeGrid" />
-    <FooterComp/>
+  <BannerSection/>
+  <ArticleSection/>
+  <HeroSection/>
+  <GridSection :cards="tweedeGrid" />
+  <ChartContainer/>
 </template>

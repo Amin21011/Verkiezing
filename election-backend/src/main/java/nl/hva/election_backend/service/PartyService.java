@@ -35,7 +35,14 @@ public class PartyService {
                 .orElse(null);
     }
 
-    public List<Party> getTopParties(int limit) {
-        return resultRepository.findTopParties(limit);
+    public List<Party> getTopPartiesByYear(Integer year, int limit) {
+        System.out.println("Top partijen opgevraagd (jaar = " + year + ", limit = " + limit + ")");
+        List<Party> topParties = resultRepository.findTopParties(limit);
+
+        if (topParties == null || topParties.isEmpty()) {
+            System.out.println("Geen resultaten gevonden");
+            return new ArrayList<>();
+        }
+        return topParties;
     }
 }

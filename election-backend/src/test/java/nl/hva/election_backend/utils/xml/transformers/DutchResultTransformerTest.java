@@ -8,13 +8,12 @@ import nl.hva.election_backend.utils.xml.DutchCandidateParser;
 import nl.hva.election_backend.utils.xml.DutchPartyParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DutchResultTransformerTest {
@@ -28,7 +27,6 @@ class DutchResultTransformerTest {
         repository = new ResultRepository();
         election = new Election("TK2023");
 
-        // Parses parties and candidates
         DutchPartyParser partyParser = new DutchPartyParser();
         List<Party> parties = partyParser.parseParties("Verkiezingsdefinitie_TK2023.eml.xml");
         election.getParties().addAll(parties);
@@ -68,7 +66,7 @@ class DutchResultTransformerTest {
 
             Map<String, String> selectionData = new HashMap<>();
             String lastPartyId = null;
-            String lastIdType = null;
+            String currentType = null; // "party" of "candidate"
 
             while (reader.hasNext()) {
                 int event = reader.next();
@@ -76,51 +74,48 @@ class DutchResultTransformerTest {
                 if (event == XMLStreamConstants.START_ELEMENT) {
                     String localName = reader.getLocalName();
 
-                    // Partij-ID
-                    if (localName.endsWith("AffiliationIdentifier")) {
-                        String id = reader.getAttributeValue(null, "Id");
-                        if (id != null) {
-                            selectionData.put("AffiliationIdentifier-Id", id);
-                            lastPartyId = id;
+                    switch (localName) {
+                        case "AffiliationIdentifier" -> {
+                            String id = reader.getAttributeValue(null, "Id");
+                            if (id != null) {
+                                selectionData.put("AffiliationIdentifier-Id", id);
+                                lastPartyId = id;
+                            }
+                            currentType = "party";
                         }
-                        lastIdType = "party";
-                    }
-
-                    // Kandidaat-ID (met fallback naar laatste partij)
-                    else if (localName.endsWith("CandidateIdentifier")) {
-                        String id = reader.getAttributeValue(null, "Id");
-                        String shortCode = reader.getAttributeValue(null, "ShortCode");
-                        if (id != null) selectionData.put("CandidateIdentifier-Id", id);
-                        if (shortCode != null) selectionData.put("CandidateIdentifier-ShortCode", shortCode);
-                        if (!selectionData.containsKey("AffiliationIdentifier-Id") && lastPartyId != null) {
-                            selectionData.put("AffiliationIdentifier-Id", lastPartyId);
+                        case "CandidateIdentifier" -> {
+                            String id = reader.getAttributeValue(null, "Id");
+                            String shortCode = reader.getAttributeValue(null, "ShortCode");
+                            if (id != null) selectionData.put("CandidateIdentifier-Id", id);
+                            if (shortCode != null) selectionData.put("CandidateIdentifier-ShortCode", shortCode);
+                            if (!selectionData.containsKey("AffiliationIdentifier-Id") && lastPartyId != null) {
+                                selectionData.put("AffiliationIdentifier-Id", lastPartyId);
+                            }
+                            currentType = "candidate";
                         }
-                        lastIdType = "candidate";
-                    }
-
-                    // Votes
-                    else if (localName.equals("ValidVotes")) {
-                        String vv = readElementText(reader);
-                        selectionData.put("ValidVotes", vv);
-                        if ("candidate".equals(lastIdType))
-                            selectionData.put("CandidateValidVotes", vv);
-                        else
-                            selectionData.put("PartyValidVotes", vv);
-                    }
-
-                    else if (localName.equals("TotalVotes")) {
-                        selectionData.put("TotalVotes", readElementText(reader));
+                        case "ValidVotes" -> {
+                            String vv = readElementText(reader);
+                            selectionData.put("ValidVotes", vv);
+                            if ("candidate".equals(currentType))
+                                selectionData.put("CandidateValidVotes", vv);
+                            else
+                                selectionData.put("PartyValidVotes", vv);
+                        }
+                        case "TotalVotes" -> selectionData.put("TotalVotes", readElementText(reader));
                     }
                 }
 
-                // Register when Selection or Contest ends
                 if (event == XMLStreamConstants.END_ELEMENT) {
                     String end = reader.getLocalName();
+
                     if ("Selection".equals(end)) {
-                        transformer.registerPartyVotes(true, selectionData);
-                        transformer.registerCandidateVotes(true, selectionData);
+                        if ("candidate".equals(currentType))
+                            transformer.registerCandidateVotes(true, selectionData);
+                        else
+                            transformer.registerPartyVotes(true, selectionData);
+
                         selectionData.clear();
-                        lastIdType = null;
+                        currentType = null;
                     } else if ("Contest".equals(end)) {
                         transformer.registerMetadata(true, selectionData);
                         selectionData.clear();
@@ -130,38 +125,18 @@ class DutchResultTransformerTest {
             reader.close();
         }
 
-        System.out.println("\n=== Results ===");
-        repository.getAll().stream()
-                .sorted((r1, r2) -> (r1.getPartyId() != null ? r1.getPartyId() : "")
-                        .compareTo(r2.getPartyId() != null ? r2.getPartyId() : ""))
-                .forEach(result -> {
-                    String type = result.getCandidateId() == null ? "Party" : "Candidate";
-                    String partyName = repository.getPartyName(result.getPartyId());
-                    String shortCode = "";
+        transformer.flushResults();
 
-                    if (result.getCandidateId() != null) {
-                        Candidate c = election.getCandidates().stream()
-                                .filter(cd -> cd.getId().equals(result.getCandidateId()))
-                                .findFirst()
-                                .orElse(null);
-                        if (c != null && c.getShortCode() != null) {
-                            shortCode = c.getShortCode();
-                        }
-                    }
-
-                    System.out.printf(
-                            "%s | PartyId: %s (%s) | CandidateId: %s | ShortCode: %s | Votes: %d | Region: %s %s%n",
-                            type,
-                            result.getPartyId(),
-                            partyName,
-                            result.getCandidateId(),
-                            shortCode,
-                            result.getVotes(),
-                            result.getRegionType(),
-                            result.getRegionId()
-                    );
-                });
-
+        System.out.println("\n=== Final Aggregated Results ===");
+        election.getParties().forEach(p -> {
+            System.out.printf("\n%s (%s) – Total Votes: %d%n", p.getName(), p.getId(), p.getVotes());
+            p.getCandidates().stream()
+                    .filter(c -> c.getVotes() > 0)
+                    .sorted(Comparator.comparingInt(Candidate::getVotes).reversed())
+                    .forEach(c -> System.out.printf("%s %s | Id=%s | ShortCode=%s | Votes=%d%n",
+                            c.getFirstName(), c.getLastName(),
+                            c.getId(), c.getShortCode(), c.getVotes()));
+        });
 
         assertFalse(repository.getAll().isEmpty(), "ResultRepository should have entries");
     }

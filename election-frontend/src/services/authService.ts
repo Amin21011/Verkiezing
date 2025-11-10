@@ -1,7 +1,7 @@
 import { ref } from 'vue'
-import { jwtDecode } from "jwt-decode";
 import type { AuthUser } from '@/types/IUser.ts'
 import { authFetch } from '@/helpers/authFetch.ts'
+import { jwtDecode } from 'jwt-decode'
 
 export const API_URL = `${import.meta.env.VITE_API_URL}/auth`
 export const authUser = ref<string | null>(null)
@@ -18,6 +18,7 @@ export async function register(name: string, email: string, password: string) {
   const data = await res.json()
   authUser.value = data.name
   authToken.value = data.token
+  localStorage.setItem("token", data.token);
 
   return data
 }

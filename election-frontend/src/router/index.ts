@@ -24,20 +24,15 @@ const router = createRouter({
       name: 'candidates',
       component: CandidatesView,
     },
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   component: () => import('../views/AboutView.vue'), // lazy-loaded
-    // },
     {
       path: '/polls',
       name: 'polls',
-      component: () => import('../views/PollView.vue'), // lazy-loaded
+      component: () => import('../views/PollView.vue'),
     },
     {
       path: '/latest-news',
       name: 'latest-news',
-      component: () => import('../views/NewsView.vue'), // lazy-loaded
+      component: () => import('../views/NewsView.vue'),
     },
     {
       path: `/register`,
@@ -53,8 +48,13 @@ const router = createRouter({
       path: '/account',
       name: 'account',
       component: AccountView,
-      meta: { requiresAuth: true }
-    }
+      meta: { requiresAuth: true },
+    }, // 👈 deze komma ontbrak
+    {
+      path: '/quiz',
+      name: 'quiz',
+      component: () => import('../views/QuizView.vue'),
+    },
   ],
 });
 
@@ -69,4 +69,4 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-export default router;
+export default router

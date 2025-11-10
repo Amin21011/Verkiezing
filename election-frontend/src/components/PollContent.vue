@@ -46,7 +46,7 @@ function getPercentage(votes: number[], i: number) {
           @click="$emit('vote', pollIndex, optionIndex)"
         >
           <!-- Achtergrond balk -->
-          <div class="absolute top-0 left-0 h-full bg-blue-950 rounded-l-lg"
+          <div class="absolute top-0 left-0 h-full bg-blue-950 rounded-l-lg opacity-40"
                :style="{ width: getPercentage(poll.votes, optionIndex) + '%' }"></div>
 
           <!-- Tekst -->

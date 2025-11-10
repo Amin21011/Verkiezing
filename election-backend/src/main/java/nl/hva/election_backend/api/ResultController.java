@@ -1,4 +1,5 @@
-package nl.hva.election_backend.controller;
+package nl.hva.election_backend.api;
+import nl.hva.election_backend.model.Candidate;
 import nl.hva.election_backend.model.Party;
 import nl.hva.election_backend.service.ResultService;
 import org.springframework.web.bind.annotation.*;
@@ -20,5 +21,13 @@ public class ResultController {
             @RequestParam(defaultValue = "3") int limit
     ) {
         return resultService.getTopParties(limit);
+    }
+
+    @GetMapping("/candidates/top")
+    public List<Candidate> getTopCandidatesByParty(
+            @RequestParam(required = false) String partyId,
+            @RequestParam(defaultValue = "5") int limit
+    ) {
+        return resultService.getTopCandidatesByParty(partyId, limit);
     }
 }

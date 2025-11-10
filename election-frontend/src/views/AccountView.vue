@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import NavBar from '@/components/NavBar.vue'
-import FooterComp from '@/components/FooterComp.vue'
 import UserDashboard from '../components/UserDashboard.vue'
 import AdminDashboard from '../components/AdminDashboard.vue'
 import { getAuthUser, getCurrentUser } from '@/services/authService'
@@ -28,8 +26,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <NavBar />
-
   <div v-if="loading" class="p-8 text-center">
     <p>Gebruikersgegevens worden geladen...</p>
   </div>
@@ -41,8 +37,6 @@ onMounted(async () => {
       Geen geldige rol gevonden of niet ingelogd.
     </p>
   </div>
-
-  <FooterComp />
 </template>
 
 <style scoped>

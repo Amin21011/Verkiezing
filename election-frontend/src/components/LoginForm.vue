@@ -5,15 +5,16 @@ import router from '@/router'
 const email = ref('')
 const password = ref('')
 import { login } from "../services/authService";
+import { showToast } from '@/helpers/useFlash.ts'
 
 const handleLogin = async () => {
   try {
     await login(email.value, password.value);
-    alert("Succesvol ingelogd!");
+    showToast("Inloggen gelukt!", "success")
     router.push("/");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (err: unknown) {
-    alert("Login mislukt.");
+  } catch (err) {
+    showToast("Login mislukt.", "error")
   }
 };
 </script>

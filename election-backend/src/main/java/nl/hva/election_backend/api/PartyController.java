@@ -17,8 +17,11 @@ public class PartyController {
 
     // Top partijnamen op basis van stemmen
     @GetMapping("/top")
-    public List<Party> getTopParties(@RequestParam(defaultValue = "3") int limit) {
-        return partyService.getTopParties(limit);
+    public List<Party> getTopParties(
+            @RequestParam(defaultValue = "3") int limit,
+            @RequestParam(required = false) Integer year
+    ) {
+        return partyService.getTopPartiesByYear(year, limit);
     }
 
     // Eén specifieke partij

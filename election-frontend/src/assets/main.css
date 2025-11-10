@@ -73,3 +73,43 @@
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
+
+
+:root {
+  --retro-paper: #f8f5f0;
+  --retro-ink: #1a1a1a;
+  --retro-red: #b23a48;
+  --retro-gold: #d9c79c;
+  --retro-blue: #466b8c;
+  --retro-shadow: rgba(0, 0, 0, 0.12);
+}
+
+.retro-texture {
+  background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+  opacity: 0.08;
+}
+
+@keyframes printFade {
+  from {
+    opacity: 0;
+    letter-spacing: 0.1em;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    letter-spacing: 0;
+    transform: translateY(0);
+  }
+}
+
+.retro-title {
+  animation: printFade 0.8s ease forwards;
+}
+
+.rule-line {
+  width: 80px;
+  height: 3px;
+  margin: 1rem auto;
+  background: var(--retro-ink);
+  border-radius: 2px;
+}
