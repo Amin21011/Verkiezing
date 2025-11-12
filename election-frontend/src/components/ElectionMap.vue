@@ -35,14 +35,6 @@ function highlightProvinces() {
 
       const path = el
 
-      // Hover effect
-      path.addEventListener('mouseenter', () => {
-        path.style.fill = '#007BFF'
-      })
-      path.addEventListener('mouseleave', () => {
-        path.style.fill = selectedProvince.value?.provinceNaam === p.provinceNaam ? '#0056b3' : 'gray'
-      })
-
       // Click effect
       path.addEventListener('click', () => {
         selectedProvince.value = p
@@ -82,12 +74,20 @@ function highlightProvinces() {
 </template>
 
 <style>
-svg path {
-  cursor: pointer;
-  transition: fill 0.2s;
+/* Maak de map responsive */
+#mapContainer svg {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
 }
 
-svg path:hover {
-  fill: red;
+/* Basis styling van provincies */
+svg path {
+  fill: gray;
+  cursor: pointer;
+  stroke: black;
+  stroke-width: 1.2;
+  transition: fill 0.2s, stroke 0.3s;
 }
+
 </style>
