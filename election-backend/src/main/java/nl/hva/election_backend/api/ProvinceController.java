@@ -1,7 +1,10 @@
 package nl.hva.election_backend.api;
 
+import nl.hva.election_backend.model.ProvinceResult;
 import nl.hva.election_backend.service.ProvinceService;
+
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/provinces")
@@ -10,5 +13,10 @@ public class ProvinceController {
 
     public ProvinceController(ProvinceService provinceService) {
         this.provinceService = provinceService;
+    }
+
+    @GetMapping("/results")
+    public List<ProvinceResult> getProvinceResults() {
+        return provinceService.getProvincieResultaten();
     }
 }
