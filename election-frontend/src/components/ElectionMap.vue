@@ -66,11 +66,11 @@ function highlightProvinces() {
       <!-- Map container -->
       <div
         ref="mapContainer"
-        class="flex-1 border border-gray-400 overflow-hidden rounded shadow-lg bg-white"
+        class="flex-1 border border-gray-400 overflow-hidden rounded shadow-lg bg-white p-4 md:p-6 h-[600px] md:h-[800px]"
       ></div>
 
       <!-- Stemmen overzicht alleen tonen als er een provincie is geselecteerd -->
-      <div v-if="selectedProvince" class="w-full md:w-96 p-4 border rounded bg-white shadow">
+      <div v-if="selectedProvince" class="w-full md:w-96 p-5 border rounded bg-white shadow">
         <h2 class="font-bold text-lg mb-2">{{ selectedProvince.provinceNaam }} - Stemmen</h2>
         <ul class="list-disc list-inside">
           <li v-for="([party, votes]) in sortedVotes" :key="party">
