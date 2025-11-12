@@ -39,7 +39,7 @@ public class CandidateService {
             List<Candidate> candidates = election.getCandidates();
 
             for (Candidate c : candidates) {
-                if (!candidateRepository.existsByCandidateId(c.getCandidateId())) {
+                if (!candidateRepository.existsByCandidateId(c.getId())) {
                     candidateRepository.save(c);
                 }
             }

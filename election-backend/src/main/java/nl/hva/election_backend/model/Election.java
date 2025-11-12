@@ -1,32 +1,50 @@
 package nl.hva.election_backend.model;
 
+import jakarta.persistence.*;
+
 import java.util.*;
 
 /**
  * Houdt alle entiteiten van een verkiezing bij:
  * partijen, kandidaten en regio’s.
  */
-public class Election {
 
-    private final String id;
+@Entity
+@Table(name = "election")
+public class Election {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private final String electionId;
+    @Transient
     private final List<Party> parties = new ArrayList<>();
+    @Transient
     private final List<Candidate> candidates = new ArrayList<>();
+    @Transient
     private final List<Region> regions = new ArrayList<>();
 
+    @Transient
     private final Map<String, Candidate> candidatesById = new HashMap<>();
+    @Transient
     private final Map<String, Candidate> candidatesByShortCode = new HashMap<>();
 
-    public Election(String id) {
-        this.id = id;
+    protected Election() {
+        this.electionId = null;
+    }
+
+    public Election(String electionId) {
+        this.electionId = electionId;
     }
 
     public String getId() {
-        return id;
+        return electionId;
     }
 
     public List<Party> getParties() {
         return parties;
     }
+
 
     public List<Candidate> getCandidates() {
         return candidates;
@@ -37,10 +55,10 @@ public class Election {
     }
 
     public void addParty(Party party) {
-        if (party == null || party.getId() == null) return;
+        if (party == null || party.getPartyId() == null) return;
 
         Optional<Party> existing = parties.stream()
-                .filter(p -> p.getId().equals(party.getId()))
+                .filter(p -> p.getPartyId().equals(party.getPartyId()))
                 .findFirst();
 
         if (existing.isPresent()) {
@@ -58,7 +76,7 @@ public class Election {
     public Optional<Party> findPartyById(String partyId) {
         if (partyId == null) return Optional.empty();
         return parties.stream()
-                .filter(p -> p.getId().equals(partyId))
+                .filter(p -> p.getPartyId().equals(partyId))
                 .findFirst();
     }
 

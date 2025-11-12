@@ -19,10 +19,10 @@ public class Candidate {
 
     public Candidate() {}
 
-    public Candidate(String id, String shortCode, String firstName, String lastName, String partyId) {
-        if (id == null || id.isBlank())
+    public Candidate(String candidateId, String shortCode, String firstName, String lastName, String partyId) {
+        if (candidateId == null || candidateId.isBlank())
             throw new IllegalArgumentException("Candidate ID cannot be null or blank");
-        this.id = id;
+        this.candidateId = candidateId;
         this.shortCode = shortCode;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -30,7 +30,7 @@ public class Candidate {
         this.votes = 0;
     }
 
-    public String getId() { return id; }
+    public String getId() { return candidateId; }
     public String getShortCode() { return shortCode; }
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }

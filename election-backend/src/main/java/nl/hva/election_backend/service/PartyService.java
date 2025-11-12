@@ -30,7 +30,7 @@ public class PartyService {
 
     public Party getPartyById(String id) {
         return repository.getAll().stream()
-                .filter(p -> p.getId().equals(id))
+                .filter(p -> p.getPartyId().equals(id))
                 .findFirst()
                 .orElse(null);
     }
