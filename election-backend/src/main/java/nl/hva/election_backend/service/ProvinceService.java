@@ -1,6 +1,7 @@
 package nl.hva.election_backend.service;
 
 
+import nl.hva.election_backend.model.ProvinceResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,15 @@ public class ProvinceService {
         provincieKieskringenMap.put("Limburg", List.of("Maastricht"));
 
         logger.info("ProvincieService initialized with {} provinces", provincieKieskringenMap.size());
+    }
+
+    public List<ProvinceResult> getProvincieResultaten() {
+        List<ProvinceResult> resultaten = new ArrayList<>();
+        for (String provincie : provincieKieskringenMap.keySet()) {
+            Map<String, Integer> totaalStemmen = new HashMap<>();
+            resultaten.add(new ProvinceResult(provincie, totaalStemmen));
+        }
+        return resultaten;
     }
 
 }
