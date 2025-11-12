@@ -10,4 +10,12 @@ public class ProvinceResult {
         this.provincieNaam = provincieNaam;
         this.stemmenPerPartij = stemmenPerPartij;
     }
+
+    public String getProvinceNaam() {
+        return provincieNaam;
+    }
+
+    public Map<String, Integer> getStemmenPerPartij() {
+        return stemmenPerPartij;
+    }
 }
