@@ -33,7 +33,7 @@ spring:
     activate:
       on-profile: prod
   datasource:
-    url: jdbc:postgresql://localhost:5433/electiondb
+    url: jdbc:postgresql://localhost:5432/electiondb
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
