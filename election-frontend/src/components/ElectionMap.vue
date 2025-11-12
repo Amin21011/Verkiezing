@@ -1,15 +1,82 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import mapSvg from '@/assets/img/netherlands.svg?raw'
 
+interface ProvinceResult {
+  provinceNaam: string
+  stemmenPerPartij: Record<string, number>
+}
 
+const provinces = ref<ProvinceResult[]>([])
+const selectedProvince = ref<ProvinceResult | null>(null)
+const mapContainer = ref<HTMLElement | null>(null)
+const API_URL = `${import.meta.env.VITE_API_URL}/provinces/results`;
+
+onMounted(async () => {
+  try {
+    const res = await fetch(API_URL)
+    provinces.value = await res.json()
+    if (mapContainer.value) {
+      mapContainer.value.innerHTML = mapSvg
+      highlightProvinces()
+    }
+  } catch (err) {
+    console.error('Fout bij ophalen:', err)
+  }
+})
+
+function highlightProvinces() {
+  setTimeout(() => {
+    provinces.value.forEach((p) => {
+      const el = Array.from(document.querySelectorAll('svg path')).find(
+        (path) => path.getAttribute('title') === p.provinceNaam
+      )
+      if (!el || !(el instanceof SVGPathElement)) return
+
+      const path = el
+
+      // Hover effect
+      path.addEventListener('mouseenter', () => {
+        path.style.fill = '#007BFF'
+      })
+      path.addEventListener('mouseleave', () => {
+        path.style.fill = selectedProvince.value?.provinceNaam === p.provinceNaam ? '#0056b3' : 'gray'
+      })
+
+      // Click effect
+      path.addEventListener('click', () => {
+        selectedProvince.value = p
+
+        // Reset alle paden naar standaardkleur
+        document.querySelectorAll('svg path').forEach((other) => {
+          if (other instanceof SVGPathElement) {
+            other.style.fill = 'gray'
+          }
+        })
+        // Kleur actieve provincie
+        path.style.fill = '#0056b3'
+      })
+    })
+  }, 200)
+}
 </script>
 
 <template>
-  <section class="section-wrapper flex flex-col items-center py-16 px-4 md:px-8 bg-paper">
-    <div class="relative w-full max-w-7xl mb-16 bg-white border-4 border-ink shadow-press overflow-hidden">
-      <div v-html="mapSvg" class="w-full"></div>
+  <section class="flex flex-col items-center py-8">
+    <!-- Map container -->
+    <div
+      ref="mapContainer"
+      class="relative w-full max-w-5xl border border-gray-400 overflow-hidden rounded shadow-lg bg-white"
+    ></div>
 
-      <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
+    <!-- Stemmen overzicht alleen tonen als er een provincie is geselecteerd -->
+    <div v-if="selectedProvince" class="mt-6 p-4 border rounded bg-white shadow w-96">
+      <h2 class="font-bold text-lg mb-2">{{ selectedProvince.provinceNaam }} - Stemmen</h2>
+      <ul class="list-disc list-inside">
+        <li v-for="(votes, party) in selectedProvince.stemmenPerPartij" :key="party">
+          {{ party }}: {{ votes }}
+        </li>
+      </ul>
     </div>
   </section>
 </template>
