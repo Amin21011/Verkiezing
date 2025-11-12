@@ -5,6 +5,7 @@ import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import PartyListView from '../views/PartyListView.vue'
 import AccountView from '../views/AccountView.vue'
+import ForumPostView from '@/views/ForumPostView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,6 +56,11 @@ const router = createRouter({
       name: 'quiz',
       component: () => import('../views/QuizView.vue'),
     },
+    {
+      path: `/post`,
+      name: `post`,
+      component: ForumPostView
+    }
   ],
 });
 
