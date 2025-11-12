@@ -55,20 +55,24 @@ function highlightProvinces() {
 
 <template>
   <section class="flex flex-col items-center py-8">
-    <!-- Map container -->
-    <div
-      ref="mapContainer"
-      class="relative w-full max-w-5xl border border-gray-400 overflow-hidden rounded shadow-lg bg-white"
-    ></div>
+    <!-- Container voor map + resultaten -->
+    <div class="flex flex-col md:flex-row items-start w-full max-w-6xl gap-6">
 
-    <!-- Stemmen overzicht alleen tonen als er een provincie is geselecteerd -->
-    <div v-if="selectedProvince" class="mt-6 p-4 border rounded bg-white shadow w-96">
-      <h2 class="font-bold text-lg mb-2">{{ selectedProvince.provinceNaam }} - Stemmen</h2>
-      <ul class="list-disc list-inside">
-        <li v-for="(votes, party) in selectedProvince.stemmenPerPartij" :key="party">
-          {{ party }}: {{ votes }}
-        </li>
-      </ul>
+      <!-- Map container -->
+      <div
+        ref="mapContainer"
+        class="flex-1 border border-gray-400 overflow-hidden rounded shadow-lg bg-white"
+      ></div>
+
+      <!-- Stemmen overzicht alleen tonen als er een provincie is geselecteerd -->
+      <div v-if="selectedProvince" class="w-full md:w-96 p-4 border rounded bg-white shadow">
+        <h2 class="font-bold text-lg mb-2">{{ selectedProvince.provinceNaam }} - Stemmen</h2>
+        <ul class="list-disc list-inside">
+          <li v-for="(votes, party) in selectedProvince.stemmenPerPartij" :key="party">
+            {{ party }}: {{ votes }} stemmen
+          </li>
+        </ul>
+      </div>
     </div>
   </section>
 </template>
