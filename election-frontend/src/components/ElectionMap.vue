@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import mapSvg from '@/assets/img/netherlands.svg?raw'
 
 interface ProvinceResult {
@@ -12,6 +12,11 @@ const selectedProvince = ref<ProvinceResult | null>(null)
 const mapContainer = ref<HTMLElement | null>(null)
 const API_URL = `${import.meta.env.VITE_API_URL}/provinces/results`;
 
+const sortedVotes = computed(() => {
+  if (!selectedProvince.value) return []
+  return Object.entries(selectedProvince.value.stemmenPerPartij)
+    .sort((a, b) => b[1] - a[1])
+})
 onMounted(async () => {
   try {
     const res = await fetch(API_URL)
@@ -68,7 +73,7 @@ function highlightProvinces() {
       <div v-if="selectedProvince" class="w-full md:w-96 p-4 border rounded bg-white shadow">
         <h2 class="font-bold text-lg mb-2">{{ selectedProvince.provinceNaam }} - Stemmen</h2>
         <ul class="list-disc list-inside">
-          <li v-for="(votes, party) in selectedProvince.stemmenPerPartij" :key="party">
+          <li v-for="([party, votes]) in sortedVotes" :key="party">
             {{ party }}: {{ votes }} stemmen
           </li>
         </ul>
@@ -93,5 +98,4 @@ svg path {
   stroke-width: 1.2;
   transition: fill 0.2s, stroke 0.3s;
 }
-
 </style>
