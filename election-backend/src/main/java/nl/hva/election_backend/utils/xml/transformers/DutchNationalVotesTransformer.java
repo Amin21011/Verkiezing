@@ -3,6 +3,8 @@ package nl.hva.election_backend.utils.xml.transformers;
 import nl.hva.election_backend.model.Election;
 import nl.hva.election_backend.utils.xml.VotesTransformer;
 
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -11,15 +13,15 @@ import java.util.Map;
  */
 public class DutchNationalVotesTransformer implements VotesTransformer {
     private final Election election;
+    private final Map<String, Integer> stemmenPerPartij = new HashMap<>();
 
-    /**
-     * Creates a new transformer for handling the votes at the national level. It expects an instance of
-     * Election that can be used for storing the results.
-     * @param election the election in which the votes wil be stored.
-     */
     public DutchNationalVotesTransformer(Election election) {
         this.election = election;
     }
+    public Map<String, Integer> parse(InputStream inputStream) {
+        return stemmenPerPartij;
+    }
+
 
     @Override
     public void registerPartyVotes(boolean aggregated, Map<String, String> electionData) {
