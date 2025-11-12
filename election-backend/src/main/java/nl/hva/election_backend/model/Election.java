@@ -62,38 +62,25 @@ public class Election {
                 .findFirst();
     }
 
-    // ===== Kandidaten =====
     public void addCandidate(Candidate c) {
-        if (c == null) return;
+        if (c == null || c.getId() == null || c.getId().isBlank()) return;
 
-        candidates.add(c);
+        if (!candidatesById.containsKey(c.getId())) {
+            candidates.add(c);
+            candidatesById.put(c.getId(), c);
 
-        // Alleen opslaan als de ID uniek is
-        if (c.getId() != null && !c.getId().isBlank()) {
-            candidatesById.putIfAbsent(c.getId(), c);
-        }
-
-        if (c.getShortCode() != null && !c.getShortCode().isBlank()) {
-            candidatesByShortCode.putIfAbsent(c.getShortCode(), c);
+            if (c.getShortCode() != null && !c.getShortCode().isBlank()) {
+                candidatesByShortCode.putIfAbsent(c.getShortCode(), c);
+            }
+        } else {
+             System.out.printf("Dubbele kandidaat overgeslagen (Id=%s)%n", c.getId());
         }
     }
 
-    /** Vind kandidaat op unieke ID (voor stemmen per kandidaat) */
     public Optional<Candidate> getCandidateById(String id) {
         if (id == null || id.isBlank()) return Optional.empty();
         return Optional.ofNullable(candidatesById.get(id));
     }
-
-    /** Vind kandidaat op shortCode (zoals "C-C-B" of numerieke lijstcode) */
-    public Optional<Candidate> getCandidateByShortCode(String shortCode) {
-        if (shortCode == null || shortCode.isBlank()) return Optional.empty();
-        return Optional.ofNullable(candidatesByShortCode.get(shortCode));
-    }
-
-    public Optional<Candidate> findCandidateById(String id) {
-        return getCandidateById(id);
-    }
-
 
     public void addRegion(Region region) {
         if (region == null) return;
@@ -106,10 +93,4 @@ public class Election {
             regions.add(region);
         }
     }
-//
-//    public Optional<Candidate> getCandidateByCombinedId(String combinedId) {
-//        if (combinedId == null || combinedId.isBlank()) return Optional.empty();
-//        return Optional.ofNullable(candidatesById.get(combinedId));
-//    }
-
 }
