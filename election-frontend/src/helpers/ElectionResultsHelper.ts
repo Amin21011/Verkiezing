@@ -2,7 +2,7 @@ import { ref, watch, computed, onMounted } from "vue";
 import type { Candidate, Party } from "@/types/IParty";
 import { getTopCandidatesByParty, getTopParties } from "@/services/electionService";
 
-export function useElectionResults() {
+export function  useElectionResults() {
   const topParties = ref<Party[]>([]);
   const topCandidates = ref<Candidate[]>([]);
   const selectedPartyId = ref<string>("");
@@ -13,11 +13,12 @@ export function useElectionResults() {
   const chartLabels = computed(() =>
     topCandidates.value.map((c) => `${c.firstName} ${c.lastName}`)
   );
+
   const chartValues = computed(() =>
     topCandidates.value.map((c) => Number(c.votes) || 0)
   );
 
-  async function loadTopParties(limit = 8) {
+  async function loadTopParties(limit = 5) {
     try {
       isLoading.value = true;
       const data = await getTopParties(limit);
