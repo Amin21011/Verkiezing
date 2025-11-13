@@ -52,7 +52,8 @@ onMounted(fetchRecentPosts);
         <article
           v-for="post in posts"
           :key="post.id"
-          class="p-6 hover:bg-gray-50 transition"
+          class="p-6 hover:bg-gray-50 transition cursor-pointer"
+          @click="$router.push(`/forum/${post.id}`)"
         >
           <h3 class="text-lg font-semibold text-[#00712D] mb-1">
             {{ post.title }}
@@ -65,6 +66,7 @@ onMounted(fetchRecentPosts);
             {{ post.content }}
           </p>
         </article>
+
       </div>
     </section>
   </div>
