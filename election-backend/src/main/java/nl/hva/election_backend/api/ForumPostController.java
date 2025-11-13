@@ -3,7 +3,7 @@ package nl.hva.election_backend.api;
 
 import nl.hva.election_backend.model.ForumPost;
 import nl.hva.election_backend.model.User;
-import nl.hva.election_backend.service.ForumService;
+import nl.hva.election_backend.service.ForumPostService;
 import nl.hva.election_backend.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 @RestController
 @RequestMapping("/api/forum")
-public class ForumController {
+public class ForumPostController {
 
-    private final ForumService forumService;
+    private final ForumPostService forumService;
     private final JwtUtil jwtUtil;
     private final UserService userService;
 
-    public ForumController(ForumService forumService, JwtUtil jwtUtil, UserService userService) {
+    public ForumPostController(ForumPostService forumService, JwtUtil jwtUtil, UserService userService) {
         this.forumService = forumService;
         this.jwtUtil = jwtUtil;
         this.userService = userService;

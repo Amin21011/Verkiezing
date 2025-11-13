@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 @Repository
-public interface ForumRepository extends JpaRepository<ForumPost, Long> {
+public interface ForumPostRepository extends JpaRepository<ForumPost, Long> {
     List<ForumPost> findAllByOrderByPostedAtDesc();
 }

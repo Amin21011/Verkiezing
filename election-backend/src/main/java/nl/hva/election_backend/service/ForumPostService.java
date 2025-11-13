@@ -1,18 +1,17 @@
 package nl.hva.election_backend.service;
 
 import nl.hva.election_backend.model.ForumPost;
-import nl.hva.election_backend.repository.ForumRepository;
+import nl.hva.election_backend.repository.ForumPostRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class ForumService {
+public class ForumPostService {
 
-    private final ForumRepository forumRepository;
+    private final ForumPostRepository forumRepository;
 
-    public ForumService(ForumRepository forumRepository) {
+    public ForumPostService(ForumPostRepository forumRepository) {
         this.forumRepository = forumRepository;
     }
 
