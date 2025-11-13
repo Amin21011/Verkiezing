@@ -2,6 +2,7 @@ package nl.hva.election_backend.api;
 import nl.hva.election_backend.model.Party;
 import nl.hva.election_backend.model.Party1;
 import nl.hva.election_backend.service.PartyService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -22,12 +23,6 @@ public class PartyController {
             @RequestParam(required = false) Integer year
     ) {
         return partyService.getTopPartiesByYear(year, limit);
-    }
-
-    // Eén specifieke partij
-    @GetMapping("/{id}")
-    public Party getPartyById(@PathVariable String id) {
-        return partyService.getPartyById(id);
     }
 
     // Willekeurige volgorde
