@@ -6,8 +6,6 @@ import nl.hva.election_backend.model.Party;
 import nl.hva.election_backend.model.Result;
 import nl.hva.election_backend.repository.ResultRepository;
 import nl.hva.election_backend.utils.xml.VotesTransformer;
-
-import java.util.HashMap;
 import java.util.Map;
 
 public class DutchResultTransformer implements VotesTransformer {
@@ -63,49 +61,31 @@ public class DutchResultTransformer implements VotesTransformer {
 
     @Override
     public void registerCandidateVotes(boolean aggregated, Map<String, String> electionData) {
-        String xmlPartyId = electionData.get("AffiliationIdentifier-Id");
+        String partyId = electionData.get("AffiliationIdentifier-Id");
         String candidateId = electionData.get("CandidateIdentifier-Id");
         String shortCode = electionData.get("CandidateIdentifier-ShortCode");
         int votes = parseVotes(electionData.getOrDefault("ValidVotes", "0"));
         if (votes <= 0) return;
 
-        String combinedId = (xmlPartyId != null && candidateId != null)
-                ? xmlPartyId.trim() + "-" + candidateId.trim()
-                : candidateId;
+        if (candidateId == null || partyId == null) return;
 
-        Candidate candidate = election.getCandidateById(combinedId).orElse(null);
+        Candidate candidate = election.getCandidateById(candidateId).orElse(null);
+        if (candidate == null) return;
 
-        if (candidate == null) {
-            System.err.printf("Geen kandidaat gevonden voor Party=%s, ShortCode=%s, Id=%s — mogelijk niet in kandidatenlijst voor deze kieskring%n",
-                    xmlPartyId, shortCode, candidateId);
-            return;
-        }
-
-        String partyName = election.findPartyById(candidate.getPartyId())
+        String partyName = election.findPartyById(partyId)
                 .map(Party::getName)
-                .orElse(repository.getPartyName(candidate.getPartyId()));
-
-        candidate.setVotes(candidate.getVotes() + votes);
-        candidate.setPartyName(partyName);
+                .orElse(repository.getPartyName(partyId));
 
         Result result = new Result(
-                candidate.getPartyId(),
+                partyId,
                 partyName,
-                candidate.getId(),
+                candidateId,
                 votes,
                 currentRegionType,
                 currentRegionId
         );
         result.setShortCode(shortCode);
         repository.addResult(result);
-
-        System.out.printf("CandidateVotes -> %s %s (%s): +%d stemmen [%s %s]%n",
-                candidate.getFirstName(),
-                candidate.getLastName(),
-                candidate.getPartyName(),
-                votes,
-                currentRegionType,
-                currentRegionId);
     }
 
     @Override
@@ -132,42 +112,18 @@ public class DutchResultTransformer implements VotesTransformer {
 
         election.getCandidates().forEach(c -> c.setVotes(0));
         election.getParties().forEach(p -> p.setVoteCount(0));
+        repository.aggregatePartyVotes(election);
+        repository.aggregateCandidateVotes(election);
 
-        Map<String, Integer> votesByCandidate = new HashMap<>();
-        Map<String, Integer> votesByParty = new HashMap<>();
+        int totalVotes = election.getCandidates().stream()
+                .mapToInt(Candidate::getVotes).sum();
 
-        for (Result r : repository.getAll()) {
-            if (r.getCandidateId() != null && r.getPartyId() != null) {
-                String key = r.getPartyId() + ":" + r.getCandidateId();
-                votesByCandidate.merge(key, r.getVotes(), Integer::sum);
-            } else if (r.getPartyId() != null) {
-                votesByParty.merge(r.getPartyId(), r.getVotes(), Integer::sum);
-            }
-        }
-
-        votesByCandidate.forEach((key, total) -> {
-            String[] parts = key.split(":");
-            if (parts.length != 2) return;
-            String partyId = parts[0];
-            String candidateId = parts[1];
-
-            election.getCandidates().stream()
-                    .filter(c -> candidateId.equals(c.getId()) && partyId.equals(c.getPartyId()))
-                    .findFirst()
-                    .ifPresent(c -> c.setVotes(c.getVotes() + total));
-        });
-
-        votesByParty.forEach((id, total) ->
-                election.findPartyById(id).ifPresent(p -> p.setVoteCount(total))
-        );
-
-        int totalVotes = election.getCandidates().stream().mapToInt(Candidate::getVotes).sum();
-        double avgVotes = totalVotes / (double) Math.max(1, election.getCandidates().size());
-
-        System.out.printf("Flush voltooid: %d unieke kandidaat-regionale combinaties, totaal %d stemmen (gem. %.0f).%n",
-                votesByCandidate.size(), totalVotes, avgVotes);
+        System.out.printf("Flush voltooid: %d kandidaten, totaal %d stemmen.%n",
+                election.getCandidates().size(), totalVotes);
 
         election.getParties().forEach(p ->
-                System.out.printf("→ %s (%s): %d stemmen%n", p.getName(), p.getId(), p.getVoteCount()));
+                System.out.printf("→ %s (%s): %d stemmen%n",
+                        p.getName(), p.getId(), p.getVoteCount()));
     }
+
 }

@@ -2,17 +2,12 @@ package nl.hva.election_backend.model;
 
 import java.util.*;
 
-/**
- * Houdt alle entiteiten van een verkiezing bij:
- * partijen, kandidaten en regio’s.
- */
 public class Election {
 
     private final String id;
     private final List<Party> parties = new ArrayList<>();
     private final List<Candidate> candidates = new ArrayList<>();
     private final List<Region> regions = new ArrayList<>();
-
     private final Map<String, Candidate> candidatesById = new HashMap<>();
     private final Map<String, Candidate> candidatesByShortCode = new HashMap<>();
 
@@ -32,10 +27,6 @@ public class Election {
         return candidates;
     }
 
-    public List<Region> getRegions() {
-        return regions;
-    }
-
     public void addParty(Party party) {
         if (party == null || party.getId() == null) return;
 
@@ -46,7 +37,6 @@ public class Election {
         if (existing.isPresent()) {
             Party current = existing.get();
 
-            // Voeg stemmen samen als er al data bestaat
             if (party.getVoteCount() > 0) {
                 current.setVoteCount(current.getVoteCount() + party.getVoteCount());
             }
@@ -63,17 +53,18 @@ public class Election {
     }
 
     public void addCandidate(Candidate c) {
-        if (c == null || c.getId() == null || c.getId().isBlank()) return;
+        if (c == null || c.getId() == null) return;
 
-        if (!candidatesById.containsKey(c.getId())) {
+        boolean exists = candidates.stream()
+                .anyMatch(existing -> existing.getId().equals(c.getId())
+                        && Objects.equals(existing.getPartyId(), c.getPartyId()));
+
+        if (!exists) {
             candidates.add(c);
-            candidatesById.put(c.getId(), c);
-
+            candidatesById.putIfAbsent(c.getId(), c);
             if (c.getShortCode() != null && !c.getShortCode().isBlank()) {
                 candidatesByShortCode.putIfAbsent(c.getShortCode(), c);
             }
-        } else {
-             System.out.printf("Dubbele kandidaat overgeslagen (Id=%s)%n", c.getId());
         }
     }
 
