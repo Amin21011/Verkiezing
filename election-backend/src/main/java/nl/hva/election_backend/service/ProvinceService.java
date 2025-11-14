@@ -37,14 +37,14 @@ public class ProvinceService {
         logger.info("ProvincieService initialized with {} provinces", provincieKieskringenMap.size());
     }
 
-    public List<ProvinceResult> getProvincieResultaten() {
+    public List<ProvinceResult> getProvincieResultaten(int year) {
         List<ProvinceResult> resultaten = new ArrayList<>();
         for (String provincie : provincieKieskringenMap.keySet()) {
             Map<String, Integer> totaalStemmen = new HashMap<>();
             for (String kieskring : provincieKieskringenMap.get(provincie)) {
                 String resourcePath = String.format(
-                        "TK2023_HvA_UvA/Telling_2023/Telling_TK2023_kieskring_%s.eml.xml",
-                        kieskring
+                        "TK2023_HvA_UvA/Telling_%d/Telling_TK%d_kieskring_%s.eml.xml",
+                        year, year, kieskring
                 );
                 Resource resource = new ClassPathResource(resourcePath);
 
@@ -54,7 +54,7 @@ public class ProvinceService {
                 }
 
                 try (InputStream inputStream = resource.getInputStream()) {
-                    Election election = new Election("TK2023");
+                    Election election = new Election("TK" + year);
 
                     DutchNationalVotesTransformer transformer = new DutchNationalVotesTransformer(election);
 
