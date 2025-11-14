@@ -43,7 +43,7 @@ public class ProvinceService {
             Map<String, Integer> totaalStemmen = new HashMap<>();
             for (String kieskring : provincieKieskringenMap.get(provincie)) {
                 String resourcePath = String.format(
-                        "TK2023_HvA_UvA/Telling/Telling_TK2023_kieskring_%s.eml.xml",
+                        "TK2023_HvA_UvA/Telling_2023/Telling_TK2023_kieskring_%s.eml.xml",
                         kieskring
                 );
                 Resource resource = new ClassPathResource(resourcePath);
