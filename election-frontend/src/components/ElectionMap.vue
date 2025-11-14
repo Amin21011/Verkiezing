@@ -10,16 +10,21 @@ interface ProvinceResult {
 const provinces = ref<ProvinceResult[]>([])
 const selectedProvince = ref<ProvinceResult | null>(null)
 const mapContainer = ref<HTMLElement | null>(null)
-const API_URL = `${import.meta.env.VITE_API_URL}/provinces/results`;
+
+const selectedYear = ref(2025)
+const API_URL = `${import.meta.env.VITE_API_URL}/provinces/results`
 
 const sortedVotes = computed(() => {
   if (!selectedProvince.value) return []
   return Object.entries(selectedProvince.value.stemmenPerPartij)
     .sort((a, b) => b[1] - a[1])
 })
-onMounted(async () => {
+
+async function loadData() {
   try {
-    const res = await fetch(API_URL)
+    selectedProvince.value = null
+
+    const res = await fetch(`${API_URL}/${selectedYear.value}`)
     provinces.value = await res.json()
     if (mapContainer.value) {
       mapContainer.value.innerHTML = mapSvg
@@ -28,7 +33,15 @@ onMounted(async () => {
   } catch (err) {
     console.error('Fout bij ophalen:', err)
   }
+}
+onMounted(() => {
+  loadData()
 })
+
+function onYearChange(event: Event) {
+  selectedYear.value = Number((event.target as HTMLSelectElement).value)
+  loadData()
+}
 
 function highlightProvinces() {
   setTimeout(() => {
@@ -63,10 +76,11 @@ function highlightProvinces() {
     <!-- Jaar selectie -->
     <div class="w-full max-w-6xl mb-4">
       <label for="year" class="font-semibold mr-2">Kies jaar:</label>
-      <select id="year" class="border p-2 rounded">
+      <select id="year" class="border p-2 rounded" @change="onYearChange">
         <option value="2017">2017</option>
         <option value="2021">2021</option>
         <option value="2023">2023</option>
+        <option value="2025" selected>2025</option>
       </select>
     </div>
 
