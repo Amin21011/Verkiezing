@@ -15,8 +15,8 @@ public class ProvinceController {
         this.provinceService = provinceService;
     }
 
-    @GetMapping("/results")
-    public List<ProvinceResult> getProvinceResults() {
-        return provinceService.getProvincieResultaten();
+    @GetMapping("/results/{year}")
+    public List<ProvinceResult> getProvinceResults(@PathVariable int year) {
+        return provinceService.getProvincieResultaten(year);
     }
 }
