@@ -60,6 +60,16 @@ function highlightProvinces() {
 
 <template>
   <section class="flex flex-col items-center py-8">
+    <!-- Jaar selectie -->
+    <div class="w-full max-w-6xl mb-4">
+      <label for="year" class="font-semibold mr-2">Kies jaar:</label>
+      <select id="year" class="border p-2 rounded">
+        <option value="2017">2017</option>
+        <option value="2021">2021</option>
+        <option value="2023">2023</option>
+      </select>
+    </div>
+
     <!-- Container voor map + resultaten -->
     <div class="flex flex-col md:flex-row items-start w-full max-w-6xl gap-6">
 
