@@ -19,6 +19,8 @@
 > **Mauro**:
 > *"Ik vind versie B beter, omdat de partijen veel duidelijker worden weergegeven. Je kunt meteen zien welke partijen erbij horen en hoe ze zich tot elkaar verhouden, terwijl dat bij een piechart minder overzichtelijk is."*
 
+> **Kevin**:
+> *"Ik zou kiezen voor versie B, want die is duidelijker als ik snel het resultaat wil zien van een specifieke partij. De piechart is visueel mooier maar minder duidelijk"*
 
 
 
