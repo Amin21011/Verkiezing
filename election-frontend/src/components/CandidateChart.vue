@@ -15,9 +15,10 @@ const {
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 let chart: Chart | null = null;
 
-const totalVotes = computed(() =>
-  chartValues.value.reduce((sum, v) => sum + v, 0)
-);
+const totalVotes = computed(() => {
+  const party = topParties.value.find(p => p.id === selectedPartyId.value);
+  return party ? Number(party.voteCount) : 0;
+});
 
 watch([chartLabels, chartValues], async ([labels, values]) => {
   await nextTick();
@@ -39,13 +40,12 @@ function renderChart(labels: string[], values: number[]) {
     return;
   }
 
-  // Retro, gedrukt kleurenpalet
   const colors = [
-    "#b23a48", // warm rood
-    "#d4a373", // zandbruin
-    "#8c9a9e", // staalgrijs
-    "#c1cfa1", // mosgroen
-    "#f4ca64", // vergeelde oker
+    "#b23a48",
+    "#d4a373",
+    "#8c9a9e",
+    "#c1cfa1",
+    "#f4ca64",
   ].slice(0, values.length);
 
   chart = new Chart(ctx, {
