@@ -1,5 +1,6 @@
 package nl.hva.election_backend.api;
 
+import nl.hva.election_backend.dto.PasswordChangeRequest;
 import nl.hva.election_backend.dto.UserDTO;
 import nl.hva.election_backend.model.User;
 import nl.hva.election_backend.service.AuthService;
@@ -42,7 +43,6 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         String email = body.get("email");
         String password = body.get("password");
-
         String token = authService.authenticate(email, password);
         User user = userService.findByEmail(email);
 
@@ -56,6 +56,42 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body(Map.of("error", "Geen geldige token gevonden"));
+        }
+
+        String token = authHeader.substring(7);
+        String email = jwtUtil.validateTokenAndGetEmail(token);
+        User user = userService.findByEmail(email);
+
+        return ResponseEntity.ok(
+                new UserDTO(user.getName(), user.getEmail(), user.getRole())
+        );
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUser(
+            @RequestHeader("Authorization") String authHeader, @RequestBody UserDTO updatedUser) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("Geen geldige token gevonden");
+        }
+
+        String token = authHeader.substring(7);
+        String email = jwtUtil.validateTokenAndGetEmail(token);
+        User user = userService.findByEmail(email);
+
+        if (user == null) return ResponseEntity.status(404).body("Gebruiker niet gevonden");
+
+        user.setName(updatedUser.name());
+        user.setEmail(updatedUser.email());
+
+        User saved = userService.save(user);
+            return ResponseEntity.ok(new UserDTO(saved.getName(), saved.getEmail(), saved.getRole()));
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @RequestHeader("Authorization") String authHeader, @RequestBody PasswordChangeRequest request) {
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body(Map.of("error", "Geen geldige token gevonden"));
@@ -64,10 +100,15 @@ public class AuthController {
         String token = authHeader.substring(7);
         String email = jwtUtil.validateTokenAndGetEmail(token);
 
-        User user = userService.findByEmail(email);
+        if (request.getOldPassword() == null || request.getNewPassword() == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Beide wachtwoordvelden zijn verplicht."));
+        }
 
-        return ResponseEntity.ok(
-                new UserDTO(user.getName(), user.getEmail(), user.getRole())
-        );
+        try {
+            userService.changePassword(email, request.getOldPassword(), request.getNewPassword());
+            return ResponseEntity.ok(Map.of("message", "Wachtwoord succesvol gewijzigd"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
+        }
     }
 }
