@@ -1,19 +1,37 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { getToken } from "@/services/authService";
+
+
+interface User {
+  name: string;
+}
+
+interface ForumComment {
+  id: number;
+  comment: string;
+  createdAt: string;
+  user: User;
+}
 
 interface ForumPost {
   id: number;
   title: string;
   content: string;
   postedAt: string;
-  user: { name: string };
+  user: User;
+  comments?: ForumComment[];
 }
+
 
 const route = useRoute();
 const post = ref<ForumPost | null>(null);
+const newComment = ref("");
 const loading = ref(true);
 const errorMsg = ref("");
+const submitting = ref(false);
+
 
 async function fetchPost() {
   loading.value = true;
@@ -29,6 +47,36 @@ async function fetchPost() {
   }
 }
 
+
+async function submitComment() {
+  if (!newComment.value.trim()) return;
+
+  submitting.value = true;
+  const token = getToken();
+  const id = route.params.id;
+
+  try {
+    const res = await fetch(`http://localhost:8080/api/forum/posts/${id}/comments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({ comment: newComment.value }),
+    });
+
+    if (!res.ok) throw new Error("Kon reactie niet plaatsen");
+
+    newComment.value = "";
+    await fetchPost();
+  } catch (err: any) {
+    alert(err.message);
+  } finally {
+    submitting.value = false;
+  }
+}
+
+
 onMounted(fetchPost);
 </script>
 
@@ -37,10 +85,12 @@ onMounted(fetchPost);
     <section
       class="max-w-3xl mx-auto bg-white rounded-2xl border border-gray-200 shadow-sm p-8"
     >
+
       <div v-if="loading" class="text-center text-gray-500">Laden...</div>
       <div v-else-if="errorMsg" class="text-center text-red-500">
         {{ errorMsg }}
       </div>
+
 
       <div v-else>
         <h1 class="text-2xl font-bold text-[#00712D] mb-2">{{ post?.title }}</h1>
@@ -48,9 +98,47 @@ onMounted(fetchPost);
           door {{ post?.user?.name || "Onbekend" }} •
           {{ new Date(post?.postedAt || "").toLocaleDateString("nl-NL") }}
         </p>
-        <p class="text-gray-800 leading-relaxed whitespace-pre-line">
+        <p class="text-gray-800 leading-relaxed whitespace-pre-line mb-8">
           {{ post?.content }}
         </p>
+
+
+        <div class="mt-8 border-t border-gray-200 pt-6">
+          <h2 class="text-lg font-semibold mb-4">Reacties</h2>
+
+
+          <div v-if="post?.comments?.length">
+            <div
+              v-for="comment in post.comments"
+              :key="comment.id"
+              class="mb-4 p-4 bg-gray-50 rounded-lg"
+            >
+              <p class="text-gray-700">{{ comment.comment }}</p>
+              <p class="text-xs text-gray-500 mt-1">
+                door {{ comment.user?.name || "Onbekend" }} •
+                {{ new Date(comment.createdAt).toLocaleString("nl-NL") }}
+              </p>
+            </div>
+          </div>
+          <p v-else class="text-gray-400">Nog geen reacties — wees de eerste!</p>
+
+
+          <div class="mt-6">
+            <textarea
+              v-model="newComment"
+              placeholder="Schrijf een reactie..."
+              class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#00712D] resize-none"
+              rows="3"
+            ></textarea>
+            <button
+              @click="submitComment"
+              :disabled="submitting"
+              class="mt-3 bg-[#00712D] text-white px-4 py-2 rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+            >
+              {{ submitting ? "Bezig..." : "Plaats reactie" }}
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   </div>
