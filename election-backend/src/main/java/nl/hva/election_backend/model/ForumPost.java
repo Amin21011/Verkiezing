@@ -1,8 +1,11 @@
 package nl.hva.election_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "posts")
@@ -20,6 +23,10 @@ public class ForumPost {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "forumPost", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<ForumComment> comments = new ArrayList<>();
 
 
     public ForumPost() {}
@@ -48,6 +55,10 @@ public class ForumPost {
     }
     public User getUser() { return user; }
 
+    public List<ForumComment> getComments() {
+        return comments;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -59,5 +70,9 @@ public class ForumPost {
     }
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setComments(List<ForumComment> comments) {
+        this.comments = comments;
     }
 }
