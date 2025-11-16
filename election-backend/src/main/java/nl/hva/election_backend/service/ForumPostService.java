@@ -5,6 +5,7 @@ import nl.hva.election_backend.repository.ForumPostRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ForumPostService {
@@ -21,5 +22,9 @@ public class ForumPostService {
 
     public ForumPost addPost(ForumPost forumPost) {
         return forumRepository.save(forumPost);
+    }
+
+    public Optional<ForumPost> getPostById(long id) {
+        return forumRepository.findById(id);
     }
 }
