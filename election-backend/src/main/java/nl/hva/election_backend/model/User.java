@@ -36,4 +36,12 @@ public class User {
     public void setQuizBestMatch(String quizBestMatch) {
         this.quizBestMatch = quizBestMatch;
     }
+
+    public String getQuizBestMatch() {
+        return quizBestMatch;
+    }
+
+    public boolean isQuizCompleted() {
+        return quizCompleted;
+    }
 }
