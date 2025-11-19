@@ -1,114 +1,239 @@
-# Interface Map with implementation classes HashMap, TreeMap.
+## Interface Map with implementation classes HashMap, LinkedHashMap and TreeMap.
 
-## Central research question:
+### _Problem Statement_
 
-Which Map implementation in Java provides the best balance between performance, readability, and maintainability when handling large datasets?
+In modern software development, choosing the correct data structure has a large 
+impact on the performance, scalability, and maintainability of applications. 
+Although Java provides several implementations of the Map interface, many developers 
+choose a Map type based on habit rather than from a correct understanding of how 
+the structure works internally. As applications expand, this may eventually lead to further issues.
 
-### Sub questions:
+This research compares **HashMap**, **LinkedHashMap**, and **TreeMap** to determine which 
+implementation provides the best balance between **performance**, **readability**, and **maintainability** 
+when handling large datasets.
 
--	What is the purpose of the Java Map interface, and what are its main implementations used for in software development?
--	How do HashMap, LinkedHashMap, and TreeMap differ in terms of insertion time, lookup time, and memory efficiency?
--	What structural and algorithmic differences explain the performance variations between these Map types?
--	How can understanding these differences help developers make better design choices and write more maintainable and readable Java code? 
+### Central Research Question:
 
+Which Map implementation in Java provides the best balance between performance, readability, 
+and maintainability when handling large datasets?
 
-### Problem Statement:
+## _What is the purpose of the Java Map interface, and what are its main implementations used for in software development?_
 
-Developers often choose a Map type based on habit rather than on an understanding of how it works internally. 
-As data grows larger, an inefficient choice can cause programs to slow down, use more memory than necessary, or become harder to maintain. 
-Without understanding how Map structures operate, even experienced programmers can produce code that performs poorly or behaves unpredictably.
+Maps are widely used to manage large collections of key–value relationships. Some examples are 
+users and their sessions, products and their IDs, or candidates and their vote counts. 
+Because this plays such a central role in data management, it is essential to understand 
+how these different types behave under different workload conditions. The Java interface `Map` 
+provides a flexible mechanism for storing and retrieving **unique key–value pairs**, allowing direct 
+access to data through a key. Because of this, it is ideal for simulating real-world implementations 
+like user profiles, configuration settings, or product descriptions with their identifiers (Oracle, 2015).
 
-### What is the purpose of the Java Map interface, and what are its main implementations used for in software development?
+There are several Map implementations in Java such as **HashMap, LinkedHashMap, TreeMap, Hashtable, 
+ConcurrentHashMap, WeakHashMap, and EnumMap.** Each implementation is designed to address specific 
+requirements such as concurrency control, memory sensitivity, or ordering guarantees, but HashMap, 
+LinkedHashMap, and TreeMap remain the most commonly used due to their general-purpose design and strong 
+performance characteristics (Oaks, 2014).
 
-The Java Map interface is one of the main building blocks of the Java Collections Framework.
-Its main goal is simple but powerful: it stores key–value pairs, where each key must be unique and maps directly to one specific value. 
-This makes it ideal for situations where you need to find something quickly by an identifier. 
-For example, retrieving a product by its ID, a username by an email, or the number of votes per candidate in an election system.
-
-Unlike a simple list, where you might have to search through every element one by one, a Map lets you jump straight to the right value by using the key. 
-This direct access is what makes Maps so efficient and widely used in both small and large applications. 
-Over the years, Java has introduced several implementations of this interface, each designed with a slightly different focus. 
-The most common are HashMap, LinkedHashMap, and TreeMap.
-
-HashMap is the fastest and most used version. It uses a technique called hashing to calculate where in memory a key–value pair should be stored. 
-When you ask for that value later, it performs the same calculation and retrieves it almost instantly. 
-It’s perfect for large datasets where order doesn’t matter like caching, counting, or lookups.
-
-LinkedHashMap builds on HashMap by adding a small twist: it remembers the order in which elements were inserted. This makes it slightly slower, 
-but far more predictable when you want your output to appear in a specific order such as displaying search results in the order they were added or creating an easy “recently used” list.
-
-TreeMap, on the other hand, automatically sorts all its keys using a self-balancing tree structure called a Red-Black Tree. 
-If you need your data sorted (for instance, alphabetical user lists or time-based data), it’s the right choice.
-Each of these implementations has its strengths and weaknesses. Choosing between them depends on the nature of the task whether you prioritize speed, order, or sorted data.
-
-### How do HashMap, LinkedHashMap, and TreeMap differ in terms of insertion time, lookup time, and memory efficiency?
-
-When I compared these three Map types, I wanted to see how they would perform under real-world conditions. 
-I tested each implementation with 1000, 10,000, and 100,000 entries and measured how long it took to insert and retrieve data. 
-To ensure the results were reliable, every test was repeated five times and averaged to smooth out random differences caused by background processes or Java’s garbage collector. 
-The pattern that emerged was clear and consistent.
-HashMap was the fastest by a large margin. Even with a million entries, inserting all the data took only a few hundred milliseconds. 
-Lookups were just as fast, since the hash-based system can find elements directly without searching through the entire dataset. 
-It also consumed the least amount of memory, which makes sense because its structure is compact and doesn’t need to store any extra information like order or sorting.
-     
-LinkedHashMap followed closely behind. It was slightly slower, usually by around 10 to 15 percent, but the difference wasn’t dramatic. 
-Its small performance trade-off is the price you pay for the convenience of predictable iteration order. 
-In practical terms, it’s still fast enough for most real-world use cases and is often worth it when you need consistent output order.
-     
-TreeMap, however, behaved very differently. Because it must maintain its internal tree structure to keep keys sorted, every insertion or lookup takes more time — roughly three times longer than HashMap when the dataset grows large. 
-It also used noticeably more memory, since each element must store additional pointers and balancing information for the tree.
-In short: HashMap is the fastest and lightest, LinkedHashMap offers predictability at a small cost, and TreeMap trades speed for sorted data.
-
-### What structural and algorithmic differences explain the performance variations between these Map types?
-     
-To understand why these differences exist, you must look briefly at the algorithms that power each Map type. 
-These structures might sound technical, but the idea behind each is surprisingly instinctual. 
-
-A **HashMap** stores its entries in an array-like structure called a hash table. 
-When a key–value pair is inserted, Java calculates a numeric code — known as a hash code — based on the key. 
-This code is then used to determine the exact “bucket” (or memory slot) where the entry will be stored.
-When retrieving a value, Java performs the same calculation again, jumps directly to the corresponding bucket, and returns the value.
-This is why lookups are so fast — it doesn’t have to search; it already knows where to look. 
-
-This process is extremely efficient because the program does not need to search through all the entries; it can go directly to the right one.
-The efficiency of HashMap operations, such as `put()` and `get()`, is therefore described as constant time, written mathematically as O(1). 
-This means that the time it takes to perform these operations does not depend on the number of elements in the map. 
-However, if many keys produce the same hash code which is called a collision; multiple entries end up in the same bucket.
-In older Java versions, this caused linked lists to form inside buckets, making performance degrade toward O(n) (linear time). 
-Since Java 8, those lists automatically convert into small balanced trees, ensuring that even in the worst case, access remains logarithmic O(log n). 
-This internal optimization explains why HashMap consistently outperformed the other implementations in the measurements.
-
-A **LinkedHashMap** uses this same system but adds a “chain” that links entries together in the order they were added. 
-This extra link doesn’t change how fast lookups are, but it does slightly slow down insertions and increase memory use because every entry needs to store pointers to the previous and next ones. 
-The benefit is that when you iterate through the map, for example when printing all entries they appear exactly in the order they were inserted or last accessed.
-
-A **TreeMap** takes a completely different approach. It organizes its entries in a Red-Black Tree, a self-balancing binary tree where each new element is placed in the correct position to keep the keys sorted. 
-Whenever you insert or remove something, the tree may “rebalance” itself to maintain order. While this structure guarantees that all keys remain sorted, it also introduces a higher computational cost.
-Each operation whether it is inserting, deleting, or searching requires following a path down the tree, comparing keys along the way. This results in a logarithmic time complexity, expressed as O(log n), meaning that the time required grows slowly but steadily as the dataset becomes larger. 
-If a dataset doubles in size, the number of comparisons only increases by one, but that extra step still makes a measurable difference compared to the constant-time behavior of hashing. It is incredibly useful for things like ordered reports or range queries, but not worth the overhead for general use.
-In summary: HashMap focuses on speed, LinkedHashMap adds order, and TreeMap enforces sorting through extra computation. Their design decisions explain exactly why the benchmarks behave the way they do.
-     
-
-### How can understanding these differences help developers make better design choices and write more maintainable and readable Java code?
-    
-Many performance problems in software come not from poor coding, but from choosing the wrong data structure for the job. Knowing how each Map works helps developers make smarter decisions early in the design phase.
-For example, if your application stores millions of temporary objects that need to be retrieved quickly, using a HashMap will keep your program fast and memory-efficient. 
-If you care about the order in which users entered data — say, when showing recent searches 
-— a LinkedHashMap gives you that consistency with almost the same speed. If your system requires data to be automatically sorted, such as ranking candidates by votes, a TreeMap gives that structure out of the box.
-
-But beyond performance, there’s also a human side: readability and maintainability. 
-When code clearly communicates its intent by using the right data structure for the job, it becomes a lot easier for others to understand, debug, and extend.
-For instance, using a LinkedHashMap in a cache immediately signals to other developers: “Order matters here.” 
-Using a TreeMap in a leaderboard tells them, “This data is always sorted by score.”
-
-Good teams often go a step further and set coding guidelines: for example, “Use HashMap by default unless order or sorting is explicitly required.” 
-This keeps projects consistent and avoids unnecessary complexity. Finally, the experiments and theory together show a simple truth:
-The more a developer understands what’s happening behind the scenes in a data structure, the better their design decisions become. 
-This understanding doesn’t just make programs faster. Tt makes them more predictable, stable, and human-readable, which is ultimately what defines great software engineering. 
+- HashMap is the default choice for fast lookups, insertions, and removals, offering average 
+constant-time operations through hashing (Oracle, 2015b).
 
 
-### Conclusion:
+- LinkedHashMap extends HashMap by storing entries in a predictable iteration order using a 
+doubly linked list, making it useful for APIs, caching, and event tracking (GeeksforGeeks, 2023).
 
-This research shows that the internal data structures and algorithms behind each Map type directly determine their performance and maintainability. 
-HashMap is the fastest and most memory-efficient implementation, ideal for most use cases. LinkedHashMap provides predictable order and remains efficient for medium-sized datasets. 
-TreeMap offers automatic sorting but should be used only when that feature is necessary due to its slower performance.
+
+- TreeMap maintains keys in sorted order using a self-balancing Red-Black Tree, 
+enabling features such as alphabetical ordering, sorted leaderboards, and efficient range queries (Baeldung, 2023).
+
+Because these three implementations all share the same interface, developers can 
+easily switch between them without changing their application logic or code structure, 
+improving maintainability and flexibility.
+
+
+## _How do HashMap, LinkedHashMap, and TreeMap differ in terms of insertion time, lookup time, and memory efficiency?_
+
+To evaluate performance differences, a benchmark was executed using a custom Java test application.
+This experiment included:
+
+- Inserting 10,000 entries into each Map
+- Performing 10,000 lookups
+- Executing 100 remove operations
+- Repeating the full process 1,000 times
+- Using a fixed random seed
+- Forcing garbage collection before each run to eliminate memory noise
+
+_Benchmark Results:_
+
+Type | 	Insert | Lookup | Remove | Memory Usage 
+| -- | -- | -- | -- | -- |  
+**HashMap**	| 249 µs | 69 µs | 1 µs | 4.189 MB
+**LinkedHashMap** | 244 µs | 92 µs | 1 µs | 4.881 MB
+**TreeMap** | 926 µs | 837 µs | 10 µs | 5.764 MB
+
+### Interpretation of Results
+
+_HashMap_
+
+This performed the fastest overall on both insert and lookup operations, while also consuming 
+the least memory. This aligns with its design: a simple hash table that stores entries in buckets, 
+requiring minimal overhead (OpenJDK, 2025).
+
+_LinkedHashMap:_ 
+
+Interestingly, this one occasionally outperformed HashMap, even though it stores extra ordering pointers.
+The reason for this behaviour is because:
+
+- Both implementations share the same hashing and bucket system
+- Performance also depends heavily on hash distribution
+- Small differences in collisions can shift results
+
+When collisions are distributed evenly, **LinkedHashMap** avoids some unfavorable bucket configurations 
+that HashMap may encounter, resulting in faster measurements in certain runs. This illustrates an important 
+theoretical insight: Maps with identical Big-O complexity can still differ due to micro-level factors such as:
+
+- Bucket collision patterns
+- CPU caching
+- Branch prediction
+- JIT compiler optimizations (Oaks, 2014).
+
+Memory usage behaved exactly as expected: LinkedHashMap consumed more memory due to its doubly linked list.
+
+_Treemap:_ 
+
+These results were consistently the slowest in all operations. This is fully consistent with its internal structure: 
+a self-balancing Red-Black Tree, where every insert, search, or delete involves:
+- Multiple key comparisons,
+- Tree traversal over multiple levels, 
+- Occasional rotations or recoloring to maintain balance (Baeldung, 2023).
+
+These steps guarantee predictable O(log n) behaviour but introduce more work than hash-based Maps. TreeMap 
+also stores more references per entry, making it slightly less memory-efficient.
+
+![](./img/map_memory_chart.png)
+
+
+## _How do the internal structures of HashMap, LinkedHashMap, and TreeMap explain their performance differences_
+
+The structural and algorithmic differences between HashMap, LinkedHashMap, 
+and TreeMap clearly explain the performance patterns observed in the benchmark. 
+Each implementation uses a fundamentally different strategy to store, navigate, 
+and organize data, which directly influences its speed, memory usage, and practical use cases.
+
+### HashMap: Fast lookups through hashing
+
+HashMap is implemented using a hash table. Each key is converted into a hash value, 
+which is then mapped to a specific bucket _(Oracle Documentation, n.d.)_. 
+This allows the program to locate entries very quickly because it usually only needs 
+to inspect a single bucket rather than search through the entire Map. 
+
+The benchmark results reflect this design: after calculating the hash code, 
+HashMap simply inserts the entry into the correct bucket or checks a short chain of elements 
+within that bucket. Therefore its outcome of low memory usage makes total sense.
+
+HashMap stores only what is required to manage hashing and collisions, without maintaining any ordering structure.
+
+In practice, HashMap is ideal when performance is more important and if ordering is irrelevant. 
+
+Common use cases include caching large datasets, counting occurrences, storing configuration values, 
+and mapping IDs to objects in high-volume systems.
+
+### LinkedHashMap: Predictable order with minimal overhead
+
+LinkedHashMap is built on the same hash table structure as HashMap but adds a doubly linked 
+list that preserves a stable iteration order _(GeeksforGeeks, 2023)_.
+This additional list does not speed up operations, but it ensures predictable behaviour when iterating over keys.
+
+Surprisingly, the benchmark shows that **LinkedHashMap** sometimes outperforms **HashMap**. 
+This does not directly mean that linked lists are faster. 
+Instead this reveals how strongly performance depends on hash distribution inside the buckets. 
+When collisions are evenly spread, the cost of maintaining linked nodes becomes negligible, 
+so LinkedHashMap performs similarly or slightly better due to cache-friendly access patterns.
+
+- This highlights that micro-level factors such as bucket distribution and CPU caching can outweigh small theoretical overheads.
+
+**LinkedHashMap** is therefore useful when predictable iteration order matters for example when generating JSON responses, 
+implementing caches, preserving the order of user actions, or building APIs where stable output order improves
+readability or testability.
+
+### TreeMap: Logarithmic predictability through a Red-Black Tree
+
+TreeMap differs fundamentally because it is implemented as a self-balancing Red-Black Tree _(Baeldung, 2024)_. 
+Whenever the tree risks becoming unbalanced, it performs small corrective operations such as rotations or recoloring. 
+By keeping the height close to `log₂(n)`, TreeMap guarantees that lookups, insertions, and deletions remain predictably 
+efficient, even as the Map grows.
+
+This stability comes at a cost:
+
+- TreeMap must repeatedly compare keys
+- Every action goes through multiple tree levels
+- Occasional rebalances of the tree
+
+As a result, TreeMap is slower than both HashMap and LinkedHashMap. It also uses more memory because 
+each node stores pointers to its parent, left child, right child, and a color marker.
+However, TreeMap provides capabilities that hash-based Maps cannot. Because keys are always sorted, 
+it supports operations such as retrieving the smallest or largest key, and performing range queries 
+via `subMap`, `headMap`, or `tailMap`. This makes TreeMap valuable in domains where order is essential, 
+such as leaderboards, scheduling systems, and sorted indexing.
+
+![performance](./img/map_performance_chart.png)
+
+Overall, the results show that **HashMap** and **LinkedHashMap** offer the best performance, while **TreeMap** remains ideal when sorted 
+keys are necessary. This benchmark also demonstrates an important theoretical point: although asymptotic complexity predicts 
+general behavior, real performance can still vary depending on factors such as key distribution, JVM optimizations, 
+and how well data fits into the CPU cache.
+
+## How does understanding each Map type help developers make better design decisions and write more maintainable Java code?
+
+Understanding the strengths and limitations of HashMap, LinkedHashMap, and TreeMap helps developers make design choices 
+that produce cleaner, more predictable, and maintainable code. When the developer is aware of how each Map organizes its data, 
+it becomes a lot easier to select a structure that naturally fits the problem: a HashMap for fast access, a LinkedHashMap for 
+predictable order and a TreeMap for sorted navigation. 
+
+These structures also prevent accidental usages in non-fitting situations such as choosing a TreeMap in a component where 
+ordering is irrelevant or relying on repetitive order in a HashMap, which can lead to bugs or inconsistent behavior across runs.
+
+Clear structural intent also improves readability. For instance, selecting LinkedHashMap for UI menus or JSON responses 
+shows other developers that order is important. Similarly, using TreeMap in a ranking or scheduling module clearly indicates 
+that sorted keys are necessary for that specific program to run.
+
+From a maintainability perspective, choosing the right Map implementation leads to codebases that behave 
+more predictably and are easier for teams to understand. When developers truly understand the internal 
+mechanics of HashMap and TreeMap, they avoid unnecessary complexity such as using a TreeMap when ordering is 
+irrelevant or manually sorting lists that a TreeMap could handle automatically. 
+
+This shared knowledge also reinforces consistent team conventions, like using the default HashMap unless 
+sorted order is explicitly required. As a result, clarity increases, performance pitfalls are avoided, and 
+architectural decisions become more intentional. In the long run, aligning data structure choices with the
+actual goals of the system reduces bugs, improves readability, and makes the code easier
+to extend or modify as requirements evolve.
+
+
+## Conclusion
+
+This research was set out to answer the central question: Which Map implementation in Java provides 
+the best balance between performance, readability, and maintainability when handling key–value data? 
+
+The results show that there is no single “best” Map for every situation, but rather a best choice depending 
+on the requirements. The benchmark demonstrated that HashMap delivers the fastest insertion and lookup times 
+with the lowest memory usage, making it the most efficient option for performance-critical tasks. 
+
+They also show that practical performance is influenced by more than Big-O complexity alone; factors 
+such as collision patterns, JVM optimizations, and memory layout can all affect real-world behavior. 
+Understanding these structural and performance characteristics helps developers make informed design choices. 
+
+Selecting HashMap for fast access, LinkedHashMap for predictable ordering, 
+or TreeMap for sorted data will lead to clearer, more maintainable, and more predictable code.
+
+Therefore, the answer to the main question is that `HashMap` generally offers the best balance for most use cases, 
+but LinkedHashMap and TreeMap become the superior choice when ordering or sorted behavior is required. 
+The “best” Map is ultimately the one whose internal behavior matches the functional goals of the application.
+
+
+## Resources (APA-7)
+
+-	Baeldung. (2023). A guide to TreeMap in Java. https://www.baeldung.com/java-treemap
+-	GeeksforGeeks. (2023). Map interface in Java. https://www.geeksforgeeks.org/java/map-interface-in-java/
+-	Oracle. (2015). Java Platform, Standard Edition 8 API Specification: java.util.Map. https://docs.oracle.com/javase/8/docs/api/java/util/Map.html
+-	Oracle. (2015). Collections framework overview. https://docs.oracle.com/javase/8/docs/technotes/guides/collections/overview.html
+-	Oaks, S. (2014). Java Performance: The Definitive Guide. O’Reilly Media.
+-	OpenJDK. (2025). HashMap implementation source code.. https://hg.openjdk.org/jdk/jdk/file/tip/src/java.base/share/classes/java/util/HashMap.java
+
