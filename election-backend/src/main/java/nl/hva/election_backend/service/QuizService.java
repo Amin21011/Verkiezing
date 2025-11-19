@@ -4,7 +4,9 @@ import nl.hva.election_backend.model.Quiz;
 import nl.hva.election_backend.utils.xml.QuizParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+@Service
 public class QuizService {
 
     private static final Logger logger = LoggerFactory.getLogger(QuizService.class);

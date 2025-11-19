@@ -3,6 +3,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import { getToken } from '@/services/authService.ts'
 
 const questions = ref([]);
 const answers = ref({});
@@ -56,6 +57,8 @@ function resetQuiz() {
   result.value = null;
 }
 onMounted(() => loadQuiz());
+const isLoggedIn = computed(() => !!getToken());
+
 </script>
 
 <template>
@@ -109,11 +112,25 @@ onMounted(() => loadQuiz());
           {{ errorMessage }}
         </p>
 
-        <div class="flex justify-center">
-          <button type="submit" class="bg-indigo-700 text-white px-8 py-3 rounded-lg text-lg hover:bg-indigo-800 transition shadow-md">
+        <div class="flex justify-center mt-6">
+          <!-- Als gebruiker is ingelogd -->
+          <button v-if="isLoggedIn"
+            type="submit"
+            class="bg-indigo-700 text-white px-8 py-3 rounded-lg text-lg hover:bg-indigo-800 transition shadow-md">
             Bekijk mijn resultaat
           </button>
+
+          <div v-else class="text-center">
+            <button disabled class="bg-gray-400 cursor-not-allowed text-white px-8 py-3 rounded-lg text-lg opacity-70 shadow">
+              Log in om jouw resultaat te zien
+            </button>
+
+            <p class="mt-2 text-indigo-700 underline cursor-pointer" @click="$router.push('/login')">
+              Inloggen / Registreren
+            </p>
+          </div>
         </div>
+
       </form>
 
       <!-- Resultaat -->

@@ -3,6 +3,7 @@ package nl.hva.election_backend.api;
 import nl.hva.election_backend.model.Question;
 import nl.hva.election_backend.model.Quiz;
 import nl.hva.election_backend.model.QuizResult;
+import nl.hva.election_backend.security.JwtUtil;
 import nl.hva.election_backend.service.QuestionService;
 import nl.hva.election_backend.service.QuizResultService;
 import nl.hva.election_backend.service.QuizService;
@@ -16,9 +17,14 @@ import java.util.Map;
 public class QuizController {
 
     private final QuizService quizService = new QuizService();
-    private final QuizResultService resultService = new QuizResultService();
+    private final QuizResultService resultService;
     private final QuestionService questionService = new QuestionService();
+    private final JwtUtil jwtUtil;
 
+    public QuizController(QuizResultService resultService, JwtUtil jwtUtil) {
+        this.resultService = resultService;
+        this.jwtUtil = jwtUtil;
+    }
 
     @GetMapping
     public Quiz getQuiz() {
@@ -26,19 +32,31 @@ public class QuizController {
     }
 
     @PostMapping("/result")
-    public QuizResult getResult(@RequestBody Map<String, String> userAnswers) {
+    public QuizResult getResult(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody Map<String, String> userAnswers
+    ) {
         if (userAnswers == null || userAnswers.isEmpty()) {
             throw new IllegalArgumentException("Er zijn geen antwoorden ontvangen.");
         }
 
-        // Controleer of antwoorden overeenkomen met bestaande vragen
         int totalQuestions = quizService.getQuiz().getQuestions().size();
         if (userAnswers.size() != totalQuestions) {
             throw new IllegalArgumentException("Niet alle vragen zijn beantwoord (" +
                     userAnswers.size() + " van " + totalQuestions + ").");
         }
 
-        return resultService.calculateResult(userAnswers);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Geen geldige token ontvangen.");
+        }
+
+        String token = authHeader.substring(7);
+        String email = jwtUtil.validateTokenAndGetEmail(token);
+
+        QuizResult result = resultService.calculateResult(userAnswers);
+        resultService.saveQuizResult(email, result.getBestMatch());
+
+        return result;
     }
 
     @GetMapping("/questions")

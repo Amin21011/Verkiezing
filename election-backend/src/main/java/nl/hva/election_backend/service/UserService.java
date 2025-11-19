@@ -1,4 +1,5 @@
 package nl.hva.election_backend.service;
+
 import nl.hva.election_backend.model.User;
 import nl.hva.election_backend.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,4 +36,23 @@ public class UserService {
         return repository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("Geen gebruiker gevonden met e-mailadres: " + email));
     }
+
+    public User save(User user) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
+            throw new IllegalArgumentException("E-mail mag niet leeg zijn.");
+        }
+        return repository.save(user);
+    }
+
+    public void changePassword(String email, String oldPassword, String newPassword) {
+        User user = findByEmail(email);
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Oude wachtwoord is onjuist.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        repository.save(user);
+    }
 }
+
