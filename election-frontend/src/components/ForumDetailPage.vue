@@ -22,6 +22,8 @@ interface ForumPost {
   postedAt: string;
   user: User;
   comments?: ForumComment[];
+  likeCount?: number;
+  dislikeCount?: number;
 }
 
 
@@ -76,6 +78,49 @@ async function submitComment() {
   }
 }
 
+async function likePost() {
+  const id = route.params.id;
+  const token = getToken();
+
+  try {
+    const res = await fetch(`http://localhost:8080/api/forum/posts/${id}/like`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      }
+    });
+
+    if (!res.ok) throw new Error("Kon like niet verwerken");
+
+    await fetchPost();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+
+async function dislikePost() {
+  const id = route.params.id;
+  const token = getToken();
+
+  try {
+    const res = await fetch(`http://localhost:8080/api/forum/posts/${id}/dislike`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      }
+    });
+
+    if (!res.ok) throw new Error("Kon dislike niet verwerken");
+
+    await fetchPost();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+
+
 
 onMounted(fetchPost);
 </script>
@@ -101,6 +146,24 @@ onMounted(fetchPost);
         <p class="text-gray-800 leading-relaxed whitespace-pre-line mb-8">
           {{ post?.content }}
         </p>
+
+        <!-- Like & Dislike Section -->
+        <div class="flex items-center gap-6 mt-4">
+          <button
+            @click="likePost"
+            class="flex items-center gap-2 text-green-700 hover:text-green-900 transition"
+          >
+            👍 <span>{{ post?.likeCount || 0 }}</span>
+          </button>
+
+          <button
+            @click="dislikePost"
+            class="flex items-center gap-2 text-red-600 hover:text-red-800 transition"
+          >
+            👎 <span>{{ post?.dislikeCount || 0 }}</span>
+          </button>
+        </div>
+
 
 
         <div class="mt-8 border-t border-gray-200 pt-6">
