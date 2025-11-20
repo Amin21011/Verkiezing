@@ -19,6 +19,8 @@ public class ForumPost {
     private String title;
     private String content;
     private LocalDateTime postedAt = LocalDateTime.now();
+    private int likeCount = 0;
+    private int dislikeCount = 0;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -31,10 +33,12 @@ public class ForumPost {
 
     public ForumPost() {}
 
-    public ForumPost(String title, String content) {
+    public ForumPost(String title, String content, int likeCount, int dislikeCount) {
         this.title = title;
         this.content = content;
         this.postedAt = LocalDateTime.now();
+        this.likeCount = likeCount;
+        this.dislikeCount = dislikeCount;
 
     }
 
@@ -74,5 +78,21 @@ public class ForumPost {
 
     public void setComments(List<ForumComment> comments) {
         this.comments = comments;
+    }
+
+    public int getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public int getDislikeCount() {
+        return dislikeCount;
+    }
+
+    public void setDislikeCount(int dislikeCount) {
+        this.dislikeCount = dislikeCount;
     }
 }
