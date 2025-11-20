@@ -75,4 +75,33 @@ public class ForumPostController {
         ForumComment saved = forumCommentService.addComment(id, forumComment, email);
         return  ResponseEntity.ok(saved);
     }
+
+    @PostMapping("/posts/{id}/like")
+    public ResponseEntity<ForumPost> likePost(
+            @PathVariable long id,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        String token = authHeader.substring(7);
+        String email = jwtUtil.validateTokenAndGetEmail(token);
+
+        ForumPost updated = forumPostService.likePost(id, email);
+
+        return ResponseEntity.ok(updated);
+    }
+
+
+    @PostMapping("/posts/{id}/dislike")
+    public ResponseEntity<ForumPost> dislikePost(
+            @PathVariable long id,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        String token = authHeader.substring(7);
+        String email = jwtUtil.validateTokenAndGetEmail(token);
+
+        ForumPost updated = forumPostService.dislikePost(id, email);
+
+        return ResponseEntity.ok(updated);
+    }
+
+
 }
