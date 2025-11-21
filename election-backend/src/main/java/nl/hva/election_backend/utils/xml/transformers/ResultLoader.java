@@ -10,146 +10,177 @@ import nl.hva.election_backend.utils.xml.DutchPartyParser;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
+import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Laadt partijen, kandidaten en resultaten uit XML-bestanden
- * en koppelt deze correct via de DutchResultTransformer.
- * Zorgt voor een schone herstart en voorkomt dubbele optellingen.
- */
 public class ResultLoader {
 
     public static void loadResults(Election election, ResultRepository repository) throws Exception {
-        System.out.println("🔄 [ResultLoader] Start import van verkiezingsdata...");
+        System.out.println("Start import van verkiezingsdata...");
 
         repository.clearAll();
-        election.getCandidates().forEach(c -> c.setVotes(0));
-        election.getParties().forEach(p -> p.setVoteCount(0));
+        election.getCandidates().clear();
+        election.getParties().clear();
 
         DutchPartyParser partyParser = new DutchPartyParser();
         List<Party> parties = partyParser.parseParties("TK2023_HvA_UvA/Verkiezingsdefinitie_TK2023.eml.xml");
         election.getParties().addAll(parties);
 
         DutchCandidateParser candidateParser = new DutchCandidateParser();
-        List<Candidate> candidates = candidateParser.parseCandidates(
-                "TK2023_HvA_UvA/Kandidatenlijsten_TK2023_Amsterdam.eml.xml",
-                parties
-        );
+        URL folderUrl = ResultLoader.class.getResource("/TK2023_HvA_UvA");
+        if (folderUrl == null) throw new IllegalStateException("Map TK2023_HvA_UvA niet gevonden in resources!");
 
-        candidates.forEach(election::addCandidate);
-        for (Candidate c : candidates) {
-            election.findPartyById(c.getPartyId()).ifPresent(p -> p.addCandidate(c));
+        File folder = new File(folderUrl.toURI());
+        File[] candidateFiles = folder.listFiles((d, n) -> n.toLowerCase().startsWith("kandidatenlijsten_") && n.endsWith(".eml.xml"));
+        int totalCandidates = 0;
+
+        if (candidateFiles != null) {
+            for (File f : candidateFiles) {
+                System.out.println("Kandidatenlijst laden: " + f.getName());
+                List<Candidate> parsed = candidateParser.parseCandidates("TK2023_HvA_UvA/" + f.getName(), parties);
+                parsed.forEach(election::addCandidate);
+                totalCandidates += parsed.size();
+            }
         }
 
-        // 📦 4️⃣ Registreer partijen in repository
+        for (Candidate c : election.getCandidates()) {
+            election.findPartyById(c.getPartyId()).ifPresent(p -> p.addCandidate(c));
+        }
         repository.registerParties(parties);
-        System.out.printf("%d partijen en %d kandidaten geladen.%n",
-                election.getParties().size(), election.getCandidates().size());
 
-        // 🧮 5️⃣ Setup transformer
+        System.out.printf("%d partijen en %d kandidaten geladen.%n", election.getParties().size(), totalCandidates);
+
+        File[] resultFiles = folder.listFiles((dir, name) ->
+                (name.endsWith(".xml") || name.endsWith(".eml.xml"))
+                        && !name.toLowerCase().contains("kandidatenlijst")
+                        && !name.toLowerCase().contains("verkiezingsdefinitie"));
+
+        if (resultFiles == null || resultFiles.length == 0) {
+            System.err.println(" Geen telling-bestanden gevonden in TK2023_HvA_UvA/");
+            return;
+        }
+
         DutchResultTransformer transformer = new DutchResultTransformer(election);
         transformer.setRepository(repository);
 
-        // 📂 6️⃣ XML-bestanden en regio's
-        String[][] filesAndRegions = {
-                {"/Resultaat_TK2023.eml.xml", "landelijk", "NL"},
-                {"/Totaaltelling_TK2023.eml.xml", "landelijk", "NL"},
-                {"/Telling_TK2023_gemeente_Amsterdam.eml.xml", "Amsterdam", "NL"}
-        };
-
         XMLInputFactory factory = XMLInputFactory.newInstance();
+        factory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, true);
+        factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        factory.setProperty(XMLInputFactory.IS_VALIDATING, false);
 
-        // 🧾 7️⃣ Verwerk elk XML-bestand afzonderlijk
-        for (String[] fileRegion : filesAndRegions) {
-            String file = fileRegion[0];
-            InputStream is = ResultLoader.class.getResourceAsStream(file);
-            if (is == null) {
-                System.err.println("Bestand niet gevonden: " + file);
-                continue;
+        for (File file : resultFiles) {
+            String fileName = file.getName();
+            if (fileName.toLowerCase().contains("totaaltelling")) continue;
+
+            String regionType = "Onbekend";
+            String regionName = fileName.replace(".eml.xml", "").replace(".xml", "")
+                    .replace("Telling_TK2023_", "").trim();
+
+            if (regionName.toLowerCase().contains("kieskring_")) {
+                regionType = "Kieskring";
+                regionName = regionName.substring(regionName.indexOf("kieskring_") + 10);
+            } else if (regionName.toLowerCase().contains("gemeente_")) {
+                regionType = "Gemeente";
+                regionName = regionName.substring(regionName.indexOf("gemeente_") + 9);
+            } else if (regionName.toLowerCase().contains("resultaat")) {
+                regionType = "Landelijk";
+                regionName = "Nederland";
             }
 
-            transformer.setRegionContext(fileRegion[1], fileRegion[2]);
-            XMLStreamReader reader = factory.createXMLStreamReader(is);
+            regionName = regionName.replace("_", " ");
+            if (!regionName.isEmpty()) {
+                regionName = Character.toUpperCase(regionName.charAt(0)) + regionName.substring(1);
+            }
 
-            Map<String, String> selectionData = new HashMap<>();
-            String currentType = null;
+            transformer.setRegionContext(regionType, regionName);
+            System.out.printf("Verwerken van %s (%s %s)%n", fileName, regionType, regionName);
 
-            while (reader.hasNext()) {
-                int event = reader.next();
+            try (InputStream is = ResultLoader.class.getResourceAsStream("/TK2023_HvA_UvA/" + fileName)) {
+                if (is == null) continue;
 
-                if (event == XMLStreamConstants.START_ELEMENT) {
-                    String name = reader.getLocalName();
+                XMLStreamReader reader = factory.createXMLStreamReader(is);
+                Map<String, String> selectionData = new HashMap<>();
+                String currentAffiliationId = null;
 
-                    switch (name) {
-                        case "AffiliationIdentifier" -> {
-                            selectionData.put("AffiliationIdentifier-Id", reader.getAttributeValue(null, "Id"));
-                            currentType = "party";
-                        }
-                        case "CandidateIdentifier" -> {
-                            selectionData.put("CandidateIdentifier-Id", reader.getAttributeValue(null, "Id"));
-                            selectionData.put("CandidateIdentifier-ShortCode", reader.getAttributeValue(null, "ShortCode"));
-                            currentType = "candidate";
-                        }
-                        case "ValidVotes" -> {
-                            String rawVotes = readElementText(reader);
-                            try {
-                                int votes = Integer.parseInt(rawVotes.trim());
-                                selectionData.put("ValidVotes", String.valueOf(votes));
-                                if ("candidate".equals(currentType))
-                                    selectionData.put("CandidateValidVotes", String.valueOf(votes));
-                                else
-                                    selectionData.put("PartyValidVotes", String.valueOf(votes));
-                            } catch (NumberFormatException e) {
-                                System.err.println("Ongeldige stemmenwaarde: " + rawVotes);
+                while (reader.hasNext()) {
+                    int event = reader.next();
+
+                    if (event == XMLStreamConstants.START_ELEMENT) {
+                        String name = reader.getLocalName();
+
+                        switch (name) {
+                            case "AffiliationIdentifier" -> {
+                                currentAffiliationId = reader.getAttributeValue(null, "Id");
+                                if (currentAffiliationId != null) {
+                                    selectionData.put("AffiliationIdentifier-Id", currentAffiliationId.trim());
+                                }
                             }
+                            case "CandidateIdentifier" -> {
+                                String candidateId = reader.getAttributeValue(null, "Id");
+                                String shortCode = reader.getAttributeValue(null, "ShortCode");
+                                if (currentAffiliationId != null)
+                                    selectionData.put("AffiliationIdentifier-Id", currentAffiliationId.trim());
+                                if (candidateId != null)
+                                    selectionData.put("CandidateIdentifier-Id", candidateId.trim());
+                                if (shortCode != null)
+                                    selectionData.put("CandidateIdentifier-ShortCode", shortCode.trim());
+                            }
+                            case "ValidVotes" -> {
+                                String text = readElementText(reader);
+                                selectionData.put("ValidVotes", text);
+                            }
+                            case "TotalVotes" -> selectionData.put("TotalVotes", readElementText(reader));
                         }
-                        case "TotalVotes" -> selectionData.put("TotalVotes", readElementText(reader));
+                    }
+
+                    if (event == XMLStreamConstants.END_ELEMENT) {
+                        String name = reader.getLocalName();
+
+                        if ("Selection".equals(name)) {
+                            if (selectionData.containsKey("CandidateIdentifier-Id"))
+                                transformer.registerCandidateVotes(true, selectionData);
+                            else
+                                transformer.registerPartyVotes(true, selectionData);
+                            selectionData.clear();
+                        } else if ("Affiliation".equals(name)) {
+                            currentAffiliationId = null;
+                        } else if ("Contest".equals(name)) {
+                            transformer.registerMetadata(true, selectionData);
+                            selectionData.clear();
+                        }
                     }
                 }
-
-                if (event == XMLStreamConstants.END_ELEMENT) {
-                    String name = reader.getLocalName();
-
-                    if ("Selection".equals(name)) {
-                        if ("candidate".equals(currentType))
-                            transformer.registerCandidateVotes(true, selectionData);
-                        else
-                            transformer.registerPartyVotes(true, selectionData);
-
-                        selectionData.clear();
-                        currentType = null;
-                    } else if ("Contest".equals(name)) {
-                        transformer.registerMetadata(true, selectionData);
-                        selectionData.clear();
-                    }
-                }
+                reader.close();
+                System.out.println("Verwerkt: " + fileName);
             }
-
-            reader.close();
-            is.close();
-            System.out.println("Verwerkt: " + fileRegion[0]);
         }
+
+        election.getCandidates().forEach(c ->
+                election.findPartyById(c.getPartyId())
+                        .ifPresent(p -> c.setPartyName(p.getName()))
+        );
 
         transformer.flushResults();
 
-        System.out.println("[ResultLoader] Klaar — stemmen correct samengevoegd en opgeslagen.");
+        System.out.println("Top 5 partijen na parsing:");
+        election.getParties().stream()
+                .sorted((a, b) -> Integer.compare(b.getVoteCount(), a.getVoteCount()))
+                .limit(5)
+                .forEach(p -> System.out.printf("→ %s: %d stemmen%n", p.getName(), p.getVoteCount()));
+
+        System.out.println("Klaar — stemmen correct samengevoegd en opgeslagen.");
     }
 
-    /**
-     * Leest tekstinhoud van het huidige XML-element.
-     */
     private static String readElementText(XMLStreamReader reader) throws Exception {
         StringBuilder text = new StringBuilder();
         while (reader.hasNext()) {
             int event = reader.next();
-            if (event == XMLStreamConstants.CHARACTERS) {
-                text.append(reader.getText());
-            } else if (event == XMLStreamConstants.END_ELEMENT) {
-                break;
-            }
+            if (event == XMLStreamConstants.CHARACTERS) text.append(reader.getText());
+            else if (event == XMLStreamConstants.END_ELEMENT) break;
         }
         return text.toString().trim();
     }

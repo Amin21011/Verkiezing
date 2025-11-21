@@ -27,11 +27,6 @@ public class Result {
     public int getVotes() { return votes; }
     public void setVotes(int votes) { this.votes = votes; }
 
-    public String getRegionType() { return regionType; }
-    public String getRegionId() { return regionId; }
-
-    public String getPartyName() { return partyName; }
-    public void setPartyName(String partyName) { this.partyName = partyName; }
 
     @Override
     public String toString() {
