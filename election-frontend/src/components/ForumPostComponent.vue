@@ -34,12 +34,9 @@ const success = ref(false);
 const error = ref("");
 
 const submitPost = async () => {
-  error.value = "";
-  success.value = false;
-
   const token = getToken();
   if (!token) {
-    error.value = "Je bent niet ingelogd!";
+    alert("Je moet ingelogd zijn om een post te plaatsen");
     return;
   }
 
@@ -56,19 +53,16 @@ const submitPost = async () => {
       }),
     });
 
-    if (!res.ok) throw new Error("Fout bij verzenden van post");
+    if (!res.ok) throw new Error("Kon post niet aanmaken");
 
     const newPost = await res.json();
-    const newPostId = newPost.id;
-
-
-    window.location.href = `/forum/${newPostId}`;
-
+    window.location.href = `/forum/${newPost.id}`;
 
   } catch (err: any) {
-    error.value = err.message || "Onbekende fout";
+    alert(err.message);
   }
 };
+
 
 </script>
 

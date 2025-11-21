@@ -51,6 +51,11 @@ async function fetchPost() {
 
 
 async function submitComment() {
+  if (!getToken()) {
+    alert("Je moet ingelogd zijn om een reactie te plaatsen");
+    return;
+  }
+
   if (!newComment.value.trim()) return;
 
   submitting.value = true;
@@ -78,46 +83,53 @@ async function submitComment() {
   }
 }
 
-async function likePost() {
-  const id = route.params.id;
-  const token = getToken();
 
+async function likePost() {
+  const token = getToken();
+  if (!token) {
+    alert("Je moet ingelogd zijn om te liken");
+    return;
+  }
+
+  const id = route.params.id;
   try {
     const res = await fetch(`http://localhost:8080/api/forum/posts/${id}/like`, {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-      }
+      headers: { "Authorization": `Bearer ${token}` }
     });
 
     if (!res.ok) throw new Error("Kon like niet verwerken");
 
     await fetchPost();
-  } catch (err) {
+  } catch (err: any) {
     alert(err.message);
   }
 }
 
 
-async function dislikePost() {
-  const id = route.params.id;
-  const token = getToken();
 
+async function dislikePost() {
+  const token = getToken();
+  if (!token) {
+    alert("Je moet ingelogd zijn om te disliken");
+    return;
+  }
+
+  const id = route.params.id;
   try {
     const res = await fetch(`http://localhost:8080/api/forum/posts/${id}/dislike`, {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-      }
+      headers: { "Authorization": `Bearer ${token}` }
     });
 
     if (!res.ok) throw new Error("Kon dislike niet verwerken");
 
     await fetchPost();
-  } catch (err) {
+  } catch (err: any) {
     alert(err.message);
   }
 }
+
 
 
 
