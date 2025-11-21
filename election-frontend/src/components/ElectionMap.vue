@@ -16,8 +16,16 @@ const API_URL = `${import.meta.env.VITE_API_URL}/provinces/results`
 
 const sortedVotes = computed(() => {
   if (!selectedProvince.value) return []
-  return Object.entries(selectedProvince.value.stemmenPerPartij)
-    .sort((a, b) => b[1] - a[1])
+
+  const votes = selectedProvince.value.stemmenPerPartij
+  const total = Object.values(votes).reduce((a, b) => a + b, 0)
+
+  return Object.entries(votes)
+    .map(([party, count]) => {
+      const percentage = total > 0 ? (count / total) * 100 : 0
+      return { party, count, percentage }
+    })
+    .sort((a, b) => b.count - a.count)
 })
 
 async function loadData() {
@@ -97,8 +105,9 @@ function highlightProvinces() {
       <div v-if="selectedProvince" class="w-full md:w-96 p-5 border rounded bg-white shadow">
         <h2 class="font-bold text-lg mb-2">{{ selectedProvince.provinceNaam }} - Stemmen</h2>
         <ul class="list-disc list-inside">
-          <li v-for="([party, votes]) in sortedVotes" :key="party">
-            {{ party }}: {{ votes }} stemmen
+          <li v-for="item in sortedVotes" :key="item.party">
+            {{ item.party }}:
+            {{ item.count }} stemmen ({{ item.percentage.toFixed(1) }}%)
           </li>
         </ul>
       </div>
