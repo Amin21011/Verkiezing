@@ -58,14 +58,18 @@ const submitPost = async () => {
 
     if (!res.ok) throw new Error("Fout bij verzenden van post");
 
-    success.value = true;
-    title.value = "";
-    content.value = "";
-    setTimeout(() => (success.value = false), 3000);
+    const newPost = await res.json();
+    const newPostId = newPost.id;
+
+
+    window.location.href = `/forum/${newPostId}`;
+
+
   } catch (err: any) {
     error.value = err.message || "Onbekende fout";
   }
 };
+
 </script>
 
 <style scoped>
