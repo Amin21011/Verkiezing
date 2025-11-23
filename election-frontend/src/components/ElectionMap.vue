@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import mapSvg from '@/assets/img/netherlands.svg?raw'
+import { partyColors } from '@/assets/partyColors.ts'
 
 interface ProvinceResult {
   provinceNaam: string
@@ -93,23 +94,61 @@ function highlightProvinces() {
     </div>
 
     <!-- Container voor map + resultaten -->
-    <div class="flex flex-col md:flex-row items-start w-full max-w-6xl gap-6">
+    <div class="flex flex-row items-start w-full max-w-6xl gap-6">
 
       <!-- Map container -->
       <div
         ref="mapContainer"
-        class="flex-1 border border-gray-400 overflow-hidden rounded shadow-lg bg-white p-4 md:p-6 h-[600px] md:h-[800px]"
+        class="flex-1 border border-gray-400 overflow-hidden rounded shadow-lg bg-white p-4 md:p-6 h-[800px]"
       ></div>
 
-      <!-- Stemmen overzicht alleen tonen als er een provincie is geselecteerd -->
-      <div v-if="selectedProvince" class="w-full md:w-96 p-5 border rounded bg-white shadow">
-        <h2 class="font-bold text-lg mb-2">{{ selectedProvince.provinceNaam }} - Stemmen</h2>
-        <ul class="list-disc list-inside">
-          <li v-for="item in sortedVotes" :key="item.party">
-            {{ item.party }}:
-            {{ item.count }} stemmen ({{ item.percentage.toFixed(1) }}%)
-          </li>
-        </ul>
+      <div
+        v-if="selectedProvince"
+        class="flex-1 p-5 border rounded bg-white shadow h-[800px] overflow-y-auto"
+      >
+        <h2 class="font-bold text-lg mb-4">{{ selectedProvince.provinceNaam }}</h2>
+
+        <div class="relative w-full border-l border-gray-300">
+
+          <div class="absolute -bottom-6 left-0 right-0 flex justify-between text-xs text-gray-500">
+            <span v-for="n in 9" :key="n">{{ n * 2 }}%</span>
+          </div>
+
+          <div class="absolute top-0 bottom-0 left-0 right-0 flex">
+            <div
+              v-for="n in 9"
+              :key="n"
+              class="border-r border-gray-200"
+              :style="{ width: '11.11%' }"
+            ></div>
+          </div>
+
+          <div class="space-y-2 relative">
+            <div
+              v-for="item in sortedVotes"
+              :key="item.party"
+              class="flex items-center gap-2"
+            >
+              <span
+                class="text-sm font-bold text-white px-2 py-1 rounded block"
+                style="width: 120px"
+                :style="{ backgroundColor: partyColors[item.party] || '#000' }"
+              >
+                {{ item.party }}
+              </span>
+
+              <div class="flex-1 h-6 bg-gray-200 rounded">
+                <div
+                  class="h-6 rounded transition-all"
+                  :style="{
+                    width: item.percentage + '%',
+                    backgroundColor: partyColors[item.party] || '#000'
+                  }"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
