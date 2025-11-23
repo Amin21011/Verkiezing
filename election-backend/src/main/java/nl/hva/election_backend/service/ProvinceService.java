@@ -74,4 +74,17 @@ public class ProvinceService {
         return resultaten;
     }
 
+    public List<ProvinceResult> compareProvinces(int year, List<String> selectedProvinces) {
+        List<ProvinceResult> allResults = getProvincieResultaten(year);
+
+        List<ProvinceResult> filtered = new ArrayList<>();
+
+        for (ProvinceResult result : allResults) {
+            if (selectedProvinces.contains(result.getProvinceNaam())) {
+                filtered.add(result);
+            }
+        }
+
+        return filtered;
+    }
 }
