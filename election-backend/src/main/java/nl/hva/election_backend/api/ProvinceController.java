@@ -1,5 +1,6 @@
 package nl.hva.election_backend.api;
 
+import nl.hva.election_backend.model.ProvinceCompareRequest;
 import nl.hva.election_backend.model.ProvinceResult;
 import nl.hva.election_backend.service.ProvinceService;
 
@@ -19,4 +20,9 @@ public class ProvinceController {
     public List<ProvinceResult> getProvinceResults(@PathVariable int year) {
         return provinceService.getProvincieResultaten(year);
     }
+    @PostMapping("/compare")
+    public List<ProvinceResult> compareProvinces(@RequestBody ProvinceCompareRequest request) {
+        return provinceService.compareProvinces(request.getYear(), request.getProvinces());
+    }
+
 }
