@@ -29,7 +29,7 @@ public class ResultRepository {
         partiesById.clear();
         if (parties != null) {
             for (Party p : parties) {
-                partiesById.put(p.getId(), p);
+                partiesById.put(p.getPartyId(), p);
             }
         }
     }

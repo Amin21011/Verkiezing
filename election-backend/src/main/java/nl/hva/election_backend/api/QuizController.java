@@ -16,14 +16,16 @@ import java.util.Map;
 @RequestMapping("/quiz")
 public class QuizController {
 
-    private final QuizService quizService = new QuizService();
+    private final QuizService quizService;
     private final QuizResultService resultService;
-    private final QuestionService questionService = new QuestionService();
+    private final QuestionService questionService;
     private final JwtUtil jwtUtil;
 
-    public QuizController(QuizResultService resultService, JwtUtil jwtUtil) {
+    public QuizController(QuizResultService resultService, JwtUtil jwtUtil, QuizService quizService, QuestionService questionService) {
         this.resultService = resultService;
         this.jwtUtil = jwtUtil;
+        this.quizService = quizService;
+        this.questionService = questionService;
     }
 
     @GetMapping
