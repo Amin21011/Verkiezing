@@ -14,6 +14,7 @@ const {
   selectedProvinces,
   toggleProvince,
   isComparing,
+  setYear,
   sortedVotes: sortedCompareVotes,
 } = useProvinceCompare()
 
@@ -56,8 +57,8 @@ async function loadData() {
 onMounted(loadData)
 
 function onYearChange(event: Event) {
-  selectedYear.value = Number((event.target as HTMLSelectElement).value)
-  loadData()
+  const target = event.target as HTMLSelectElement
+  setYear(Number(target.value))
 }
 
 function highlightProvinces() {
