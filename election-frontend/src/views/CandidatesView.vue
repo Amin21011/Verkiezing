@@ -6,6 +6,18 @@
           Kandidatenlijst
         </h1>
 
+        <!-- SEARCHBAR -->
+        <div class="search-wrapper">
+          <input
+            v-model="search"
+            @input="handleSearch"
+            type="text"
+            placeholder="Zoeken..."
+            class="search-input"
+          />
+          <span class="search-icon">🔍</span>
+        </div>
+
         <select
           v-model="selectedParty"
           class="border border-gray-300 rounded-lg px-4 py-2 text-black bg-white"
@@ -80,11 +92,37 @@ interface Candidate {
 }
 
 const candidates = ref<Candidate[]>([]);
+const search = ref("");
 const currentPage = ref(1);
 const ITEMS_PER_PAGE = 18;
-const selectedParty = ref('');
+const selectedParty = ref("");
 
 const API_URL = `${import.meta.env.VITE_API_URL}/candidates`;
+const SEARCH_URL = `${import.meta.env.VITE_API_URL}/search`;
+
+// Backend zoekfunctie
+async function searchCandidatesBackend(query: string) {
+  const response = await axios.get(SEARCH_URL, {
+    params: { name: query }
+  });
+  return response.data;
+}
+
+
+// Search + reset
+async function handleSearch() {
+  if (search.value.trim() === "") {
+    // reset naar volledige lijst
+    const response = await axios.get(API_URL);
+    candidates.value = response.data;
+    currentPage.value = 1;
+    return;
+  }
+
+  const result = await searchCandidatesBackend(search.value);
+  candidates.value = result;
+  currentPage.value = 1;
+}
 
 onMounted(async () => {
   try {
@@ -127,4 +165,33 @@ const prevPage = () => {
 </script>
 
 <style scoped>
+.search-wrapper {
+  position: relative;
+}
+
+.search-input {
+  border: none;
+  border-radius: 9999px;
+  padding: 0.5rem 2rem 0.5rem 1rem;
+  font-size: 0.875rem;
+  background-color: #f5f5f5;
+  transition: all 0.2s ease;
+  width: 160px;
+}
+
+.search-input:focus {
+  outline: none;
+  background-color: #fff;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.search-icon {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #888;
+  font-size: 1rem;
+}
 </style>
