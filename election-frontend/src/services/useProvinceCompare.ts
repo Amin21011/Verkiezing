@@ -53,15 +53,15 @@ export function useProvinceCompare() {
   }
 
   // ⬇️ Sorteren + percentages berekenen
-  function sortedVotes(data: ProvinceResult) {
-    const votes = data.stemmenPerPartij
-    const total = Object.values(votes).reduce((a, b) => a + b, 0)
+  function sortedVotes(province: ProvinceResult) {
+    const votes = province.stemmenPerPartij
+    const maxCount = Math.max(...Object.values(votes))
 
     return Object.entries(votes)
       .map(([party, count]) => ({
         party,
         count,
-        percentage: total > 0 ? (count / total) * 100 : 0,
+        percentage: maxCount > 0 ? (count / maxCount) * 100 : 0,
       }))
       .sort((a, b) => b.count - a.count)
   }
