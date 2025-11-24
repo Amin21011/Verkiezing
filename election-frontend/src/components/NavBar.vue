@@ -3,6 +3,7 @@ import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { authToken, getAuthUser, getCurrentUser, logout } from '@/services/authService'
 import { showToast } from '@/helpers/useFlash.ts'
+import SearchBar from '@/components/SearchBar.vue'
 
 const router = useRouter()
 const isScrolled = ref(false)
@@ -74,8 +75,9 @@ function toggleOffcanvas() {
   showOffcanvas.value = !showOffcanvas.value
 }
 
-function handleSearch() {
-  console.log('Zoeken:', search.value)
+const handleSearchInput = (query: string) => {
+  search.value = query
+  console.log('Zoeken:', query)
 }
 </script>
 
@@ -93,17 +95,7 @@ function handleSearch() {
 
       <!-- Search + User -->
       <div class="flex items-center gap-4">
-        <!-- Searchbar -->
-        <div class="search-wrapper">
-          <input
-            v-model="search"
-            @input="handleSearch"
-            type="text"
-            placeholder="Zoeken..."
-            class="search-input"
-          />
-          <span class="search-icon">🔍</span>
-        </div>
+        <SearchBar v-model="search" @search="handleSearchInput" />
 
       <div v-if="user" class="relative">
         <div class="user-avatar w-[36px] h-[36px] rounded-full bg-[darkslateblue] text-white font-bold flex items-center justify-center cursor-pointer select-none"
@@ -170,36 +162,6 @@ function handleSearch() {
 </template>
 
 <style scoped>
-.search-wrapper {
-  position: relative;
-}
-
-.search-input {
-  border: none;
-  border-radius: 9999px;
-  padding: 0.5rem 2rem 0.5rem 1rem;
-  font-size: 0.875rem;
-  background-color: #f5f5f5;
-  transition: all 0.2s ease;
-  width: 160px;
-}
-
-.search-input:focus {
-  outline: none;
-  background-color: #fff;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
-}
-
-.search-icon {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: #888;
-  font-size: 1rem;
-}
-
 .offcanvas-overlay {
   position: fixed;
   inset: 0;

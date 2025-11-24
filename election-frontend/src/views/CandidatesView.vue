@@ -7,16 +7,7 @@
         </h1>
 
         <!-- SEARCHBAR -->
-        <div class="search-wrapper">
-          <input
-            v-model="search"
-            @input="handleSearch"
-            type="text"
-            placeholder="Zoeken..."
-            class="search-input"
-          />
-          <span class="search-icon">🔍</span>
-        </div>
+        <SearchBar v-model="search" @search="handleSearchInput" />
 
         <select
           v-model="selectedParty"
@@ -80,6 +71,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
+import SearchBar from '@/components/SearchBar.vue';
 
 interface Candidate {
   id: string;
@@ -110,7 +102,9 @@ async function searchCandidatesBackend(query: string) {
 
 
 // Search + reset
-async function handleSearch() {
+async function handleSearchInput(query: string) {
+  search.value = query;
+
   if (search.value.trim() === "") {
     // reset naar volledige lijst
     const response = await axios.get(API_URL);
@@ -165,33 +159,4 @@ const prevPage = () => {
 </script>
 
 <style scoped>
-.search-wrapper {
-  position: relative;
-}
-
-.search-input {
-  border: none;
-  border-radius: 9999px;
-  padding: 0.5rem 2rem 0.5rem 1rem;
-  font-size: 0.875rem;
-  background-color: #f5f5f5;
-  transition: all 0.2s ease;
-  width: 160px;
-}
-
-.search-input:focus {
-  outline: none;
-  background-color: #fff;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
-}
-
-.search-icon {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: #888;
-  font-size: 1rem;
-}
 </style>
