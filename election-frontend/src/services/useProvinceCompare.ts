@@ -66,11 +66,22 @@ export function useProvinceCompare() {
       .sort((a, b) => b.count - a.count)
   }
 
+  function setYear(year: number) {
+    selectedYear.value = year
+
+    // als er al 2 provincies zijn → opnieuw vergelijken
+    if (selectedProvinces.value.length === 2) {
+      compareTwoProvinces()
+    }
+  }
+
+
   return {
     selectedYear,
     selectedProvinces,
     compareResults,
     isComparing,
+    setYear,
     toggleProvince,
     sortedVotes,
   }
