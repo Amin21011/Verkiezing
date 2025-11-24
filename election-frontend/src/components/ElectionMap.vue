@@ -74,16 +74,29 @@ function highlightProvinces() {
       // Click effect
       path.addEventListener('click', () => {
         if (isComparing.value) return
-        selectedProvince.value = p
 
-        // Reset alle paden naar standaardkleur
-        document.querySelectorAll('svg path').forEach((other) => {
-          if (other instanceof SVGPathElement) {
-            other.style.fill = 'gray'
-          }
-        })
-        // Kleur actieve provincie
-        path.style.fill = '#0056b3'
+        if (selectedProvince.value?.provinceNaam === p.provinceNaam) {
+          // Klik op dezelfde provincie → deselecteer
+          selectedProvince.value = null
+          // Reset alle kleuren
+          document.querySelectorAll('svg path').forEach((other) => {
+            if (other instanceof SVGPathElement) {
+              other.style.fill = 'gray'
+            }
+          })
+        } else {
+          // Selecteer nieuwe provincie
+          selectedProvince.value = p
+
+          // Reset alle paden naar standaardkleur
+          document.querySelectorAll('svg path').forEach((other) => {
+            if (other instanceof SVGPathElement) {
+              other.style.fill = 'gray'
+            }
+          })
+          // Kleur actieve provincie
+          path.style.fill = '#0056b3'
+        }
       })
     })
   }, 200)
