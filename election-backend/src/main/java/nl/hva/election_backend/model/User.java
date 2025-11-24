@@ -15,7 +15,9 @@ public class User {
     private String email;
     private String password;
     private String role = "USER";
-    private boolean quizCompleted = false;
+
+    @Column(nullable = true)
+    private Boolean quizCompleted;
     private String quizBestMatch;
 
     public Long getId() { return id; }
@@ -29,7 +31,7 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public void setRole(String role) { this.role = role; }
 
-    public void setQuizCompleted(boolean quizCompleted) {
+    public void setQuizCompleted(Boolean quizCompleted) {
         this.quizCompleted = quizCompleted;
     }
 
@@ -41,7 +43,7 @@ public class User {
         return quizBestMatch;
     }
 
-    public boolean isQuizCompleted() {
+    public Boolean isQuizCompleted() {
         return quizCompleted;
     }
 }

@@ -141,7 +141,7 @@ function toggleOffcanvas() {
         <button class="close-btn" @click="toggleOffcanvas">✕</button>
         <router-link to="/latest-news">Laatste Nieuws</router-link>
         <router-link to="/">Trending</router-link>
-        <router-link to="/">Forum</router-link>
+        <router-link to="/forum">Forum</router-link>
         <router-link to="/quiz">Quiz</router-link>
         <router-link to="/candidates">Kandidaten</router-link>
         <router-link to="/">FAQ</router-link>
