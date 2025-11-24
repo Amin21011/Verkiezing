@@ -65,7 +65,7 @@ public class AuthController {
         User user = userService.findByEmail(email);
 
         return ResponseEntity.ok(
-                new UserDTO(user.getName(), user.getEmail(), user.getRole())
+                new UserDTO(user.getName(), user.getEmail(), user.getRole(), user.getQuizBestMatch())
         );
     }
 
@@ -86,7 +86,7 @@ public class AuthController {
         user.setEmail(updatedUser.email());
 
         User saved = userService.save(user);
-            return ResponseEntity.ok(new UserDTO(saved.getName(), saved.getEmail(), saved.getRole()));
+            return ResponseEntity.ok(new UserDTO(saved.getName(), saved.getEmail(), saved.getRole(), saved.getQuizBestMatch()));
     }
 
     @PutMapping("/change-password")
