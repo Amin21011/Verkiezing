@@ -8,6 +8,7 @@ import AccountView from '../views/AccountView.vue'
 import ForumPostView from '@/views/ForumPostView.vue'
 import ForumView from '@/views/ForumView.vue'
 import ForumDetailView from '@/views/ForumDetailView.vue'
+import MapView from '@/views/MapView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -72,7 +73,12 @@ const router = createRouter({
       path: "/forum/:id",
       name: "ForumDetail",
       component: ForumDetailView
-    }
+    },
+    {
+      path: `/map`,
+      name: `map`,
+      component: MapView
+    },
   ],
 });
 
