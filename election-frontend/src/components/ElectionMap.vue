@@ -122,7 +122,7 @@ function highlightProvinces() {
       <!-- Map container -->
       <div
         ref="mapContainer"
-        class="flex-1 border border-gray-400 overflow-hidden rounded shadow-lg bg-white p-4 md:p-6 h-[800px]"
+        class="grow basis-[20%] border border-gray-400 overflow-hidden rounded shadow-lg bg-white p-4 md:p-6 h-[800px]"
       />
 
       <div
