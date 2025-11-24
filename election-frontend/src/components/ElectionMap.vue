@@ -117,17 +117,17 @@ function highlightProvinces() {
     </div>
 
     <!-- Container voor map + resultaten -->
-    <div class="flex flex-row items-start w-full max-w-6xl gap-6">
+    <div class="flex flex-col md:flex-row items-start w-full max-w-6xl gap-6">
 
       <!-- Map container -->
       <div
         ref="mapContainer"
-        class="grow basis-[20%] border border-gray-400 overflow-hidden rounded shadow-lg bg-white p-4 md:p-6 h-[800px]"
+        class="w-full md:flex-[1.5] border border-gray-400 overflow-hidden rounded shadow-lg bg-white p-4 md:p-6 h-[400px] md:h-[800px]"
       />
 
       <div
         v-if="selectedProvince && !isComparing"
-        class="flex-1 p-5 border rounded bg-white shadow h-[800px] overflow-y-auto"
+        class="w-full md:flex-1 p-5 border rounded bg-white shadow h-[400px] md:h-[800px] overflow-y-auto"
       >
         <h2 class="font-bold text-lg mb-4">{{ selectedProvince.provinceNaam }}</h2>
 
@@ -192,16 +192,15 @@ function highlightProvinces() {
 
       <div
         v-if="isComparing"
-        class="flex-1 p-5 border rounded bg-white shadow h-[800px] overflow-y-auto"
+        class="w-full md:flex-1 p-5 border rounded bg-white shadow h-[400px] md:h-[800px] overflow-y-auto"
       >
-        <h2 class="font-bold text-lg mb-8">Geselecteerd voor vergelijking</h2>
+        <h2 class="font-bold text-lg mb-4 md:mb-8">Geselecteerd voor vergelijking</h2>
 
-        <div class="w-full max-w-6xl flex gap-6">
-
+        <div class="flex flex-col md:flex-row w-full gap-6">
           <div
             v-for="prov in compareResults"
             :key="prov.provinceNaam"
-            class="flex-1 p-4 bg-white border rounded shadow"
+            class="w-full md:flex-1 p-4 bg-white border rounded shadow mb-6 md:mb-0"
           >
             <h3 class="font-bold text-lg mb-3">{{ prov.provinceNaam }}</h3>
 
@@ -212,22 +211,12 @@ function highlightProvinces() {
               Verwijder uit vergelijking
             </button>
 
-            <div
-              v-for="row in sortedCompareVotes(prov)"
-              :key="row.party"
-              class="mb-3"
-            >
-              <div class="text-sm font-bold mb-1">
-                {{ row.party }} — {{ row.count }}
-              </div>
-
+            <div v-for="row in sortedCompareVotes(prov)" :key="row.party" class="mb-3">
+              <div class="text-sm font-bold mb-1">{{ row.party }} — {{ row.count }}</div>
               <div class="h-4 bg-gray-200 rounded">
                 <div
                   class="h-4 rounded"
-                  :style="{
-                    width: row.percentage + '%',
-                    backgroundColor: partyColors[row.party] || '#000'
-                  }"
+                  :style="{ width: row.percentage + '%', backgroundColor: partyColors[row.party] || '#000' }"
                 />
               </div>
             </div>
@@ -242,8 +231,9 @@ function highlightProvinces() {
 /* Maak de map responsive */
 #mapContainer svg {
   width: 100%;
-  height: auto;
+  height: 100%;
   max-width: 100%;
+  max-height: 100%;
 }
 
 /* Basis styling van provincies */
