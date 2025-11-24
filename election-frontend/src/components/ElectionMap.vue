@@ -2,11 +2,20 @@
 import { onMounted, ref, computed } from 'vue'
 import mapSvg from '@/assets/img/netherlands.svg?raw'
 import { partyColors } from '@/assets/partyColors.ts'
+import { useProvinceCompare } from '@/services/useProvinceCompare.ts'
 
 interface ProvinceResult {
   provinceNaam: string
   stemmenPerPartij: Record<string, number>
 }
+
+const {
+  compareResults,
+  selectedProvinces,
+  toggleProvince,
+  isComparing,
+  sortedVotes: sortedCompareVotes,
+} = useProvinceCompare()
 
 const provinces = ref<ProvinceResult[]>([])
 const selectedProvince = ref<ProvinceResult | null>(null)
@@ -22,10 +31,11 @@ const sortedVotes = computed(() => {
   const total = Object.values(votes).reduce((a, b) => a + b, 0)
 
   return Object.entries(votes)
-    .map(([party, count]) => {
-      const percentage = total > 0 ? (count / total) * 100 : 0
-      return { party, count, percentage }
-    })
+    .map(([party, count]) => ({
+      party,
+      count,
+      percentage: total > 0 ? (count / total) * 100 : 0,
+    }))
     .sort((a, b) => b.count - a.count)
 })
 
@@ -43,9 +53,7 @@ async function loadData() {
     console.error('Fout bij ophalen:', err)
   }
 }
-onMounted(() => {
-  loadData()
-})
+onMounted(loadData)
 
 function onYearChange(event: Event) {
   selectedYear.value = Number((event.target as HTMLSelectElement).value)
@@ -64,6 +72,7 @@ function highlightProvinces() {
 
       // Click effect
       path.addEventListener('click', () => {
+        if (isComparing.value) return
         selectedProvince.value = p
 
         // Reset alle paden naar standaardkleur
@@ -100,13 +109,29 @@ function highlightProvinces() {
       <div
         ref="mapContainer"
         class="flex-1 border border-gray-400 overflow-hidden rounded shadow-lg bg-white p-4 md:p-6 h-[800px]"
-      ></div>
+      />
 
       <div
-        v-if="selectedProvince"
+        v-if="selectedProvince && !isComparing"
         class="flex-1 p-5 border rounded bg-white shadow h-[800px] overflow-y-auto"
       >
         <h2 class="font-bold text-lg mb-4">{{ selectedProvince.provinceNaam }}</h2>
+
+        <!-- Vergelijk knop -->
+        <button
+          class="mb-4 bg-blue-600 text-white px-4 py-2 rounded"
+          @click="toggleProvince(selectedProvince.provinceNaam)"
+        >
+          Vergelijk deze provincie
+        </button>
+
+        <!-- Geselecteerde provincies -->
+        <div class="mb-4">
+          <p class="font-semibold">Geselecteerd voor vergelijking:</p>
+          <ul class="text-sm list-disc ml-4">
+            <li v-for="p in selectedProvinces" :key="p">{{ p }}</li>
+          </ul>
+        </div>
 
         <div class="relative w-full border-l border-gray-300">
 
@@ -120,7 +145,7 @@ function highlightProvinces() {
               :key="n"
               class="border-r border-gray-200"
               :style="{ width: '11.11%' }"
-            ></div>
+            />
           </div>
 
           <div class="space-y-2 relative">
@@ -144,7 +169,52 @@ function highlightProvinces() {
                     width: item.percentage + '%',
                     backgroundColor: partyColors[item.party] || '#000'
                   }"
-                ></div>
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        v-if="isComparing"
+        class="flex-1 p-5 border rounded bg-white shadow h-[800px] overflow-y-auto"
+      >
+        <h2 class="font-bold text-lg mb-8">Geselecteerd voor vergelijking</h2>
+
+        <div class="w-full max-w-6xl flex gap-6">
+
+          <div
+            v-for="prov in compareResults"
+            :key="prov.provinceNaam"
+            class="flex-1 p-4 bg-white border rounded shadow"
+          >
+            <h3 class="font-bold text-lg mb-3">{{ prov.provinceNaam }}</h3>
+
+            <button
+              class="mb-4 bg-red-600 text-white px-4 py-2 rounded"
+              @click="toggleProvince(prov.provinceNaam)"
+            >
+              Verwijder uit vergelijking
+            </button>
+
+            <div
+              v-for="row in sortedCompareVotes(prov)"
+              :key="row.party"
+              class="mb-3"
+            >
+              <div class="text-sm font-bold mb-1">
+                {{ row.party }} — {{ row.count }}
+              </div>
+
+              <div class="h-4 bg-gray-200 rounded">
+                <div
+                  class="h-4 rounded"
+                  :style="{
+                    width: row.percentage + '%',
+                    backgroundColor: partyColors[row.party] || '#000'
+                  }"
+                />
               </div>
             </div>
           </div>
