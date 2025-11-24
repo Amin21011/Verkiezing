@@ -29,13 +29,13 @@ const sortedVotes = computed(() => {
   if (!selectedProvince.value) return []
 
   const votes = selectedProvince.value.stemmenPerPartij
-  const total = Object.values(votes).reduce((a, b) => a + b, 0)
+  const maxCount = Math.max(...Object.values(votes))
 
   return Object.entries(votes)
     .map(([party, count]) => ({
       party,
       count,
-      percentage: total > 0 ? (count / total) * 100 : 0,
+      percentage: maxCount > 0 ? (count / maxCount) * 100 : 0,
     }))
     .sort((a, b) => b.count - a.count)
 })
@@ -150,12 +150,12 @@ function highlightProvinces() {
         <div class="relative w-full border-l border-gray-300">
 
           <div class="absolute -bottom-6 left-0 right-0 flex justify-between text-xs text-gray-500">
-            <span v-for="n in 9" :key="n">{{ n * 2 }}%</span>
+            <span v-for="n in 4" :key="n">{{ n * 25 }}%</span>
           </div>
 
           <div class="absolute top-0 bottom-0 left-0 right-0 flex">
             <div
-              v-for="n in 9"
+              v-for="n in 4"
               :key="n"
               class="border-r border-gray-200"
               :style="{ width: '11.11%' }"
