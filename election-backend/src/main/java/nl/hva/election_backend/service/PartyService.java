@@ -18,10 +18,21 @@ public class PartyService {
         this.resultRepository = resultRepository;
     }
 
+    public List<Party> getAllParties() {
+        return repository.getAll();
+    }
+
     public List<Party1> getAllPartiesRandomized() {
         List<Party1> shuffled = new ArrayList<>(repository.getAllParties());
         Collections.shuffle(shuffled);
         return shuffled;
+    }
+
+    public Party getPartyById(String id) {
+        return repository.getAll().stream()
+                .filter(p -> p.getPartyId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
     public List<Party> getTopPartiesByYear(Integer year, int limit) {
