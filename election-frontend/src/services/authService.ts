@@ -13,8 +13,8 @@ export async function register(name: string, email: string, password: string) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, email, password }),
   })
-  if (!res.ok) throw new Error(await res.text())
 
+  if (!res.ok) throw new Error(await res.text())
   const data = await res.json()
   authUser.value = data.name
   authToken.value = data.token
@@ -72,6 +72,40 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   return await response.json() as AuthUser
 }
 
+export async function updateUser(name: string, email: string) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Geen token gevonden");
+
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/update`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ name, email }),
+  });
+
+  if (!res.ok) throw new Error(await res.text());
+  return await res.json();
+}
+
 export function getToken(): string | null {
   return authToken.value ?? localStorage.getItem("token")
+}
+
+export async function changePassword(oldPassword: string, newPassword: string) {
+  const token = localStorage.getItem("token")
+  if (!token) throw new Error("Geen token gevonden")
+
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/change-password`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ oldPassword, newPassword }),
+  })
+
+  if (!res.ok) throw new Error(await res.text())
+  return await res.json()
 }

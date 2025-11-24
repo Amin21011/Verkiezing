@@ -15,6 +15,10 @@ public class QuizResult {
         return bestMatchingParty;
     }
 
+    public String getBestMatch() {
+        return bestMatchingParty;
+    }
+
     public Map<String, Double> getPartyScores() {
         return partyScores;
     }

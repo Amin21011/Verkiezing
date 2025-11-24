@@ -5,6 +5,9 @@ import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import PartyListView from '../views/PartyListView.vue'
 import AccountView from '../views/AccountView.vue'
+import ForumPostView from '@/views/ForumPostView.vue'
+import ForumView from '@/views/ForumView.vue'
+import ForumDetailView from '@/views/ForumDetailView.vue'
 import MapView from '@/views/MapView.vue'
 
 const router = createRouter({
@@ -55,6 +58,21 @@ const router = createRouter({
       path: '/quiz',
       name: 'quiz',
       component: () => import('../views/QuizView.vue'),
+    },
+    {
+      path: `/forum`,
+      name: `forum`,
+      component: ForumView
+    },
+    {
+      path: `/post`,
+      name: `post`,
+      component: ForumPostView
+    },
+    {
+      path: "/forum/:id",
+      name: "ForumDetail",
+      component: ForumDetailView
     },
     {
       path: `/map`,

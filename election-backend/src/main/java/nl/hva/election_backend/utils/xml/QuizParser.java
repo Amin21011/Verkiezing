@@ -11,7 +11,6 @@ import java.util.*;
 
 public class QuizParser {
 
-    // Leest een XML-bestand en zet het om in een Quiz-object
     public Quiz parseQuiz(String path) throws Exception {
         InputStream inputStream = getClass().getResourceAsStream(path);
         if (inputStream == null) throw new RuntimeException("Kon XML niet vinden: " + path);
