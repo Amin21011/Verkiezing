@@ -74,7 +74,12 @@ watch(() => route.query.q, loadResults)
                 :key="c.id"
                 class="py-3 hover:bg-gray-50 rounded-lg px-2 transition cursor-pointer"
               >
-                {{ c.firstName }} {{ c.lastName }}
+                <router-link
+                  :to="`/candidates`"
+                  class="block w-full"
+                >
+                  {{ c.firstName }} {{ c.lastName }}
+                </router-link>
               </li>
             </ul>
           </section>
@@ -88,7 +93,12 @@ watch(() => route.query.q, loadResults)
                 :key="p.id"
                 class="py-3 hover:bg-gray-50 rounded-lg px-2 transition cursor-pointer"
               >
-                {{ p.name }}
+                <router-link
+                  :to="`/parties`"
+                  class="block w-full"
+                >
+                  {{ p.name }}
+                </router-link>
               </li>
             </ul>
           </section>
