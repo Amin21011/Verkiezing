@@ -80,39 +80,11 @@ interface Candidate {
 }
 
 const candidates = ref<Candidate[]>([]);
-const search = ref("");
 const currentPage = ref(1);
 const ITEMS_PER_PAGE = 18;
 const selectedParty = ref("");
 
 const API_URL = `${import.meta.env.VITE_API_URL}/candidates`;
-const SEARCH_URL = `${import.meta.env.VITE_API_URL}/search`;
-
-// Backend zoekfunctie
-async function searchCandidatesBackend(query: string) {
-  const response = await axios.get(SEARCH_URL, {
-    params: { name: query }
-  });
-  return response.data;
-}
-
-
-// Search + reset
-async function handleSearchInput(query: string) {
-  search.value = query;
-
-  if (search.value.trim() === "") {
-    // reset naar volledige lijst
-    const response = await axios.get(API_URL);
-    candidates.value = response.data;
-    currentPage.value = 1;
-    return;
-  }
-
-  const result = await searchCandidatesBackend(search.value);
-  candidates.value = result;
-  currentPage.value = 1;
-}
 
 onMounted(async () => {
   try {
