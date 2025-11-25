@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 
@@ -22,6 +22,11 @@ const parties = ref<Party[]>([])
 const loading = ref(false)
 const queryString = ref('')
 
+// Pagination state
+const currentPageCandidates = ref(1)
+const currentPageParties = ref(1)
+const itemsPerPage = 8
+
 const loadResults = async () => {
   const q = (route.query.q as string) ?? ''
   queryString.value = q
@@ -40,6 +45,9 @@ const loadResults = async () => {
     const res = await axios.get(API_URL)
     candidates.value = res.data.candidates ?? []
     parties.value = res.data.parties ?? []
+
+    currentPageCandidates.value = 1
+    currentPageParties.value = 1
   } catch (err) {
     console.error('Error loading search results', err)
     candidates.value = []
@@ -51,6 +59,34 @@ const loadResults = async () => {
 
 onMounted(loadResults)
 watch(() => route.query.q, loadResults)
+
+// Computed properties for paginated data
+const paginatedCandidates = computed(() => {
+  const start = (currentPageCandidates.value - 1) * itemsPerPage
+  return candidates.value.slice(start, start + itemsPerPage)
+})
+
+const paginatedParties = computed(() => {
+  const start = (currentPageParties.value - 1) * itemsPerPage
+  return parties.value.slice(start, start + itemsPerPage)
+})
+
+const totalPagesCandidates = computed(() => Math.ceil(candidates.value.length / itemsPerPage))
+const totalPagesParties = computed(() => Math.ceil(parties.value.length / itemsPerPage))
+
+const nextPageCandidates = () => {
+  if (currentPageCandidates.value < totalPagesCandidates.value) currentPageCandidates.value++
+}
+const prevPageCandidates = () => {
+  if (currentPageCandidates.value > 1) currentPageCandidates.value--
+}
+
+const nextPageParties = () => {
+  if (currentPageParties.value < totalPagesParties.value) currentPageParties.value++
+}
+const prevPageParties = () => {
+  if (currentPageParties.value > 1) currentPageParties.value--
+}
 </script>
 
 <template>
@@ -70,7 +106,7 @@ watch(() => route.query.q, loadResults)
             <h2 class="text-xl font-semibold text-[#00712D] mb-3">Kandidaten</h2>
             <ul class="divide-y divide-gray-200">
               <li
-                v-for="c in candidates"
+                v-for="c in paginatedCandidates"
                 :key="c.id"
                 class="py-3 hover:bg-gray-50 rounded-lg px-2 transition cursor-pointer"
               >
@@ -82,6 +118,25 @@ watch(() => route.query.q, loadResults)
                 </router-link>
               </li>
             </ul>
+
+            <!-- Pagination controls -->
+            <div class="flex justify-between mt-3">
+              <button
+                class="px-4 py-2 bg-blue-950 text-white font-semibold rounded disabled:opacity-50"
+                :disabled="currentPageCandidates === 1"
+                @click="prevPageCandidates"
+              >
+                Vorige
+              </button>
+              <span class="px-4 py-2 text-black font-semibold">{{ currentPageCandidates }} / {{ totalPagesCandidates }}</span>
+              <button
+                class="px-4 py-2 bg-blue-950 text-white font-semibold rounded disabled:opacity-50"
+                :disabled="currentPageCandidates === totalPagesCandidates"
+                @click="nextPageCandidates"
+              >
+                Volgende
+              </button>
+            </div>
           </section>
 
           <!-- Partijen -->
@@ -89,7 +144,7 @@ watch(() => route.query.q, loadResults)
             <h2 class="text-xl font-semibold text-[#00712D] mb-3">Partijen</h2>
             <ul class="divide-y divide-gray-200">
               <li
-                v-for="p in parties"
+                v-for="p in paginatedParties"
                 :key="p.id"
                 class="py-3 hover:bg-gray-50 rounded-lg px-2 transition cursor-pointer"
               >
@@ -101,6 +156,13 @@ watch(() => route.query.q, loadResults)
                 </router-link>
               </li>
             </ul>
+
+            <!-- Pagination controls -->
+            <div class="flex justify-between mt-3">
+              <button @click="prevPageParties" :disabled="currentPageParties === 1" class="px-4 py-2 bg-blue-950 text-white font-semibold rounded disabled:opacity-50">Vorige</button>
+              <span>Pagina {{ currentPageParties }} / {{ totalPagesParties }}</span>
+              <button @click="nextPageParties" :disabled="currentPageParties === totalPagesParties" class="px-4 py-2 bg-blue-950 text-white font-semibold rounded disabled:opacity-50">Volgende</button>
+            </div>
           </section>
 
           <!-- Geen resultaten -->
