@@ -2,35 +2,43 @@ package nl.hva.election_backend.service;
 
 import nl.hva.election_backend.model.Poll;
 import nl.hva.election_backend.repository.PollRepository;
+import org.springframework.stereotype.Service;
 
+import jakarta.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.List;
 
+@Service
 public class PollService {
+
     private final PollRepository pollRepository;
-    public PollService() {
-        this.pollRepository = new PollRepository();
+
+    public PollService(PollRepository pollRepository) {
+        this.pollRepository = pollRepository;
     }
 
-    /**
-     * Maakt een nieuwe poll aan.
-     */
-    public void createPoll(String question, List<String> options) {
-        Poll poll = new Poll(question, options); // Nieuwe poll aanmaken
-        pollRepository.addPoll(poll);
+    public Poll createPoll(String question, List<String> options) {
+        Poll poll = new Poll(question, options);
+        return pollRepository.save(poll);
     }
 
-    public void voteOnPoll(int pollIndex, int optionIndex) {
-        Poll poll = pollRepository.getPollByIndex(pollIndex); // Haalt de juiste poll op
-        if (poll != null) {
-            poll.vote(optionIndex); // Voegt een stem toe aan de poll
+    public void voteOnPoll(Long pollId, int optionIndex) {
+        Poll poll = pollRepository.findById(pollId).orElse(null);
+        if (poll != null && optionIndex >= 0 && optionIndex < poll.getVotes().size()) {
+            List<Integer> votes = poll.getVotes();
+            votes.set(optionIndex, votes.get(optionIndex) + 1);
+            poll.setVotes(votes);
+            pollRepository.save(poll);
         }
     }
 
-
-    public void resetVote(int pollIndex, int optionIndex) {
-        Poll poll = pollRepository.getPollByIndex(pollIndex); // Haalt de juiste poll op
-        if (poll != null) {
-            poll.resetVote(optionIndex); // Verwijdert een stem van de optie
+    public void resetVote(Long pollId, int optionIndex) {
+        Poll poll = pollRepository.findById(pollId).orElse(null);
+        if (poll != null && optionIndex >= 0 && optionIndex < poll.getVotes().size()) {
+            List<Integer> votes = poll.getVotes();
+            votes.set(optionIndex, Math.max(votes.get(optionIndex) - 1, 0));
+            poll.setVotes(votes);
+            pollRepository.save(poll);
         }
     }
 
@@ -38,13 +46,21 @@ public class PollService {
      * Geeft een lijst van alle polls die er zijn.
      */
     public List<Poll> getAllPolls() {
-        return pollRepository.getPolls();
+        return pollRepository.findAll();
     }
 
     /**
      * Delete alle polls.
      */
     public void clearAllPolls() {
-        pollRepository.clearPolls();
+        pollRepository.deleteAll();
+    }
+
+    @PostConstruct
+    public void init() {
+        if (pollRepository.count() == 0) {
+            createPoll("Wie is de betere partij?", Arrays.asList("VVD", "D66", "CDA"));
+            System.out.println("✅ Initiele poll toegevoegd");
+        }
     }
 }
