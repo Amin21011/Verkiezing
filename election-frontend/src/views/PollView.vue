@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import PollContent from "../components/PollContent.vue";
 
 interface Poll {
+  id: number;
   question: string;
   options: string[];
   votes: number[];
@@ -18,41 +19,17 @@ async function loadPolls() {
   try {
     const res = await fetch(API_URL);
     polls.value = await res.json();
-
-    const votedPolls = JSON.parse(localStorage.getItem("votedPolls") || "{}");
-    if (Object.keys(votedPolls).length > polls.value.length) {
-      localStorage.removeItem("votedPolls");
-    }
-    console.log("Polls geladen:", polls.value); // Check
+    console.log("Polls geladen:", polls.value);
   } catch (error) {
     console.log("Fout bij het laden van polls:", error);
   }
 }
 
-// Stemmen
-async function vote(pollIndex: number, optionIndex: number) {
-  const votedPolls = JSON.parse(localStorage.getItem("votedPolls") || "{}");
-
-  if (votedPolls[pollIndex] !== undefined) {
-    const previousOption = votedPolls[pollIndex];
-
-    if (previousOption === optionIndex) {
-      message.value = "Je hebt al op deze optie gestemd!";
-      setTimeout(() => (message.value = ""), 3000);
-      return;
-    }
-
-    await fetch(`${API_URL}/${pollIndex}/reset/${previousOption}`, {
-      method: "PUT",
-    });
-  }
-
-  await fetch(`${API_URL}/${pollIndex}/vote/${optionIndex}`, {
+async function vote(pollId: number, optionIndex: number) {
+  await fetch(`${API_URL}/${pollId}/vote/${optionIndex}`, {
     method: "POST",
   });
 
-  votedPolls[pollIndex] = optionIndex;
-  localStorage.setItem("votedPolls", JSON.stringify(votedPolls));
   await loadPolls();
 }
 
