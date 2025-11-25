@@ -66,7 +66,7 @@ watch(() => route.query.q, loadResults)
 
         <div v-else>
           <!-- Kandidaten -->
-          <section class="mb-6">
+          <section v-if="candidates.length">
             <h2 class="text-xl font-semibold text-[#00712D] mb-3">Kandidaten</h2>
             <ul class="divide-y divide-gray-200">
               <li
@@ -77,11 +77,10 @@ watch(() => route.query.q, loadResults)
                 {{ c.firstName }} {{ c.lastName }}
               </li>
             </ul>
-            <p v-if="!candidates.length" class="mt-2 text-gray-400">Geen kandidaten gevonden.</p>
           </section>
 
           <!-- Partijen -->
-          <section>
+          <section v-if="parties.length">
             <h2 class="text-xl font-semibold text-[#00712D] mb-3">Partijen</h2>
             <ul class="divide-y divide-gray-200">
               <li
@@ -92,18 +91,18 @@ watch(() => route.query.q, loadResults)
                 {{ p.name }}
               </li>
             </ul>
-            <p v-if="!parties.length" class="mt-2 text-gray-400">Geen partijen gevonden.</p>
           </section>
 
-          <p v-if="!candidates.length && !parties.length && !loading" class="mt-4 text-center text-gray-500">
+          <!-- Geen resultaten -->
+          <p v-if="!candidates.length && !parties.length" class="mt-4 text-center text-gray-500">
             Geen resultaten gevonden.
           </p>
         </div>
       </div>
     </main>
   </div>
-
 </template>
+
 
 
 <style scoped>
