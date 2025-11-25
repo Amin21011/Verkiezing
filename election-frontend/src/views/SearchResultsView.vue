@@ -54,29 +54,57 @@ watch(() => route.query.q, loadResults)
 </script>
 
 <template>
-  <div class="p-6 max-w-4xl mx-auto">
-    <h1 class="text-3xl font-bold mb-4">Zoekresultaten voor "{{ queryString }}"</h1>
+  <div class="min-h-screen bg-[#F8F7F3] flex items-start justify-center px-6 pt-20">
+    <!-- Resultaten container -->
+    <main class="w-full max-w-2xl space-y-6">
+      <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">
+          Zoekresultaten voor "{{ queryString }}"
+        </h1>
 
-    <div v-if="loading">Bezig met laden...</div>
+        <div v-if="loading" class="text-center text-gray-500 py-10">Bezig met laden…</div>
 
-    <div v-else>
-      <h2 class="text-xl font-semibold mt-4">Kandidaten</h2>
-      <ul>
-        <li v-for="c in candidates" :key="c.id">
-          {{ c.firstName }} {{ c.lastName }}
-        </li>
-      </ul>
+        <div v-else>
+          <!-- Kandidaten -->
+          <section class="mb-6">
+            <h2 class="text-xl font-semibold text-[#00712D] mb-3">Kandidaten</h2>
+            <ul class="divide-y divide-gray-200">
+              <li
+                v-for="c in candidates"
+                :key="c.id"
+                class="py-3 hover:bg-gray-50 rounded-lg px-2 transition cursor-pointer"
+              >
+                {{ c.firstName }} {{ c.lastName }}
+              </li>
+            </ul>
+            <p v-if="!candidates.length" class="mt-2 text-gray-400">Geen kandidaten gevonden.</p>
+          </section>
 
-      <h2 class="text-xl font-semibold mt-6">Partijen</h2>
-      <ul>
-        <li v-for="p in parties" :key="p.id">
-          {{ p.name }}
-        </li>
-      </ul>
+          <!-- Partijen -->
+          <section>
+            <h2 class="text-xl font-semibold text-[#00712D] mb-3">Partijen</h2>
+            <ul class="divide-y divide-gray-200">
+              <li
+                v-for="p in parties"
+                :key="p.id"
+                class="py-3 hover:bg-gray-50 rounded-lg px-2 transition cursor-pointer"
+              >
+                {{ p.name }}
+              </li>
+            </ul>
+            <p v-if="!parties.length" class="mt-2 text-gray-400">Geen partijen gevonden.</p>
+          </section>
 
-      <p v-if="!candidates.length && !parties.length && !loading" class="mt-4">
-        Geen resultaten gevonden.
-      </p>
-    </div>
+          <p v-if="!candidates.length && !parties.length && !loading" class="mt-4 text-center text-gray-500">
+            Geen resultaten gevonden.
+          </p>
+        </div>
+      </div>
+    </main>
   </div>
+
 </template>
+
+
+<style scoped>
+</style>
