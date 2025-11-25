@@ -6,9 +6,6 @@
           Kandidatenlijst
         </h1>
 
-        <!-- SEARCHBAR -->
-        <SearchBar v-model="search" @search="handleSearchInput" />
-
         <select
           v-model="selectedParty"
           class="border border-gray-300 rounded-lg px-4 py-2 text-black bg-white"
@@ -71,7 +68,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
-import SearchBar from '@/components/SearchBar.vue';
 
 interface Candidate {
   id: string;
