@@ -2,6 +2,7 @@
 defineProps<{
   polls: { id: number; question: string; options: string[]; votes: number[] }[];
   message: string;
+  userVotes: Record<number, number>;
 }>();
 
 defineEmits<{
@@ -49,13 +50,21 @@ function getPercentage(votes: number[], i: number) {
           class="relative w-full cursor-pointer"
           @click="$emit('vote', poll.id, optionIndex)"
         >
+
+          <!-- Percentage achter background -->
           <div
             class="absolute top-0 left-0 h-full bg-blue-950 rounded-l-lg opacity-40"
             :style="{ width: getPercentage(poll.votes, optionIndex) + '%' }"
           ></div>
 
-          <!-- Tekst -->
-          <div class="relative flex justify-between px-3 py-2 border text-black border-gray-300 rounded-lg">
+          <!-- Tekst + highlight wanneer gestemd -->
+          <div
+            class="relative flex justify-between px-3 py-2 border rounded-lg"
+            :class="{
+              'border-green-600 bg-green-100 font-bold':
+                userVotes[poll.id] === optionIndex
+            }"
+          >
             <span>{{ option }}</span>
             <span>{{ getPercentage(poll.votes, optionIndex) }}%</span>
           </div>
