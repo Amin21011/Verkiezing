@@ -99,6 +99,7 @@ onMounted(async () => {
             <li>Bekijk of verwijder accounts</li>
             <li>Promoot gebruikers tot redacteur of beheerder</li>
             <li>Controleer laatste inlogmomenten</li>
+            <li>Voeg en verwijder polls</li>
           </ul>
         </article>
 
