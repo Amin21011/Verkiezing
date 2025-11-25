@@ -89,6 +89,12 @@ const onInput = async () => {
 </template>
 
 <style scoped>
+.search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
 
 .results-list li {
   padding: 0.25rem 0.5rem;
