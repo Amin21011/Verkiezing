@@ -84,7 +84,7 @@ const onInput = async () => {
       placeholder="Zoeken..."
       class="search-input"
     />
-    <span class="search-icon">🔍</span>
+    <span class="search-icon cursor-pointer" @click="onEnter">🔍</span>
   </div>
 </template>
 
