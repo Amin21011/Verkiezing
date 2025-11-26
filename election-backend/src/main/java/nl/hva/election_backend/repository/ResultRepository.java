@@ -29,7 +29,7 @@ public class ResultRepository {
         partiesById.clear();
         if (parties != null) {
             for (Party p : parties) {
-                partiesById.put(p.getPartyId(), p);
+                partiesById.put(p.getId(), p);
             }
         }
     }
@@ -68,7 +68,13 @@ public class ResultRepository {
                     String name = (base != null) ? base.getName() : "Onbekende partij";
                     String leaderName = (base != null) ? base.getLeaderName() : "";
                     String website = (base != null) ? base.getWebsite() : "";
-                    Party p = new Party(id, name, leaderName != null ? leaderName : "", 0, website != null ? website : "");
+                    Party p = new Party(
+                            id,
+                            name,
+                            leaderName != null ? leaderName : "",
+                            0,
+                            website != null ? website : ""
+                    );
                     p.setVoteCount(votes);
                     return p;
                 })
@@ -106,8 +112,27 @@ public class ResultRepository {
         }
     }
 
-
     public void setPartyNames(List<Party> parties) {
         registerParties(parties);
+    }
+
+    public int getTotalVotesForParty(String partyId) {
+        if (partyId == null) return 0;
+
+        return results.stream()
+                .filter(r -> partyId.equals(r.getPartyId()))
+                .mapToInt(Result::getVotes)
+                .sum();
+    }
+
+    public Map<String, Integer> getVotesByParty() {
+        Map<String, Integer> votes = new HashMap<>();
+
+        for (Party p : partiesById.values()) {
+            int total = getTotalVotesForParty(p.getId());
+            votes.put(p.getName(), total); // naam als key → mooi voor simulatie + UI
+        }
+
+        return votes;
     }
 }
