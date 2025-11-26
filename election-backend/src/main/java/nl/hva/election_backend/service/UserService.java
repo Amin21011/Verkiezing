@@ -46,7 +46,6 @@ public class UserService {
 
     public void changePassword(String email, String oldPassword, String newPassword) {
         User user = findByEmail(email);
-
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             throw new IllegalArgumentException("Oude wachtwoord is onjuist.");
         }

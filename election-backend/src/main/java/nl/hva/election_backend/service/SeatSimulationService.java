@@ -16,9 +16,7 @@ public class SeatSimulationService {
     }
 
     public SeatSimulationResponse simulate(SeatSimulationRequest request) {
-
         var totals = resultService.getVotesByParty();
-
         double factor = request.turnout() / 100.0;
         totals.replaceAll((party, votes) -> (int) (votes * factor));
 
@@ -29,7 +27,8 @@ public class SeatSimulationService {
                         .map(e -> new SeatSimulationResponse.PartySeats(e.getKey(), e.getValue()))
                         .toList();
 
-        int votesPerSeat = totals.values().stream().mapToInt(Integer::intValue).sum() / 150;
+        int totalVotes = totals.values().stream().mapToInt(Integer::intValue).sum();
+        int votesPerSeat = totalVotes / 150;
 
         return new SeatSimulationResponse(list, votesPerSeat);
     }
