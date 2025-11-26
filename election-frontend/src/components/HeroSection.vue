@@ -1,24 +1,17 @@
 <template>
-  <section
-    class="bg-paper relative flex flex-col md:flex-row items-center justify-between max-w-7xl mx-auto px-8 py-16 md:py-20 transition-transform duration-500"
-  >
+  <section class="bg-paper relative flex flex-col md:flex-row items-center justify-between max-w-7xl mx-auto px-8 py-16 md:py-20 transition-transform duration-500">
     <div class="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/newsprint.png')]"></div>
 
     <div class="relative z-10 space-y-6 md:w-1/2">
       <h2 class="text-5xl md:text-6xl font-extrabold leading-tight text-ink uppercase">
-
-        <!-- vaste hoogte + typing span -->
         <div class="h-[4.5rem] md:h-[6rem] overflow-hidden">
           <span
-            class="animate-typing block text-[3.5rem] text-accent font-extrabold leading-[4.5rem] md:leading-[6rem]"
-          >
+            class="animate-typing block text-[3.5rem] text-accent font-extrabold leading-[4.5rem] md:leading-[6rem]">
             {{ slogans[currentIndex] }}
           </span>
         </div>
 
-        <span
-          class="bg-gradient-to-r from-[#c62828] via-[#ef6c00] to-[#fbc02d] bg-clip-text text-transparent font-black"
-        >
+        <span class="bg-gradient-to-r from-[#c62828] via-[#ef6c00] to-[#fbc02d] bg-clip-text text-transparent font-black">
           Anderen beslissen voor jou.
         </span>
       </h2>
@@ -28,8 +21,7 @@
       </p>
 
       <button
-        class="mt-8 px-8 py-3 border-2 border-accent text-accent font-bold uppercase tracking-widest bg-transparent hover:bg-accent hover:text-white transition-all duration-300"
-      >
+        class="mt-8 px-8 py-3 border-2 border-accent text-accent font-bold uppercase tracking-widest bg-transparent hover:bg-accent hover:text-white transition-all duration-300">
         Ontdek jouw invloed
       </button>
     </div>
@@ -81,7 +73,7 @@ onMounted(() => {
 
 @keyframes blink {
   0%, 49% {
-    border-color: #e53935; /* accentkleur */
+    border-color: #e53935;
   }
   50%, 100% {
     border-color: transparent;
@@ -92,7 +84,7 @@ onMounted(() => {
   overflow: hidden;
   white-space: nowrap;
   display: inline-block;
-  border-right: 3px solid #e53935; /* cursor */
+  border-right: 3px solid #e53935;
   animation:
     typing 4s steps(18) infinite alternate,
     blink 1s step-end infinite;
