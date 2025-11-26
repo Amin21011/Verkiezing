@@ -1,9 +1,8 @@
 
 export interface AuthUser {
-  id?: number
+  id: number
   name: string
   email: string
   role: 'USER' | 'ADMIN'
-  quizCompleted: boolean
   quizBestMatch: string
 }

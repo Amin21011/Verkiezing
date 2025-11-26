@@ -8,7 +8,6 @@ const {
   chartLabels,
   chartValues,
   selectedPartyId,
-  selectedPartyName,
   isLoading,
 } = useElectionResults();
 
@@ -79,7 +78,7 @@ function renderChart(labels: string[], values: number[]) {
         },
         title: {
           display: true,
-          text: `Topkandidaten – ${selectedPartyName.value}`,
+          text: `Verdeling`,
           color: "#1a1a1a",
           font: {
             family: "'Playfair Display', serif",
