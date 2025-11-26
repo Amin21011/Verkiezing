@@ -2,7 +2,6 @@ package nl.hva.election_backend.api;
 import nl.hva.election_backend.model.Candidate;
 import nl.hva.election_backend.model.Party;
 import nl.hva.election_backend.service.ResultService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
