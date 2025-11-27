@@ -24,21 +24,35 @@ public class PollController {
         return pollService.getAllPolls();
     }
 
+    // Stemmen op optie
     @PostMapping("/{pollId}/vote/{optionIndex}")
     public void vote(@PathVariable Long pollId, @PathVariable int optionIndex) {
         pollService.voteOnPoll(pollId, optionIndex);
     }
 
+    // Stem resetten
     @PutMapping("/{pollId}/reset/{optionIndex}")
     public void resetVote(@PathVariable Long pollId, @PathVariable int optionIndex) {
         pollService.resetVote(pollId, optionIndex);
     }
 
+    // Poll aanmaken
+    @PostMapping
+    public Poll createPoll(@RequestBody Poll poll) {
+        return pollService.createPoll(poll.getQuestion(), poll.getOptions());
+    }
+
+    // Poll updaten
+    @PutMapping("/{pollId}")
+    public Poll updatePoll(@PathVariable Long pollId, @RequestBody Poll poll) {
+        return pollService.updatePoll(pollId, poll.getQuestion(), poll.getOptions());
+    }
+
     /**
      * Verwijdert alle polls.
      */
-    @DeleteMapping("/clear")
-    public void clearPolls() {
-        pollService.clearAllPolls();
+    @DeleteMapping("/{pollId}")
+    public void deletePoll(@PathVariable Long pollId) {
+        pollService.deletePoll(pollId);
     }
 }
