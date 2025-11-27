@@ -9,7 +9,9 @@ import ForumPostView from '@/views/ForumPostView.vue'
 import ForumView from '@/views/ForumView.vue'
 import ForumDetailView from '@/views/ForumDetailView.vue'
 import MapView from '@/views/MapView.vue'
+import SearchResultsView from '@/views/SearchResultsView.vue'
 import SimulatorView from '@/views/SimulatorView.vue'
+import AdminPollView from '@/views/AdminPollView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -85,6 +87,16 @@ const router = createRouter({
       name: `map`,
       component: MapView
     },
+    {
+      path: '/search',
+      name: 'search',
+      component: SearchResultsView
+    },
+    {
+      path: '/admin-poll',
+      name: 'admin-poll',
+      component: AdminPollView
+    }
   ],
 });
 
