@@ -9,7 +9,7 @@ interface Poll {
   votes: number[];
 }
 
-const API_URL = `${import.meta.env.VITE_API_URL}/polls`;
+const API_URL = `${import.meta.env.VITE_API_URL}/polls/active`;
 
 const polls = ref<Poll[]>([]);
 const message = ref("");
@@ -31,23 +31,24 @@ function saveUserVotes() {
 async function loadPolls() {
   try {
     const res = await fetch(API_URL);
-    polls.value = await res.json();
+    const poll = await res.json();
+    polls.value = poll ? [poll] : [];
   } catch (error) {
-    console.log("Fout bij het laden van polls:", error);
+    console.log("Fout bij laden:", error);
   }
 }
 
 async function vote(pollId: number, optionIndex: number) {
-  const previousVote = userVotes.value[pollId];
+  const previous = userVotes.value[pollId];
 
-  if (previousVote === optionIndex) {
+  if (previous === optionIndex) {
     message.value = "Je hebt al gestemd!";
     setTimeout(() => (message.value = ""), 3000); // verdwijnt na 3 sec
     return;
   }
 
-  if (previousVote !== undefined) {
-    await fetch(`${API_URL}/${pollId}/reset/${previousVote}`, {
+  if (previous !== undefined) {
+    await fetch(`${API_URL}/${pollId}/reset/${previous}`, {
       method: "PUT",
     });
   }

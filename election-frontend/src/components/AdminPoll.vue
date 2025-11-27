@@ -9,6 +9,7 @@ interface Poll {
   question: string
   options: string[]
   votes: number[]
+  active: boolean
 }
 
 interface JwtPayload {
@@ -71,6 +72,11 @@ async function vote(pollId: number, optionIndex: number) {
 
   userVotes.value[pollId] = optionIndex
   saveUserVotes()
+  loadPolls()
+}
+
+async function activatePoll(id: number) {
+  await fetch(`${API_URL}/${id}/activate`, { method: 'PUT' })
   loadPolls()
 }
 
@@ -205,6 +211,16 @@ onMounted(async () => {
           <div v-if="user?.role === 'ADMIN'" class="mt-4 flex gap-2">
             <button @click="startEdit(poll)" class="bg-yellow-500 text-white px-3 py-1 rounded">Bewerken</button>
             <button @click="deletePoll(poll.id)" class="bg-red-500 text-white px-3 py-1 rounded">Verwijderen</button>
+            <button
+              @click="activatePoll(poll.id)"
+              class="bg-blue-500 text-white px-3 py-1 rounded"
+            >
+              Activeren
+            </button>
+          </div>
+
+          <div v-if="poll.active" class="text-green-600 font-bold mt-2">
+            ✅ Deze poll is actief
           </div>
         </div>
       </div>
