@@ -167,13 +167,18 @@ async function promoteAdmin(u: AuthUser) {
 
       <section class="border border-gray-300/50 rounded-lg p-8 bg-white/60 shadow-inner">
         <h3 class="text-xl font-serif font-semibold mb-3">Statistieken & Activiteit</h3>
-        <ul class="list-disc list-inside text-gray-600 italic">
+        <ul class="list-disc list-inside text-gray-600 italic space-y-1">
           <li>Actieve gebruikers per week</li>
           <li>Populairste forumposts</li>
           <li>Nieuwste registraties</li>
-          <router-link :to="'/admin-poll'" class="block w-full">
-            <li>Poll</li>
-          </router-link>
+          <li>
+            <router-link
+              :to="'/admin-poll'"
+              class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+            >
+              Poll
+            </router-link>
+          </li>
         </ul>
       </section>
     </div>
