@@ -24,6 +24,12 @@ public class PollController {
         return pollService.getAllPolls();
     }
 
+    // Actieve poll ophalen
+    @GetMapping("/active")
+    public Poll getActivePoll() {
+        return pollService.getActivePoll();
+    }
+
     // Stemmen op optie
     @PostMapping("/{pollId}/vote/{optionIndex}")
     public void vote(@PathVariable Long pollId, @PathVariable int optionIndex) {
@@ -54,5 +60,11 @@ public class PollController {
     @DeleteMapping("/{pollId}")
     public void deletePoll(@PathVariable Long pollId) {
         pollService.deletePoll(pollId);
+    }
+
+    // Poll activeren
+    @PutMapping("/{pollId}/activate")
+    public void activatePoll(@PathVariable Long pollId) {
+        pollService.activatePoll(pollId);
     }
 }
