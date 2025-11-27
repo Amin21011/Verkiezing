@@ -57,4 +57,18 @@ public class CandidateRepository {
     public List<Party> findAllParties() {
         return parties;
     }
+
+    public List<Candidate> findByFirstNameContainingIgnoreCase(String name) {
+        return candidates.stream()
+                .filter(c -> c.getFirstName() != null &&
+                        c.getFirstName().toLowerCase().contains(name.toLowerCase()))
+                .toList();
+    }
+
+    public List<Candidate> findByLastNameContainingIgnoreCase(String name) {
+        return candidates.stream()
+                .filter(c -> c.getLastName() != null &&
+                        c.getLastName().toLowerCase().contains(name.toLowerCase()))
+                .toList();
+    }
 }
