@@ -3,9 +3,6 @@ package nl.hva.election_backend.service;
 import nl.hva.election_backend.model.Poll;
 import nl.hva.election_backend.repository.PollRepository;
 import org.springframework.stereotype.Service;
-
-import jakarta.annotation.PostConstruct;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -75,18 +72,23 @@ public class PollService {
         return pollRepository.findAll();
     }
 
-    /**
-     * Delete alle polls.
-     */
-    public void clearAllPolls() {
-        pollRepository.deleteAll();
+    // Actieve poll instellen
+    public void activatePoll(Long pollId) {
+        List<Poll> all = pollRepository.findAll();
+        for (Poll p : all) {
+            p.setActive(false);
+        }
+        Poll poll = pollRepository.findById(pollId).orElseThrow();
+        poll.setActive(true);
+        pollRepository.saveAll(all);
+        pollRepository.save(poll);
     }
 
-    @PostConstruct
-    public void init() {
-        if (pollRepository.count() == 0) {
-            createPoll("Wie is de betere partij?", Arrays.asList("VVD", "D66", "CDA"));
-            System.out.println("✅ Initiele poll toegevoegd");
-        }
+    // Actieve poll ophalen
+    public Poll getActivePoll() {
+        return pollRepository.findAll().stream()
+                .filter(Poll::isActive)
+                .findFirst()
+                .orElse(null);
     }
 }
