@@ -12,8 +12,8 @@ public class Result {
     public String getShortCode() { return shortCode; }
     public void setShortCode(String shortCode) { this.shortCode = shortCode; }
 
-
-    public Result(String partyId, String partyName, String candidateId, int votes, String regionType, String regionId) {
+    public Result(String partyId, String partyName, String candidateId, int votes,
+                  String regionType, String regionId) {
         this.partyId = partyId;
         this.candidateId = candidateId;
         this.votes = votes;
@@ -27,11 +27,12 @@ public class Result {
     public int getVotes() { return votes; }
     public void setVotes(int votes) { this.votes = votes; }
 
-
     @Override
     public String toString() {
         String type = candidateId == null ? "Party" : "Candidate";
-        return String.format("%s | PartyId: %s (%s) | CandidateId: %s | Votes: %d | Region: %s %s",
-                type, partyId, partyName, candidateId, votes, regionType, regionId);
+        return String.format(
+                "%s | PartyId: %s (%s) | CandidateId: %s | Votes: %d | Region: %s %s",
+                type, partyId, partyName, candidateId, votes, regionType, regionId
+        );
     }
 }

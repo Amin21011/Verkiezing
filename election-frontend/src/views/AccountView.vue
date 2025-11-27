@@ -9,7 +9,6 @@ const loading = ref(true)
 
 onMounted(async () => {
   try {
-    // haalt meest actuele data op
     const currentUser = await getCurrentUser()
     if (currentUser) {
       userRole.value = currentUser.role

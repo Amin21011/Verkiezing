@@ -2,11 +2,11 @@
 
 
 Eerste versie van onze UML: 
-![eerste](./img/oldUML.png)
+![eerste](img/oldUML.png)
 
 Tweede versie na ontvangen feedback: 
 
-![eerste](./img/newUML.png)
+![eerste](img/newUML.png)
 
 In mermaid: 
 
