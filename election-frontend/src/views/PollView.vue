@@ -48,14 +48,16 @@ async function vote(pollId: number, optionIndex: number) {
   }
 
   if (previous !== undefined) {
-    await fetch(`${API_URL}/${pollId}/reset/${previous}`, {
-      method: "PUT",
-    });
+    await fetch(
+      `${import.meta.env.VITE_API_URL}/polls/${pollId}/reset/${previous}`,
+      { method: "PUT" }
+    );
   }
 
-  await fetch(`${API_URL}/${pollId}/vote/${optionIndex}`, {
-    method: "POST",
-  });
+  await fetch(
+    `${import.meta.env.VITE_API_URL}/polls/${pollId}/vote/${optionIndex}`,
+    { method: "POST" }
+  );
 
   userVotes.value[pollId] = optionIndex;
   saveUserVotes();
