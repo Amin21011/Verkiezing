@@ -171,6 +171,9 @@ async function promoteAdmin(u: AuthUser) {
           <li>Actieve gebruikers per week</li>
           <li>Populairste forumposts</li>
           <li>Nieuwste registraties</li>
+          <router-link :to="'/admin-poll'" class="block w-full">
+            <li>Poll</li>
+          </router-link>
         </ul>
       </section>
     </div>
