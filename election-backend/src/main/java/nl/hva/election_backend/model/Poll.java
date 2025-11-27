@@ -1,6 +1,7 @@
 package nl.hva.election_backend.model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,17 +14,20 @@ public class Poll {
     private String question;
 
     @ElementCollection
-    private List<String> options;
+    private List<String> options = new ArrayList<>();
 
     @ElementCollection
-    private List<Integer> votes;
+    private List<Integer> votes = new ArrayList<>();
 
     public Poll() {}
 
     public Poll(String question, List<String> options) {
         this.question = question;
         this.options = options;
-        this.votes = options.stream().map(o -> 0).toList();
+        this.votes = new ArrayList<>();
+        for (int i = 0; i < options.size(); i++) {
+            this.votes.add(0);
+        }
     }
 
     public Long getId() {
@@ -35,9 +39,16 @@ public class Poll {
         return question;
     }
 
-    // Lijst met antwoordopties teruggeven
+    public void setQuestion(String question) {
+        this.question = question;
+    }
+
     public List<String> getOptions() {
         return options;
+    }
+
+    public void setOptions(List<String> options) {
+        this.options = options;
     }
 
     public List<Integer> getVotes() {
