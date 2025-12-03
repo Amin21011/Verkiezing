@@ -3,20 +3,17 @@ package nl.hva.election_backend.api;
 import nl.hva.election_backend.service.PollService;
 import nl.hva.election_backend.model.Poll;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/polls")
+@RequestMapping("/api/polls")
 @CrossOrigin(origins = "http://localhost:5173")
 public class PollController {
+
     private final PollService pollService;
 
-    public PollController() {
-        this.pollService = new PollService();
-
-        pollService.createPoll("Wie is de betere partij?", Arrays.asList("VVD", "D66", "CDA"));
+    public PollController(PollService pollService) {
+        this.pollService = pollService;
     }
 
     /**
@@ -27,29 +24,47 @@ public class PollController {
         return pollService.getAllPolls();
     }
 
-    /**
-     * Het toevoegen van een stem aan een poll.
-     */
-    @PostMapping("/{pollIndex}/vote/{optionIndex}")
-    public void vote(@PathVariable int pollIndex, @PathVariable int optionIndex) {
-        pollService.voteOnPoll(pollIndex, optionIndex);
+    // Actieve poll ophalen
+    @GetMapping("/active")
+    public Poll getActivePoll() {
+        return pollService.getActivePoll();
     }
 
-    /**
-     * Haalt een stem weg.
-     */
-    @PutMapping("/{pollIndex}/reset/{optionIndex}")
-    public void resetVote(@PathVariable int pollIndex, @PathVariable int optionIndex) {
-        pollService.resetVote(pollIndex, optionIndex);
+    // Stemmen op optie
+    @PostMapping("/{pollId}/vote/{optionIndex}")
+    public void vote(@PathVariable Long pollId, @PathVariable int optionIndex) {
+        pollService.voteOnPoll(pollId, optionIndex);
+    }
+
+    // Stem resetten
+    @PutMapping("/{pollId}/reset/{optionIndex}")
+    public void resetVote(@PathVariable Long pollId, @PathVariable int optionIndex) {
+        pollService.resetVote(pollId, optionIndex);
+    }
+
+    // Poll aanmaken
+    @PostMapping
+    public Poll createPoll(@RequestBody Poll poll) {
+        return pollService.createPoll(poll.getQuestion(), poll.getOptions());
+    }
+
+    // Poll updaten
+    @PutMapping("/{pollId}")
+    public Poll updatePoll(@PathVariable Long pollId, @RequestBody Poll poll) {
+        return pollService.updatePoll(pollId, poll.getQuestion(), poll.getOptions());
     }
 
     /**
      * Verwijdert alle polls.
      */
-    @DeleteMapping("/clear")
-    public void clearPolls() {
-        pollService.clearAllPolls();
+    @DeleteMapping("/{pollId}")
+    public void deletePoll(@PathVariable Long pollId) {
+        pollService.deletePoll(pollId);
     }
 
-
+    // Poll activeren
+    @PutMapping("/{pollId}/activate")
+    public void activatePoll(@PathVariable Long pollId) {
+        pollService.activatePoll(pollId);
+    }
 }

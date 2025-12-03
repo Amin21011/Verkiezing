@@ -3,62 +3,81 @@ import { ref, onMounted } from "vue";
 import PollContent from "../components/PollContent.vue";
 
 interface Poll {
+  id: number;
   question: string;
   options: string[];
   votes: number[];
 }
 
-const API_URL = `${import.meta.env.VITE_API_URL}/polls`;
+const API_URL = `${import.meta.env.VITE_API_URL}/polls/active`;
 
 const polls = ref<Poll[]>([]);
 const message = ref("");
 
 // Laad polls
+const userVotes = ref<Record<number, number>>({});
+// Load keuze uit localStorage
+function loadUserVotes() {
+  const saved = localStorage.getItem("userVotes");
+  userVotes.value = saved ? JSON.parse(saved) : {};
+}
+
+// Save keuze
+function saveUserVotes() {
+  localStorage.setItem("userVotes", JSON.stringify(userVotes.value));
+}
+
+// Polls laden
 async function loadPolls() {
   try {
     const res = await fetch(API_URL);
-    polls.value = await res.json();
-
-    const votedPolls = JSON.parse(localStorage.getItem("votedPolls") || "{}");
-    if (Object.keys(votedPolls).length > polls.value.length) {
-      localStorage.removeItem("votedPolls");
-    }
-    console.log("Polls geladen:", polls.value); // Check
+    const poll = await res.json();
+    polls.value = poll ? [poll] : [];
   } catch (error) {
-    console.log("Fout bij het laden van polls:", error);
+    console.log("Fout bij laden:", error);
   }
 }
 
-// Stemmen
-async function vote(pollIndex: number, optionIndex: number) {
-  const votedPolls = JSON.parse(localStorage.getItem("votedPolls") || "{}");
+async function vote(pollId: number, optionIndex: number) {
+  const previous = userVotes.value[pollId];
 
-  if (votedPolls[pollIndex] !== undefined) {
-    const previousOption = votedPolls[pollIndex];
-
-    if (previousOption === optionIndex) {
-      message.value = "Je hebt al op deze optie gestemd!";
-      setTimeout(() => (message.value = ""), 3000);
-      return;
-    }
-
-    await fetch(`${API_URL}/${pollIndex}/reset/${previousOption}`, {
-      method: "PUT",
-    });
+  if (previous === optionIndex) {
+    message.value = "Je hebt al gestemd!";
+    setTimeout(() => (message.value = ""), 3000); // verdwijnt na 3 sec
+    return;
   }
 
-  await fetch(`${API_URL}/${pollIndex}/vote/${optionIndex}`, {
-    method: "POST",
-  });
+  if (previous !== undefined) {
+    await fetch(
+      `${import.meta.env.VITE_API_URL}/polls/${pollId}/reset/${previous}`,
+      { method: "PUT" }
+    );
+  }
 
-  votedPolls[pollIndex] = optionIndex;
-  localStorage.setItem("votedPolls", JSON.stringify(votedPolls));
+  await fetch(
+    `${import.meta.env.VITE_API_URL}/polls/${pollId}/vote/${optionIndex}`,
+    { method: "POST" }
+  );
+
+  userVotes.value[pollId] = optionIndex;
+  saveUserVotes();
+
   await loadPolls();
 }
 
-onMounted(loadPolls);
+
+
+onMounted(() => {
+  loadUserVotes();
+  loadPolls();
+});
 </script>
 
 <template>
-  <PollContent :polls="polls" :message="message" @vote="vote" />
+  <PollContent
+    :polls="polls"
+    :message="message"
+    :userVotes="userVotes"
+    @vote="vote"
+  />
 </template>

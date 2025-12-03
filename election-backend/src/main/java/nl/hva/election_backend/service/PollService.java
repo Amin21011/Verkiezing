@@ -2,49 +2,93 @@ package nl.hva.election_backend.service;
 
 import nl.hva.election_backend.model.Poll;
 import nl.hva.election_backend.repository.PollRepository;
-
+import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.ArrayList;
 
+@Service
 public class PollService {
+
     private final PollRepository pollRepository;
-    public PollService() {
-        this.pollRepository = new PollRepository();
+
+    public PollService(PollRepository pollRepository) {
+        this.pollRepository = pollRepository;
     }
 
-    /**
-     * Maakt een nieuwe poll aan.
-     */
-    public void createPoll(String question, List<String> options) {
-        Poll poll = new Poll(question, options); // Nieuwe poll aanmaken
-        pollRepository.addPoll(poll);
+    // Poll aanmaken
+    public Poll createPoll(String question, List<String> options) {
+        Poll poll = new Poll(question, options);
+        return pollRepository.save(poll);
     }
 
-    public void voteOnPoll(int pollIndex, int optionIndex) {
-        Poll poll = pollRepository.getPollByIndex(pollIndex); // Haalt de juiste poll op
-        if (poll != null) {
-            poll.vote(optionIndex); // Voegt een stem toe aan de poll
+    // Stemmen op poll
+    public void voteOnPoll(Long pollId, int optionIndex) {
+        Poll poll = pollRepository.findById(pollId).orElse(null);
+        if (poll != null && optionIndex >= 0 && optionIndex < poll.getVotes().size()) {
+            List<Integer> votes = new ArrayList<>(poll.getVotes());
+            votes.set(optionIndex, votes.get(optionIndex) + 1);
+            poll.setVotes(votes);
+            pollRepository.save(poll);
         }
     }
 
-
-    public void resetVote(int pollIndex, int optionIndex) {
-        Poll poll = pollRepository.getPollByIndex(pollIndex); // Haalt de juiste poll op
-        if (poll != null) {
-            poll.resetVote(optionIndex); // Verwijdert een stem van de optie
+    public void resetVote(Long pollId, int optionIndex) {
+        Poll poll = pollRepository.findById(pollId).orElse(null);
+        if (poll != null && optionIndex >= 0 && optionIndex < poll.getVotes().size()) {
+            List<Integer> votes = new ArrayList<>(poll.getVotes());
+            votes.set(optionIndex, Math.max(votes.get(optionIndex) - 1, 0));
+            poll.setVotes(votes);
+            pollRepository.save(poll);
         }
     }
 
-    /**
-     * Geeft een lijst van alle polls die er zijn.
-     */
+    // Poll verwijderen
+    public void deletePoll(Long pollId) {
+        pollRepository.deleteById(pollId);
+    }
+
+    // Poll updaten (stemmen behouden voor bestaande opties)
+    public Poll updatePoll(Long pollId, String question, List<String> options) {
+        Poll poll = pollRepository.findById(pollId).orElseThrow();
+
+        List<Integer> oldVotes = poll.getVotes();
+        List<String> oldOptions = poll.getOptions();
+        List<Integer> newVotes = new ArrayList<>();
+
+        for (String option : options) {
+            int index = oldOptions.indexOf(option);
+            newVotes.add(index != -1 ? oldVotes.get(index) : 0);
+        }
+
+        poll.setQuestion(question);
+        poll.setOptions(options);
+        poll.setVotes(newVotes);
+
+        return pollRepository.save(poll);
+    }
+
+    // Alle polls ophalen
     public List<Poll> getAllPolls() {
-        return pollRepository.getPolls();
+        return pollRepository.findAll();
     }
 
-    /**
-     * Delete alle polls.
-     */
-    public void clearAllPolls() {
-        pollRepository.clearPolls();
+    // Actieve poll instellen
+    public void activatePoll(Long pollId) {
+        List<Poll> all = pollRepository.findAll();
+        for (Poll p : all) {
+            p.setActive(false);
+        }
+        Poll poll = pollRepository.findById(pollId).orElseThrow();
+        poll.setActive(true);
+        pollRepository.saveAll(all);
+        pollRepository.save(poll);
+    }
+
+    // Actieve poll ophalen
+    public Poll getActivePoll() {
+        return pollRepository.findAll().stream()
+                .filter(Poll::isActive)
+                .findFirst()
+                .orElse(null);
     }
 }

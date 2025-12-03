@@ -23,6 +23,16 @@
 > **Kevin**:
 > *"Ik zou kiezen voor versie B, want die is duidelijker als ik snel het resultaat wil zien van een specifieke partij. De piechart is visueel mooier maar minder duidelijk"*
 
+> **Ayse**:  
+> *"Ik kies voor de staafdiagram omdat die veel makkelijker leesbaar is. Je kunt snel zien hoeveel elke partij heeft gekregen en het overzicht blijft behouden, zelfs als er veel partijen zijn."*
+
+> **Elif**:  
+> *"Ik vind de staafdiagram fijner om te gebruiken. Het is duidelijker om de verschillen tussen de partijen te vergelijken"*
+
+> **Firdevs**:  
+> *"Ik kies voor de piechart omdat die meer je aandacht aantrekt. Visueel is het leuker om naar te kijken, ook al is het soms iets minder overzichtelijk."*
+
+
 
 ---
 

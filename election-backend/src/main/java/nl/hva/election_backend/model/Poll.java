@@ -1,42 +1,45 @@
 package nl.hva.election_backend.model;
 
+import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class Poll {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String question;
-    private List<String> options;
-    private int[] votes;
+
+    @ElementCollection
+    private List<String> options = new ArrayList<>();
+
+    @ElementCollection
+    private List<Integer> votes = new ArrayList<>();
+
+    private boolean active = false;
+    public Poll() {}
 
     public Poll(String question, List<String> options) {
         this.question = question;
         this.options = options;
-        this.votes = new int[options.size()];
-    }
-
-    // Pollvraag teruggeven
-    public String getQuestion() {
-        return question;
-    }
-
-    // Lijst met antwoordopties teruggeven
-    public List<String> getOptions() {
-        return options;
-    }
-
-    // Aantal stemmen per optie teruggeven
-    public int[] getVotes() {
-        return votes;
-    }
-
-    public void vote(int optionIndex) {
-        if (optionIndex >= 0 && optionIndex < votes.length) {
-            votes[optionIndex]++;
+        this.votes = new ArrayList<>();
+        for (int i = 0; i < options.size(); i++) {
+            this.votes.add(0);
         }
+        this.active = false;
     }
 
-    public void resetVote(int optionIndex) {
-        if (optionIndex >= 0 && optionIndex < votes.length && votes[optionIndex] > 0) {
-            votes[optionIndex]--;
-        }
-    }
+    // Getters & setters
+    public Long getId() { return id; }
+    public String getQuestion() { return question; }
+    public void setQuestion(String question) { this.question = question; }
+    public List<String> getOptions() { return options; }
+    public void setOptions(List<String> options) { this.options = options; }
+    public List<Integer> getVotes() { return votes; }
+    public void setVotes(List<Integer> votes) { this.votes = votes; }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }

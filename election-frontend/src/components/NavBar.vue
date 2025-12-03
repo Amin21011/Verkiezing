@@ -3,12 +3,14 @@ import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { authToken, getAuthUser, getCurrentUser, logout } from '@/services/authService'
 import { showToast } from '@/helpers/useFlash.ts'
+import SearchBar from '@/components/SearchBar.vue'
 
 const router = useRouter()
 const isScrolled = ref(false)
 const user = ref(getAuthUser())
 const showMenu = ref(false)
 const showOffcanvas = ref(false)
+const search = ref('')
 
 const goToHome = () => router.push('/')
 
@@ -72,6 +74,11 @@ const ticker = [
 function toggleOffcanvas() {
   showOffcanvas.value = !showOffcanvas.value
 }
+
+const handleSearchInput = (query: string) => {
+  search.value = query
+  console.log('Zoeken:', query)
+}
 </script>
 
 
@@ -85,6 +92,10 @@ function toggleOffcanvas() {
         <button class="bg-transparent border-none cursor-pointer text-xl px-2 py-1 transition hover:text-indigo-700" title="Dark Mode">
           🌙 </button>
       </div>
+
+      <!-- Search + User -->
+      <div class="flex items-center gap-4">
+        <SearchBar v-model="search" @search="handleSearchInput" />
 
       <div v-if="user" class="relative">
         <div class="user-avatar w-[36px] h-[36px] rounded-full bg-[darkslateblue] text-white font-bold flex items-center justify-center cursor-pointer select-none"
@@ -109,12 +120,12 @@ function toggleOffcanvas() {
         </transition>
       </div>
 
-
       <div v-else>
         <button class="cursor-pointer px-2 py-1" @click="() => router.push('/register')">
           <img src="../assets/img/images.png" class="w-8 h-8 object-contain" />
         </button>
       </div>
+     </div>
     </div>
 
     <div @click="goToHome" class="text-center text-[#111827] mt-4 cursor-pointer">
@@ -144,7 +155,7 @@ function toggleOffcanvas() {
         <router-link to="/forum">Forum</router-link>
         <router-link to="/quiz">Quiz</router-link>
         <router-link to="/simulator">Tweede Kamer Simulator</router-link>
-
+        <router-link to="/map">De Map</router-link>
         <router-link to="/candidates">Kandidaten</router-link>
         <router-link to="/">FAQ</router-link>
       </div>
@@ -196,7 +207,6 @@ function toggleOffcanvas() {
   position: relative;
   padding-left: 1.5rem;
 }
-
 
 .offcanvas a::before {
   content: '▶';

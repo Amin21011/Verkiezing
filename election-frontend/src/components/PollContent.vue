@@ -1,12 +1,12 @@
 <script setup lang="ts">
-
 defineProps<{
-  polls: { question: string; options: string[]; votes: number[] }[];
+  polls: { id: number; question: string; options: string[]; votes: number[] }[];
   message: string;
+  userVotes: Record<number, number>;
 }>();
 
 defineEmits<{
-  (e: "vote", pollIndex: number, optionIndex: number): void;
+  (e: "vote", pollId: number, optionIndex: number): void;
 }>();
 
 function getTotalVotes(votes: number[]) {
@@ -34,23 +34,37 @@ function getPercentage(votes: number[], i: number) {
       Er zijn nog geen polls beschikbaar.
     </div>
 
-    <div v-else v-for="(poll, pollIndex) in polls" :key="pollIndex" class="bg-white p-4 rounded-lg shadow mb-6 w-full max-w-xl">
+    <div
+      v-else
+      v-for="poll in polls"
+      :key="poll.id"
+      class="bg-white p-4 rounded-lg shadow mb-6 w-full max-w-xl"
+    >
       <h3 class="text-lg font-semibold mb-2 border-b pb-1">{{ poll.question }}</h3>
 
       <!-- Opties -->
       <div class="space-y-2">
         <div
-          v-for="(option, optionIndex) in poll.options || []"
+          v-for="(option, optionIndex) in poll.options"
           :key="optionIndex"
           class="relative w-full cursor-pointer"
-          @click="$emit('vote', pollIndex, optionIndex)"
+          @click="$emit('vote', poll.id, optionIndex)"
         >
-          <!-- Achtergrond balk -->
-          <div class="absolute top-0 left-0 h-full bg-blue-950 rounded-l-lg opacity-40"
-               :style="{ width: getPercentage(poll.votes, optionIndex) + '%' }"></div>
 
-          <!-- Tekst -->
-          <div class="relative flex justify-between px-3 py-2 border text-black border-gray-300 rounded-lg">
+          <!-- Percentage achter background -->
+          <div
+            class="absolute top-0 left-0 h-full bg-blue-950 rounded-l-lg opacity-40"
+            :style="{ width: getPercentage(poll.votes, optionIndex) + '%' }"
+          ></div>
+
+          <!-- Tekst + highlight wanneer gestemd -->
+          <div
+            class="relative flex justify-between px-3 py-2 border rounded-lg"
+            :class="{
+              'border-green-600 bg-green-100 font-bold':
+                userVotes[poll.id] === optionIndex
+            }"
+          >
             <span>{{ option }}</span>
             <span>{{ getPercentage(poll.votes, optionIndex) }}%</span>
           </div>

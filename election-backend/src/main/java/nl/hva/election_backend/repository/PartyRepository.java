@@ -18,4 +18,14 @@ public class PartyRepository {
     public List<Party1> getAllParties() {
         return new ArrayList<>(partiesLong);
     }
+
+    public List<Party> findByNameContainingIgnoreCase(String name) {
+        List<Party> result = new ArrayList<>();
+        for (Party p : parties) {
+            if (p.getName().toLowerCase().contains(name.toLowerCase())) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
 }
