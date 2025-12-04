@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import FeaturedArticle from '@/components/ElectionMap.vue'
+import Map from '@/components/ElectionMap.vue'
 </script>
 
 <template>
   <div class="min-h-screen">
-    <FeaturedArticle />
+    <Map />
   </div>
 </template>
