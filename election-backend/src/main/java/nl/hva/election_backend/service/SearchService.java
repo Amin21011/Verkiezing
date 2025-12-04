@@ -27,10 +27,14 @@ public class SearchService {
         combined.addAll(first);
         combined.addAll(last);
 
+        for (Candidate c : combined) {
+            partyRepository.findById(c.getPartyId())
+                    .ifPresent(p -> c.setPartyName(p.getName()));
+        }
+
         return new ArrayList<>(combined);
     }
 
     public List<Party> searchParties(String name) {
         return partyRepository.findByNameContainingIgnoreCase(name);}
 }
-//        return candidateRepository.searchByName(name);
