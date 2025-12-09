@@ -34,6 +34,8 @@ public class DutchCandidateParser {
             String shortCode = null;
             String firstName = null;
             String lastName = null;
+            String gender = null;
+            String residence = null;
 
             while (reader.hasNext()) {
                 int event = reader.next();
@@ -49,6 +51,8 @@ public class DutchCandidateParser {
                         }
                         case "FirstName" -> firstName = reader.getElementText().trim();
                         case "LastName" -> lastName = reader.getElementText().trim();
+                        case "Gender" -> gender = reader.getElementText().trim();
+                        case "LocalityName" -> residence = reader.getElementText().trim();
                     }
                 }
 
@@ -64,10 +68,12 @@ public class DutchCandidateParser {
 
                             Candidate c = new Candidate(candidateId, finalShortCode, firstName, lastName, currentPartyId);
                             c.setPartyId(currentPartyId);
+                            c.setGender(gender);
+                            c.setResidence(residence);
                             candidates.add(c);
                         }
                         // reset voor volgende kandidaat
-                        candidateId = shortCode = firstName = lastName = null;
+                        candidateId = shortCode = firstName = lastName = gender = residence = null;
                     } else if ("Affiliation".equals(localName)) {
                         currentPartyId = null;
                     }
