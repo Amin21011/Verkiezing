@@ -10,6 +10,8 @@ interface Candidate {
   lastName: string;
   partyId: string;
   partyName: string;
+  gender: string;
+  residence: string;
   votes: number;
 }
 
@@ -196,10 +198,11 @@ const getCandidateName = (value: string) => {
         <p class="text-xl font-semibold">{{ c.firstName }} {{ c.lastName }}</p>
         <p class="text-gray-600">Partij: {{ c.partyName }}</p>
         <div class="mt-2 space-y-1">
-          <p>Shortcode: {{ c.shortCode }}</p>
-          <p>Stemmen: {{ c.votes }}</p>
           <p>ID: {{ c.id }}</p>
           <p>Party ID: {{ c.partyId }}</p>
+          <p>Geslacht: {{ c.gender }}</p>
+          <p>Woonplaats: {{ c.residence }}</p>
+          <p>Stemmen: {{ c.votes }}</p>
         </div>
       </div>
     </div>
