@@ -105,6 +105,7 @@ public class ResultLoader {
                 XMLStreamReader reader = factory.createXMLStreamReader(is);
                 Map<String, String> selectionData = new HashMap<>();
                 String currentAffiliationId = null;
+                Candidate currentCandidate = null;
 
                 while (reader.hasNext()) {
                     int event = reader.next();
@@ -115,23 +116,44 @@ public class ResultLoader {
                         switch (name) {
                             case "AffiliationIdentifier" -> {
                                 currentAffiliationId = reader.getAttributeValue(null, "Id");
-                                if (currentAffiliationId != null) {
-                                    selectionData.put("AffiliationIdentifier-Id", currentAffiliationId.trim());
-                                }
+                                if (currentAffiliationId != null) selectionData.put("AffiliationIdentifier-Id", currentAffiliationId.trim());
                             }
                             case "CandidateIdentifier" -> {
                                 String candidateId = reader.getAttributeValue(null, "Id");
                                 String shortCode = reader.getAttributeValue(null, "ShortCode");
-                                if (currentAffiliationId != null)
-                                    selectionData.put("AffiliationIdentifier-Id", currentAffiliationId.trim());
-                                if (candidateId != null)
-                                    selectionData.put("CandidateIdentifier-Id", candidateId.trim());
-                                if (shortCode != null)
-                                    selectionData.put("CandidateIdentifier-ShortCode", shortCode.trim());
+
+                                if (candidateId != null) {
+                                    final String cid = candidateId.trim();
+                                    currentCandidate = election.getCandidates().stream()
+                                            .filter(c -> c.getId().equals(cid))
+                                            .findFirst()
+                                            .orElse(null);
+                                }
+
+                                if (currentCandidate != null && shortCode != null)
+                                    currentCandidate.setShortCode(shortCode.trim());
+                            }
+                            case "Gender" -> {
+                                if (currentCandidate != null)
+                                    currentCandidate.setGender(readElementText(reader));
+                            }
+                            case "QualifyingAddress" -> {
+                                String residence = null;
+                                while (reader.hasNext()) {
+                                    int innerEvent = reader.next();
+                                    if (innerEvent == XMLStreamConstants.START_ELEMENT &&
+                                            "LocalityName".equals(reader.getLocalName())) {
+                                        residence = readElementText(reader);
+                                    } else if (innerEvent == XMLStreamConstants.END_ELEMENT &&
+                                            "QualifyingAddress".equals(reader.getLocalName())) {
+                                        break;
+                                    }
+                                }
+                                if (currentCandidate != null && residence != null)
+                                    currentCandidate.setResidence(residence);
                             }
                             case "ValidVotes" -> {
-                                String text = readElementText(reader);
-                                selectionData.put("ValidVotes", text);
+                                selectionData.put("ValidVotes", readElementText(reader));
                             }
                             case "TotalVotes" -> selectionData.put("TotalVotes", readElementText(reader));
                         }
@@ -146,6 +168,7 @@ public class ResultLoader {
                             else
                                 transformer.registerPartyVotes(true, selectionData);
                             selectionData.clear();
+                            currentCandidate = null;
                         } else if ("Affiliation".equals(name)) {
                             currentAffiliationId = null;
                         } else if ("Contest".equals(name)) {
