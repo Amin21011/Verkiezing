@@ -7,6 +7,8 @@ interface Candidate {
   id: number | string
   firstName: string
   lastName: string
+  partyId?: number | string
+  partyName?: string | null
 }
 
 interface Party {
@@ -115,6 +117,9 @@ const prevPageParties = () => {
                   class="block w-full"
                 >
                   {{ c.firstName }} {{ c.lastName }}
+                  <span v-if="c.partyName" class="text-gray-500 ml-2">
+                    ({{ c.partyName }})
+                  </span>
                 </router-link>
               </li>
             </ul>
