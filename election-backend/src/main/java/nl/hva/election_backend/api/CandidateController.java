@@ -5,6 +5,7 @@ import nl.hva.election_backend.service.CandidateService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/candidates")
@@ -26,4 +27,11 @@ public class CandidateController {
     public List<Candidate> getCandidatesByParty(@PathVariable String partyId) {
         return candidateService.getCandidatesByParty(partyId);
     }
+    @PostMapping("/compare")
+    public List<Candidate> compareCandidates(
+            @RequestBody List<Map<String, String>> selections
+    ) {
+        return candidateService.compareCandidates(selections);
+    }
+
 }
