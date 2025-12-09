@@ -8,6 +8,8 @@ public class Candidate {
     private String lastName;
     private String partyId;
     private String partyName;
+    private String gender;
+    private String residence;
     private int votes;
 
     public Candidate(String id, String shortCode, String firstName, String lastName, String partyId) {
@@ -27,6 +29,9 @@ public class Candidate {
     public String getPartyId() { return partyId; }
     public String getPartyName() { return partyName; }
     public int getVotes() { return votes; }
+    public String getGender() { return gender; }
+    public String getResidence() { return residence; }
+
 
     public void setId(String id) { this.id = id; }
     public void setShortCode(String shortCode) { this.shortCode = shortCode; }
@@ -35,6 +40,8 @@ public class Candidate {
     public void setPartyId(String partyId) { this.partyId = partyId; }
     public void setPartyName(String partyName) { this.partyName = partyName; }
     public void setVotes(int votes) { this.votes = votes; }
+    public void setGender(String gender) { this.gender = gender; }
+    public void setResidence(String residence) { this.residence = residence; }
 
     @Override
     public String toString() {
