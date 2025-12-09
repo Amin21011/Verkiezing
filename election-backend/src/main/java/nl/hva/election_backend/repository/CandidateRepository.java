@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class CandidateRepository {
@@ -71,4 +72,17 @@ public class CandidateRepository {
                         c.getLastName().toLowerCase().contains(name.toLowerCase()))
                 .toList();
     }
+    public List<Candidate> findByPartyAndCandidateIds(
+            List<Map<String, String>> selections
+    ) {
+        return candidates.stream()
+                .filter(c ->
+                        selections.stream().anyMatch(s ->
+                                c.getId().equals(s.get("candidateId")) &&
+                                        c.getPartyId().equals(s.get("partyId"))
+                        )
+                )
+                .toList();
+    }
+
 }
