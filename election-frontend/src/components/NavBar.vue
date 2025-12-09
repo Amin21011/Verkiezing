@@ -157,6 +157,7 @@ const handleSearchInput = (query: string) => {
         <router-link to="/simulator">Tweede Kamer Simulator</router-link>
         <router-link to="/map">De Provincies</router-link>
         <router-link to="/candidates">Kandidaten</router-link>
+        <router-link to="/compare-candidates">Compare canidates</router-link>
         <router-link to="/">FAQ</router-link>
       </div>
     </div>
