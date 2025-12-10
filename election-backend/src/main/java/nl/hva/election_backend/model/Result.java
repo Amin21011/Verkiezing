@@ -1,38 +1,69 @@
 package nl.hva.election_backend.model;
 
+import jakarta.persistence.*;
+import java.util.Objects;
+
+@Entity
+@Table(name = "results")
 public class Result {
-    private final String partyId;
-    private final String candidateId;
-    private int votes;
-    private final String regionType;
-    private final String regionId;
-    private String partyName;
-    private String shortCode;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public String getShortCode() { return shortCode; }
-    public void setShortCode(String shortCode) { this.shortCode = shortCode; }
+    private int votes = 0;
 
-    public Result(String partyId, String partyName, String candidateId, int votes,
-                  String regionType, String regionId) {
-        this.partyId = partyId;
-        this.candidateId = candidateId;
+    private Boolean elected;
+    private Integer ranking;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "party_id")
+    private Party party;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "candidate_id")
+    private Candidate candidate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id")
+    private Region region;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "election_id", nullable = false)
+    private Election election;
+
+    public Result() {}
+
+    public Result(Election election, Region region, Party party, Candidate candidate, int votes) {
+        this.election = election;
+        this.region = region;
+        this.party = party;
+        this.candidate = candidate;
         this.votes = votes;
-        this.regionType = regionType;
-        this.regionId = regionId;
-        this.partyName = partyName;
     }
 
-    public String getPartyId() { return partyId; }
-    public String getCandidateId() { return candidateId; }
+    public Long getId() { return id; }
     public int getVotes() { return votes; }
+    public Party getParty() { return party; }
+    public Candidate getCandidate() { return candidate; }
+    public Region getRegion() { return region; }
+    public Election getElection() { return election; }
+    public Boolean getElected() { return elected; }
+    public Integer getRanking() { return ranking; }
+
     public void setVotes(int votes) { this.votes = votes; }
+    public void setElected(Boolean elected) { this.elected = elected; }
+    public void setRanking(Integer ranking) { this.ranking = ranking; }
 
     @Override
-    public String toString() {
-        String type = candidateId == null ? "Party" : "Candidate";
-        return String.format(
-                "%s | PartyId: %s (%s) | CandidateId: %s | Votes: %d | Region: %s %s",
-                type, partyId, partyName, candidateId, votes, regionType, regionId
-        );
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Result)) return false;
+        Result result = (Result) o;
+        return Objects.equals(id, result.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
