@@ -134,8 +134,11 @@ public class ResultLoader {
                                     currentCandidate.setShortCode(shortCode.trim());
                             }
                             case "Gender" -> {
-                                if (currentCandidate != null)
-                                    currentCandidate.setGender(readElementText(reader));
+                                if (currentCandidate != null) {
+                                    String gender = readElementText(reader);
+                                    // Fallback bij ontbrekend geslacht
+                                    currentCandidate.setGender(gender.isEmpty() ? "Onbekend" : gender);
+                                }
                             }
                             case "QualifyingAddress" -> {
                                 String residence = null;
@@ -149,8 +152,10 @@ public class ResultLoader {
                                         break;
                                     }
                                 }
-                                if (currentCandidate != null && residence != null)
-                                    currentCandidate.setResidence(residence);
+                                if (currentCandidate != null) {
+                                    // Fallback bij ontbrekende woonplaats
+                                    currentCandidate.setResidence(residence == null || residence.isBlank() ? "Onbekend" : residence);
+                                }
                             }
                             case "ValidVotes" -> {
                                 selectionData.put("ValidVotes", readElementText(reader));
