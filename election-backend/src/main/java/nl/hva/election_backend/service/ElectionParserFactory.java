@@ -30,7 +30,7 @@ public class ElectionParserFactory {
                 new DutchDefinitionTransformer(election, partyRepository, regionRepository),
                 new DutchCandidateTransformer(election, candidateRepository),
                 new DutchResultTransformer(election, resultRepository, candidateRepository, regionRepository, partyRepository),
-                new DutchVotesTransformer(election, resultRepository, regionRepository, partyRepository, candidateRepository)
+                new DutchVotesTransformer(election, partyRepository, candidateRepository)
         );
     }
 }
