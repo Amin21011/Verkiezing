@@ -198,11 +198,21 @@ const getCandidateName = (value: string) => {
         <p class="text-xl font-semibold">{{ c.firstName }} {{ c.lastName }}</p>
         <p class="text-gray-600">Partij: {{ c.partyName }}</p>
         <div class="mt-2 space-y-1">
-          <p>ID: {{ c.id }}</p>
-          <p>Party ID: {{ c.partyId }}</p>
-          <p>Geslacht: {{ c.gender }}</p>
-          <p>Woonplaats: {{ c.residence }}</p>
-          <p>Stemmen: {{ c.votes }}</p>
+          <p class="font-bold">
+            Lijst Positie: <span class="font-normal">{{ c.id }}</span>
+          </p>
+          <p class="font-bold">
+            Partij: <span class="font-normal">{{ c.partyName }}</span>
+          </p>
+          <p class="font-bold">
+            Geslacht: <span class="font-normal">{{ c.gender }}</span>
+          </p>
+          <p class="font-bold">
+            Woonplaats: <span class="font-normal">{{ c.residence }}</span>
+          </p>
+          <p class="font-bold">
+            Stemmen: <span class="font-normal">{{ c.votes }}</span>
+          </p>
         </div>
       </div>
     </div>
