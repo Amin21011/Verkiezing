@@ -6,11 +6,8 @@ import java.util.Objects;
 @Entity
 @Table(name = "candidates")
 public class Candidate {
-
     @Id
     private String id;
-
-    private String shortCode;
     private String namePrefix;
     private String firstName;
     private String lastName;
@@ -61,36 +58,14 @@ public class Candidate {
     public String getFullName() { return fullName; }
     public String getGender() { return gender; }
     public int getVotes() { return votes; }
-
     public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
-    public String getShortCode() {
-        if (shortCode != null && !shortCode.isBlank()) {
-            return shortCode;
-        }
-
-        if (fullName == null || fullName.isBlank()) return "";
-
-        String[] parts = fullName.split(" ");
-        StringBuilder sb = new StringBuilder();
-
-        for (String p : parts) {
-            if (!p.isBlank()) sb.append(Character.toUpperCase(p.charAt(0)));
-        }
-
-        return sb.toString();
-    }
-
-    public void setShortCode(String shortCode) {
-        this.shortCode = shortCode;
-    }
-
-    public boolean isElected() { return elected; }
     public Integer getRanking() { return ranking; }
     public Party getParty() { return party; }
     public Election getElection() { return election; }
+    public boolean isElected() { return elected; }
 
+    public void addVotes(int votes) { this.votes += votes; }
+    public void setId(String id) { this.id = id; }
     public void setGender(String gender) { this.gender = gender; }
     public void setVotes(int votes) { this.votes = votes; }
     public void setElected(boolean elected) { this.elected = elected; }
