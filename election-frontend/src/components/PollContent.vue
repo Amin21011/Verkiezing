@@ -53,6 +53,7 @@ function getPercentage(votes: number[], i: number) {
 
           <!-- Percentage achter background -->
           <div
+            v-if="userVotes[poll.id] !== undefined"
             class="absolute top-0 left-0 h-full bg-blue-950 rounded-l-lg opacity-40"
             :style="{ width: getPercentage(poll.votes, optionIndex) + '%' }"
           ></div>
@@ -66,7 +67,9 @@ function getPercentage(votes: number[], i: number) {
             }"
           >
             <span>{{ option }}</span>
-            <span>{{ getPercentage(poll.votes, optionIndex) }}%</span>
+            <span v-if="userVotes[poll.id] !== undefined">
+        {{ getPercentage(poll.votes, optionIndex) }}%
+      </span>
           </div>
         </div>
       </div>
