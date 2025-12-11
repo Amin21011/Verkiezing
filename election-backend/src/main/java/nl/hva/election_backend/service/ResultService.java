@@ -31,7 +31,7 @@ public class ResultService {
         initialized = true;
 
         try {
-            System.out.println("Initialiseren van verkiezingsresultaten...");
+            System.out.println("Initialiseren van verkiezingsresultaten..");
             election = new Election("TK2023");
             resultRepository.clearAll();
 
