@@ -12,6 +12,23 @@ spring:
     activate:
       on-profile: prod
   datasource:
+    url: jdbc:postgresql://ep-nameless-resonance-abdz6eaj-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channelBinding=require
+    username:
+    password:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  sql:
+    init:
+      mode: always
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
     url: jdbc:postgresql://localhost:5433/electiondb
     username: postgres
     password: postgres
@@ -19,12 +36,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
-  sql:
-    init:
-      mode: always
-
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+---
 server:
   port: 8080
 
