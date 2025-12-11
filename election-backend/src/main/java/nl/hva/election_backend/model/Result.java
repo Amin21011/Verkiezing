@@ -12,9 +12,6 @@ public class Result {
 
     private int votes = 0;
 
-    private Boolean elected;
-    private Integer ranking;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "party_id")
     private Party party;
@@ -47,12 +44,7 @@ public class Result {
     public Candidate getCandidate() { return candidate; }
     public Region getRegion() { return region; }
     public Election getElection() { return election; }
-    public Boolean getElected() { return elected; }
-    public Integer getRanking() { return ranking; }
-
     public void setVotes(int votes) { this.votes = votes; }
-    public void setElected(Boolean elected) { this.elected = elected; }
-    public void setRanking(Integer ranking) { this.ranking = ranking; }
 
     @Override
     public boolean equals(Object o) {
