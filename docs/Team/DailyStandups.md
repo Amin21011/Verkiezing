@@ -106,8 +106,6 @@ Naam | Wat heb ik gisteren gedaan?                   | Wat ga ik vandaag doen?  
 | Amin | Gewewrkt aan figma designs                    | A/B test uitvoeren                              | Niks                 | -                       | 
 
 
-
-
 ### Datum: 25-11-2025
 
 Naam | Wat heb ik gisteren gedaan?                                        | Wat ga ik vandaag doen?                                             | Wat houdt mij tegen?                                                                   | Opmerkingen / afspraken 
@@ -116,5 +114,20 @@ Naam | Wat heb ik gisteren gedaan?                                        | Wat 
 | Betul | Niks kunnen doen                                                   | Bezig met ophalen uit de database en daarna kijken naar de frontend | Ik raak soms in de war door dubbele data en omdat ik ziek ben is mijn focus wat minder | Geen                    |
 | Ramzi | Begin gemaakt aan de kieskringen                                   | Verder aan de kieskringen                                           | Koorts                                                                                 | Geen                    | 
 | Amin | US Provincies vergelijken afgerond                                 | Search bar werkend krijgen en polls in database krijgen             | Connectie met de database doet soms beetje stroef                                      | Geen                    |
+
+
+
+
+## Sprint 5
+
+
+### Datum: 09-12-2025
+
+Naam | Wat heb ik gisteren gedaan?                                            | Wat ga ik vandaag doen?                                     | Wat houdt mij tegen? / Obstakel                         | Opmerkingen / afspraken                                    
+| -- |------------------------------------------------------------------------|-------------------------------------------------------------|---------------------------------------------------------|------------------------------------------------------------|
+| Morsal | Sprint planning opgesteld en gewerkt aan import van xml naar database  | Verder aan de import werken                                 | Er komt momenteel steeds maar een deel in de database.  | Zsm afkrijgen zodat ik aan nieuwe userstories kan beginnen | 
+| Betul | Userstories opgesteld                                                  | Bezig geweest met de transformers van de gemeente bestanden | Endpoints zijn soms een beetje verwarrend               | Geen                                                       |
+| Ramzi | Vooruitgang aan de Kieskringen en die zijn daardoor bijna klaar        | Verder aan de kieskringen                                   | Moeite met de transformer                               | Geen                                                       | 
+| Amin | Een paar dingen verbeterd aan de research bar en userstories opgesteld | Merge request ingediend en begonnen kandidaat vergelijker   | Partij koppeling aan de kandidaat                       | Geen                                                       |
 
 
