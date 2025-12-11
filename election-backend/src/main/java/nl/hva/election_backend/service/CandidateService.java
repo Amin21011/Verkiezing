@@ -19,7 +19,6 @@ public class CandidateService {
     }
 
     public List<Candidate> getCandidatesByParty(String partyId) {
-        return candidateRepository.findByPartyId(partyId);
+        return candidateRepository.findByParty_Id(partyId);
     }
-
 }
