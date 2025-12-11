@@ -68,7 +68,6 @@ public class QuizResultService {
 
     public void saveQuizResult(String email, String bestParty) {
         User user = userService.findByEmail(email);
-        user.setQuizCompleted(true);
         user.setQuizBestMatch(bestParty);
         userService.save(user);
     }

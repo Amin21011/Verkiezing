@@ -1,129 +1,183 @@
 package nl.hva.election_backend.utils.xml.transformers;
-
-import nl.hva.election_backend.model.Candidate;
-import nl.hva.election_backend.model.Election;
-import nl.hva.election_backend.model.Party;
-import nl.hva.election_backend.model.Result;
-import nl.hva.election_backend.repository.ResultRepository;
+import nl.hva.election_backend.model.*;
+import nl.hva.election_backend.repository.*;
+import nl.hva.election_backend.utils.xml.TagAndAttributeNames;
 import nl.hva.election_backend.utils.xml.VotesTransformer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.HashMap;
 import java.util.Map;
 
-public class DutchResultTransformer implements VotesTransformer {
-
+public class DutchResultTransformer implements VotesTransformer, TagAndAttributeNames {
+    private static final Logger logger = LoggerFactory.getLogger(DutchResultTransformer.class);
     private final Election election;
-    private ResultRepository repository;
-    private String currentRegionType;
-    private String currentRegionId;
+    private final ResultRepository resultRepository;
+    private final CandidateRepository candidateRepository;
+    private final RegionRepository regionRepository;
+    private final PartyRepository partyRepository;
+    private String currentPartyDbId = null;
+    private final Map<String, String> xmlIdToDbIdCache = new HashMap<>();
 
-    public DutchResultTransformer(Election election) {
+    public DutchResultTransformer(Election election,
+                                  ResultRepository resultRepository,
+                                  CandidateRepository candidateRepository,
+                                  RegionRepository regionRepository,
+                                  PartyRepository partyRepository) {
         this.election = election;
-    }
-
-    public void setRepository(ResultRepository repository) {
-        this.repository = repository;
-    }
-
-    public void setRegionContext(String regionType, String regionId) {
-        this.currentRegionType = regionType;
-        this.currentRegionId = regionId;
+        this.resultRepository = resultRepository;
+        this.candidateRepository = candidateRepository;
+        this.regionRepository = regionRepository;
+        this.partyRepository = partyRepository;
     }
 
     @Override
-    public void registerPartyVotes(boolean aggregated, Map<String, String> electionData) {
-        String partyId = electionData.get("AffiliationIdentifier-Id");
-        if (partyId == null || partyId.isBlank()) return;
-
-        int votes = parseVotes(
-                electionData.getOrDefault("PartyValidVotes",
-                        electionData.getOrDefault("ValidVotes", "0"))
-        );
-        if (votes <= 0) return;
-
-        String partyName = election.findPartyById(partyId)
-                .map(Party::getName)
-                .orElse(repository.getPartyName(partyId));
-
-        if (partyName == null || partyName.isBlank()) partyName = "(Onbekende partij)";
-
-        Result result = new Result(
-                partyId,
-                partyName,
-                null,
-                votes,
-                currentRegionType,
-                currentRegionId
-        );
-        repository.addResult(result);
-
-        System.out.printf("PartyVotes -> PartyId=%s (%s), Votes=%d, Region=%s %s%n",
-                partyId, partyName, votes, currentRegionType, currentRegionId);
-    }
-
-    @Override
-    public void registerCandidateVotes(boolean aggregated, Map<String, String> electionData) {
-        String partyId = electionData.get("AffiliationIdentifier-Id");
-        String candidateId = electionData.get("CandidateIdentifier-Id");
-        String shortCode = electionData.get("CandidateIdentifier-ShortCode");
-        int votes = parseVotes(electionData.getOrDefault("ValidVotes", "0"));
-        if (votes <= 0) return;
-
-        if (candidateId == null || partyId == null) return;
-
-        Candidate candidate = election.getCandidateById(candidateId).orElse(null);
-        if (candidate == null) return;
-
-        String partyName = election.findPartyById(partyId)
-                .map(Party::getName)
-                .orElse(repository.getPartyName(partyId));
-
-        Result result = new Result(
-                partyId,
-                partyName,
-                candidateId,
-                votes,
-                currentRegionType,
-                currentRegionId
-        );
-        result.setShortCode(shortCode);
-        repository.addResult(result);
-    }
-
-    @Override
-    public void registerMetadata(boolean aggregated, Map<String, String> electionData) {
-        int totalVotes = parseVotes(electionData.getOrDefault("TotalVotes", "0"));
-        if (totalVotes <= 0) return;
-
-        Result meta = new Result("META", "", null, totalVotes, currentRegionType, currentRegionId);
-        repository.addResult(meta);
-    }
-
-    private int parseVotes(String votesStr) {
-        try {
-            return Integer.parseInt(votesStr.trim());
-        } catch (Exception e) {
-            return 0;
+    public void registerPartyVotes(boolean aggregated, Map<String, String> data) {
+        String xmlId = data.get(AFFILIATION_IDENTIFIER + "-" + ATTR_ID);
+        if (xmlId != null) {
+            String dbId = resolvePartyDbId(xmlId, data);
+            if (dbId != null) {
+                this.currentPartyDbId = dbId;
+            } else {
+                this.currentPartyDbId = null;
+                logger.warn("Kon partij niet resolven voor XML ID: {}", xmlId);
+            }
         }
+        String votesStr = data.get(VALID_VOTES);
+        if (votesStr == null || this.currentPartyDbId == null) return;
+
+        election.findPartyById(this.currentPartyDbId).ifPresent(party -> {
+            int votes = parseVotes(votesStr);
+            Region region = determineRegion(data);
+
+            if (votes > 0) {
+                resultRepository.save(new Result(election, region, party, null, votes));
+            }
+            if (aggregated && votes > 0) {
+                party.setVoteCount(party.getVoteCount() + votes);
+                partyRepository.save(party);
+            }
+        });
     }
 
-    public void flushResults() {
-        if (repository == null) return;
+    @Override
+    public void registerCandidateVotes(boolean aggregated, Map<String, String> data) {
+        String localId = data.get(CANDIDATE_IDENTIFIER + "-" + ATTR_ID);
+        String effectivePartyId = this.currentPartyDbId;
+        if (effectivePartyId == null && data.containsKey("partyId")) {
+            effectivePartyId = resolvePartyDbId(data.get("partyId"), data);
+        }
+        if (effectivePartyId == null || localId == null) {
+            return;
+        }
 
-        System.out.println("Aggregating results into Election model...");
+        String uniqueDatabaseId = effectivePartyId + "_" + localId;
+        int votes = parseVotes(data.get(VALID_VOTES));
 
-        election.getCandidates().forEach(c -> c.setVotes(0));
-        election.getParties().forEach(p -> p.setVoteCount(0));
-        repository.aggregatePartyVotes(election);
-        repository.aggregateCandidateVotes(election);
+        election.getCandidateById(uniqueDatabaseId).ifPresentOrElse(candidate -> {
+            Region region = determineRegion(data);
+            if (votes > 0) {
+                Result result = new Result(election, region, candidate.getParty(), candidate, votes);
+                resultRepository.save(result);
+            }
 
-        int totalVotes = election.getCandidates().stream()
-                .mapToInt(Candidate::getVotes).sum();
+            boolean changed = false;
+            if (aggregated && votes > 0) {
+                candidate.setVotes(candidate.getVotes() + votes);
+                changed = true;
+            }
 
-        System.out.printf("Flush voltooid: %d kandidaten, totaal %d stemmen.%n",
-                election.getCandidates().size(), totalVotes);
+            changed |= updateElectedStatus(candidate, data);
+            changed |= updateRanking(candidate, data);
 
-        election.getParties().forEach(p ->
-                System.out.printf("→ %s (%s): %d stemmen%n",
-                        p.getName(), p.getId(), p.getVoteCount()));
+            if (changed) {
+                candidateRepository.save(candidate);
+            }
+        }, () -> {
+            logger.warn("Kandidaat niet gevonden in DB: {}", uniqueDatabaseId);
+        });
     }
 
+    @Override
+    public void registerMetadata(boolean aggregated, Map<String, String> data) {
+        this.currentPartyDbId = null;
+    }
+
+    private boolean updateElectedStatus(Candidate candidate, Map<String, String> data) {
+        String electedVal = data.get(ELECTED);
+        if (electedVal == null) electedVal = data.get("Elected");
+        if (electedVal == null) return false;
+
+        boolean isElected = "yes".equalsIgnoreCase(electedVal.trim())
+                || "true".equalsIgnoreCase(electedVal.trim());
+
+        if (candidate.isElected() != isElected) {
+            candidate.setElected(isElected);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean updateRanking(Candidate candidate, Map<String, String> data) {
+        String rankingVal = data.get(RANKING);
+        if (rankingVal == null) rankingVal = data.get("Ranking");
+
+        if (rankingVal != null && !rankingVal.isBlank()) {
+            try {
+                int rank = Integer.parseInt(rankingVal.trim());
+                if (candidate.getRanking() == null || !candidate.getRanking().equals(rank)) {
+                    candidate.setRanking(rank);
+                    return true;
+                }
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return false;
+    }
+
+    private Region determineRegion(Map<String, String> data) {
+        String regionId = data.get(CONTEST_IDENTIFIER + "-" + ATTR_ID);
+        if (regionId == null) regionId = data.get(REPORTING_UNIT_IDENTIFIER + "-" + ATTR_ID);
+        if (regionId == null) regionId = "NL";
+        String name = data.getOrDefault(CONTEST_NAME, "Region " + regionId);
+        String finalId = regionId;
+
+        return election.getRegionById(finalId).orElseGet(() -> {
+            Region r = new Region(finalId, name, "Auto");
+            election.addRegion(r);
+            return regionRepository.save(r);
+        });
+    }
+
+    private String resolvePartyDbId(String xmlId, Map<String, String> data) {
+        if (xmlId == null) return null;
+        if (xmlIdToDbIdCache.containsKey(xmlId)) return xmlIdToDbIdCache.get(xmlId);
+
+        String name = data.get(REGISTERED_NAME);
+        if (name == null) name = data.get(REGISTERED_APPELLATION);
+
+        if (name != null) {
+            String slug = rename(name);
+            if (election.findPartyById(slug).isPresent()) {
+                xmlIdToDbIdCache.put(xmlId, slug);
+                return slug;
+            }
+        }
+        if (election.findPartyById(xmlId).isPresent()) return xmlId;
+
+        return null;
+    }
+
+    private int parseVotes(String s) {
+        try { return s == null ? 0 : Integer.parseInt(s); } catch (NumberFormatException e) { return 0; }
+    }
+
+    private String rename(String name) {
+        return name.toLowerCase()
+                .replace(" / ", "___")
+                .replace(" - ", "___")
+                .replace(" ", "_")
+                .replace("/", "_")
+                .replace("-", "_")
+                .trim();
+    }
 }
