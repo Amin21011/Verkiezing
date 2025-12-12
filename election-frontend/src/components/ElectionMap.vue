@@ -24,6 +24,34 @@ const mapContainer = ref<HTMLElement | null>(null)
 
 const selectedYear = ref(2025)
 
+const constituencyPositions: Record<string, { x: number; y: number }> = {
+  Amsterdam: { x: 650, y: 475 },
+
+  Den_Helder: { x: 615, y: 330 },
+  Haarlem: { x: 600, y: 435 },
+  Leiden: { x: 630, y: 510 },
+  s_Gravenhage: { x: 610, y: 540 },
+  Rotterdam: { x: 590, y: 600 },
+  Dordrecht: { x: 620, y: 620 },
+
+  Utrecht: { x: 678, y: 550 },
+  Lelystad: { x: 730, y: 450 },
+  Zwolle: { x: 830, y: 440 },
+
+  Arnhem: { x: 780, y: 550 },
+  Nijmegen: { x: 770, y: 600 },
+
+  s_Hertogenbosch: { x: 700, y: 600 },
+  Tilburg: { x: 630, y: 680 },
+  Middelburg: { x: 442, y: 705 },
+  Maastricht: { x: 770, y: 875 },
+  Assen: { x: 760, y: 330 },
+  Groningen: { x: 880, y: 250 },
+  Leeuwarden: { x: 775, y: 260 },
+};
+
+
+
 
 const currentMode = ref<`provinces` | `constituencies` | `national`>(`provinces`)
 const constituencies = ref<any[]>([])
@@ -88,7 +116,6 @@ function onYearChange(event: Event) {
   const target = event.target as HTMLSelectElement
   setYear(Number(target.value))
 }
-
 
 function highlightProvinces() {
   setTimeout(() => {
