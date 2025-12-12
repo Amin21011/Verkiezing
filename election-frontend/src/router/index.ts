@@ -12,6 +12,7 @@ import MapView from '@/views/MapView.vue'
 import SearchResultsView from '@/views/SearchResultsView.vue'
 import SimulatorView from '@/views/SimulatorView.vue'
 import AdminPollView from '@/views/AdminPollView.vue'
+import FakeNewsView from '@/views/FakeNewsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -86,6 +87,11 @@ const router = createRouter({
       path: `/map`,
       name: `map`,
       component: MapView
+    },
+    {
+      path: `/fake-news`,
+      name: `fake news`,
+      component: FakeNewsView
     },
     {
       path: '/search',
