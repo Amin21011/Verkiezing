@@ -116,10 +116,7 @@ Naam | Wat heb ik gisteren gedaan?                                        | Wat 
 | Amin | US Provincies vergelijken afgerond                                 | Search bar werkend krijgen en polls in database krijgen             | Connectie met de database doet soms beetje stroef                                      | Geen                    |
 
 
-
-
 ## Sprint 5
-
 
 ### Datum: 09-12-2025
 
@@ -131,3 +128,11 @@ Naam | Wat heb ik gisteren gedaan?                                            | 
 | Amin | Een paar dingen verbeterd aan de research bar en userstories opgesteld | Merge request ingediend en begonnen kandidaat vergelijker   | Partij koppeling aan de kandidaat                       | Geen                                                       |
 
 
+### Datum: 12-12-2025
+
+ Naam   | Wat heb ik gisteren gedaan?                                                    | Wat ga ik vandaag doen?             | Wat houdt mij tegen? / Obstakel                         | Opmerkingen / afspraken 
+|--------|--------------------------------------------------------------------------------|-------------------------------------|---------------------------------------------------------|-------------------------|
+| Morsal | Front end voor fake news userstory gemaakt                                     | Services met ai model laten werken  | Goede gratis AI model vinden                      |  Geen                   |
+| Betul  | Begonnen aan de transformers en service en  heb een paar testbestanden gemaakt | Verder met de gemeente transformer. | Te lang blijven hangen bij 1 bepaald dingetje.          | Geen                    |
+| Ramzi  | Verder gewerkt aan kieskring transformer, bezig met edit en delete forum posts | Kieskring transformer afmaken       | Moeite met front end gedeelte voor nauwkeurigheid       | Geen                    | 
+| Amin   | Bezig geweest met kandidaat vergelijker                                        | Topics in de forum zetten           | Database                                                | Geen                    |
