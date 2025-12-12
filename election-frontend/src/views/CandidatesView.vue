@@ -82,7 +82,7 @@ interface Candidate {
 const candidates = ref<Candidate[]>([]);
 const currentPage = ref(1);
 const ITEMS_PER_PAGE = 18;
-const selectedParty = ref('');
+const selectedParty = ref("");
 
 const API_URL = `${import.meta.env.VITE_API_URL}/candidates`;
 

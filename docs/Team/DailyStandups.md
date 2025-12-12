@@ -104,4 +104,17 @@ Naam | Wat heb ik gisteren gedaan?                   | Wat ga ik vandaag doen?  
 | Betul | Bezig geweest met de services                 | Onderzoeksverslag                               | Presentatie nadert   | -                       |
 | Ramzi | Niet veel afgekregen                          | Forum afkrijgen en merge reqiest hiervan sturen | Afleiding            | - |
 | Amin | Gewewrkt aan figma designs                    | A/B test uitvoeren                              | Niks                 | -                       | 
- 
+
+
+
+
+### Datum: 25-11-2025
+
+Naam | Wat heb ik gisteren gedaan?                                        | Wat ga ik vandaag doen?                                             | Wat houdt mij tegen?                                                                   | Opmerkingen / afspraken 
+| -- |--------------------------------------------------------------------|---------------------------------------------------------------------|----------------------------------------------------------------------------------------|-------------------------|
+| Morsal | Simulator afgekregen en admins kunnen nu lijst van gebruikers zien | Candidate chart weer werkend krijgen                                | Merge errors                                                                           | Geen                    | 
+| Betul | Niks kunnen doen                                                   | Bezig met ophalen uit de database en daarna kijken naar de frontend | Ik raak soms in de war door dubbele data en omdat ik ziek ben is mijn focus wat minder | Geen                    |
+| Ramzi | Begin gemaakt aan de kieskringen                                   | Verder aan de kieskringen                                           | Koorts                                                                                 | Geen                    | 
+| Amin | US Provincies vergelijken afgerond                                 | Search bar werkend krijgen en polls in database krijgen             | Connectie met de database doet soms beetje stroef                                      | Geen                    |
+
+

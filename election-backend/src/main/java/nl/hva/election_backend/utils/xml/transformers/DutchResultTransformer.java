@@ -123,7 +123,7 @@ public class DutchResultTransformer implements VotesTransformer {
 
         election.getParties().forEach(p ->
                 System.out.printf("→ %s (%s): %d stemmen%n",
-                        p.getName(), p.getPartyId(), p.getVoteCount()));
+                        p.getName(), p.getId(), p.getVoteCount()));
     }
 
 }

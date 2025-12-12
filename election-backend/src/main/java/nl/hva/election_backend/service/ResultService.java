@@ -8,6 +8,8 @@ import nl.hva.election_backend.repository.ResultRepository;
 import nl.hva.election_backend.utils.xml.transformers.ResultLoader;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -67,5 +69,10 @@ public class ResultService {
         if (!initialized) init();
         resultRepository.aggregatePartyVotes(election);
         return election.findPartyById(id);
+    }
+
+    public Map<String, Integer> getVotesByParty() {
+        if (!initialized) init();
+        return resultRepository.getVotesByParty();
     }
 }
