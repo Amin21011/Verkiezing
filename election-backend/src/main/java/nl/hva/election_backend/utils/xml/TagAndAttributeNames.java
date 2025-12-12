@@ -1,5 +1,4 @@
 package nl.hva.election_backend.utils.xml;
-
 /**
  * Definitions of all the known tags and their attributes.
  */
@@ -90,7 +89,7 @@ public interface TagAndAttributeNames {
     String UNCOUNTED_VOTES = "UncountedVotes";
     String VALID_VOTES = "ValidVotes";
     String VOTING_METHOD = "VotingMethod";
-    // These are the actual keys used for these specific tags
+    String ATTR_ID = "Id";
     String CANDIDATE_IDENTIFIER_ID = String.format("%s-%s", CANDIDATE_IDENTIFIER, "Id");
-    String CANDIDATE_IDENTIFIER_SHORT_CODE = String.format("%s-%s", CANDIDATE_IDENTIFIER, "ShortCode");
+    String CANDIDATE_IDENTIFIER_SHORTCODE = String.format("%s-%s", CANDIDATE_IDENTIFIER, "ShortCode");
 }

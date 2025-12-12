@@ -1,78 +1,55 @@
 package nl.hva.election_backend.service;
-
-import jakarta.annotation.PostConstruct;
 import nl.hva.election_backend.model.Candidate;
-import nl.hva.election_backend.model.Election;
 import nl.hva.election_backend.model.Party;
 import nl.hva.election_backend.repository.ResultRepository;
-import nl.hva.election_backend.utils.xml.transformers.ResultLoader;
+import nl.hva.election_backend.repository.PartyRepository;
+import nl.hva.election_backend.repository.CandidateRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
-
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class ResultService {
     private final ResultRepository resultRepository;
-    private Election election;
-    private boolean initialized = false;
+    private final PartyRepository partyRepository;
+    private final CandidateRepository candidateRepository;
 
-    public ResultService(ResultRepository resultRepository) {
+    public ResultService(
+            ResultRepository resultRepository,
+            PartyRepository partyRepository,
+            CandidateRepository candidateRepository
+    ) {
         this.resultRepository = resultRepository;
-    }
-
-    @PostConstruct
-    public void init() {
-        if (initialized) return;
-        initialized = true;
-
-        try {
-            System.out.println("Initialiseren van verkiezingsresultaten...");
-            election = new Election("TK2023");
-            resultRepository.clearAll();
-
-            ResultLoader.loadResults(election, resultRepository);
-            resultRepository.registerParties(election.getParties());
-            System.out.printf("ResultLoader klaar: %d partijen, %d kandidaten.%n",
-                    election.getParties().size(), election.getCandidates().size());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            initialized = false;
-        }
+        this.partyRepository = partyRepository;
+        this.candidateRepository = candidateRepository;
     }
 
     public List<Party> getTopParties(int limit) {
-        if (!initialized) init();
-        return election.getParties().stream()
+        return partyRepository.findAll().stream()
                 .sorted(Comparator.comparingInt(Party::getVoteCount).reversed())
                 .limit(limit)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Candidate> getTopCandidatesByParty(String partyId, int limit) {
-        if (!initialized) init();
-        resultRepository.aggregateCandidateVotes(election);
-
-        return election.getCandidates().stream()
-                .filter(c -> partyId == null || partyId.equals(c.getPartyId()))
+        return candidateRepository.findAll().stream()
+                .filter(c -> c.getParty() != null && c.getParty().getId().equals(partyId))
                 .sorted(Comparator.comparingInt(Candidate::getVotes).reversed())
                 .limit(limit)
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    public Optional<Party> getPartyById(String id) {
-        if (!initialized) init();
-        resultRepository.aggregatePartyVotes(election);
-        return election.findPartyById(id);
+    public Party getPartyById(String id) {
+        return partyRepository.findById(id).orElse(null);
     }
 
     public Map<String, Integer> getVotesByParty() {
-        if (!initialized) init();
-        return resultRepository.getVotesByParty();
+        return partyRepository.findAll().stream()
+                .collect(Collectors.toMap(
+                        Party::getId,
+                        Party::getVoteCount
+                ));
     }
 }
