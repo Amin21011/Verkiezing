@@ -1,6 +1,6 @@
 package nl.hva.election_backend.api;
 
-import nl.hva.election_backend.dto.UserDTO;
+import nl.hva.election_backend.dto.model.UserDTO;
 import nl.hva.election_backend.model.User;
 import nl.hva.election_backend.repository.UserRepository;
 import nl.hva.election_backend.security.JwtUtil;

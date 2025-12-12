@@ -1,6 +1,6 @@
 package nl.hva.election_backend.utils.xml.transformers;
-
-import nl.hva.election_backend.model.Election;
+import nl.hva.election_backend.model.*;
+import nl.hva.election_backend.repository.ResultRepository;
 import nl.hva.election_backend.utils.xml.VotesTransformer;
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
@@ -8,21 +8,14 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Just prints to content of electionData to the standard output.>br/>
- * <b>This class needs heavy modification!</b>
- */
 public class DutchNationalVotesTransformer implements VotesTransformer {
     private final Election election;
     private final Map<String, Integer> stemmenPerPartij = new HashMap<>();
+    private final ResultRepository resultRepository;
 
-    /**
-     * Creates a new transformer for handling the votes at the national level. It expects an instance of
-     * Election that can be used for storing the results.
-     * @param election the election in which the votes wil be stored.
-     */
-    public DutchNationalVotesTransformer(Election election) {
+    public DutchNationalVotesTransformer(Election election, ResultRepository resultRepository) {
         this.election = election;
+        this.resultRepository = resultRepository;
     }
 
     public Map<String, Integer> parse(InputStream inputStream) {
@@ -36,7 +29,6 @@ public class DutchNationalVotesTransformer implements VotesTransformer {
             NodeList selections = doc.getElementsByTagName("Selection");
             for (int i = 0; i < selections.getLength(); i++) {
                 Element selection = (Element) selections.item(i);
-
                 NodeList partijNodes = selection.getElementsByTagName("RegisteredName");
                 NodeList stemmenNodes = selection.getElementsByTagName("ValidVotes");
 
@@ -50,7 +42,6 @@ public class DutchNationalVotesTransformer implements VotesTransformer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return stemmenPerPartij;
     }
 
@@ -68,14 +59,36 @@ public class DutchNationalVotesTransformer implements VotesTransformer {
     }
 
     @Override
-    public void registerCandidateVotes(boolean aggregated, Map<String, String> electionData) {
-        System.out.printf("%s candidate votes: %s\n", aggregated ? "National" : "Constituency", electionData);
+    public void registerCandidateVotes(boolean aggregated, Map<String, String> data) {
+        String candId = data.get("CandidateIdentifier-Id");
+        String votesStr = data.get("ValidVotes");
+
+        if (candId == null || votesStr == null) return;
+        int votes = Integer.parseInt(votesStr);
+
+        Candidate c = election.getCandidateById(candId).orElse(null);
+
+        if (c == null) {
+            System.out.println("⚠ Candidate not found in national votes: " + candId);
+            return;
+        }
+
+        Region r = election.getRegionById("NL")
+                .orElseGet(() -> {
+                    Region nr = new Region("NL", "Nederland", "National");
+                    election.addRegion(nr);
+                    return nr;
+                });
+
+        resultRepository.save(new Result(election, r, c.getParty(), c, votes));
+        System.out.printf("NATIONAL candidate votes: %s → %d%n", c.getFullName(), votes);
     }
 
     @Override
     public void registerMetadata(boolean aggregated, Map<String, String> electionData) {
         System.out.printf("%s meta data: %s\n", aggregated ? "National" : "Constituency", electionData);
     }
+
     public Map<String, Integer> getStemmenPerPartij() {
         return stemmenPerPartij;
     }

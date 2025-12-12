@@ -1,7 +1,7 @@
 package nl.hva.election_backend.api;
 
 import nl.hva.election_backend.dto.PasswordChangeRequest;
-import nl.hva.election_backend.dto.UserDTO;
+import nl.hva.election_backend.dto.model.UserDTO;
 import nl.hva.election_backend.model.User;
 import nl.hva.election_backend.service.AuthService;
 import nl.hva.election_backend.service.UserService;

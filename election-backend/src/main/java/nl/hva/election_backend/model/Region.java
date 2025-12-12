@@ -1,26 +1,49 @@
 package nl.hva.election_backend.model;
 
-/**
- * Represents a region in the Dutch election definition.
- */
+import jakarta.persistence.*;
+import java.util.Objects;
 
+@Entity
+@Table(name = "regions")
 public class Region {
-    private final String number;
-    private final String name;
-    private final String category;
+    @Id
+    private String id;
 
-    public Region(String number, String name, String category) {
-        this.number = number;
+    private String name;
+    private String category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "election_id")
+    private Election election;
+
+    public Region() {}
+
+    public Region(String id, String name, String category) {
+        this.id = id;
         this.name = name;
         this.category = category;
     }
 
-    public String getNumber() { return number; }
+    public String getId() { return id; }
     public String getName() { return name; }
+    public Election getElection() { return election; }
     public String getCategory() { return category; }
 
+    public void setId(String id) { this.id = id; }
+    public void setCategory(String category) { this.category = category; }
+    public void setElection(Election e) { this.election = e; }
+    public void setName(String name) { this.name = name; }
+
     @Override
-    public String toString() {
-        return String.format("Region #%s: %s (%s)", number, name, category);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Region)) return false;
+        Region region = (Region) o;
+        return Objects.equals(id, region.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
