@@ -1,87 +1,78 @@
 package nl.hva.election_backend.model;
-
+import jakarta.persistence.*;
 import java.util.*;
 
+@Entity
+@Table(name = "elections")
 public class Election {
+    @Id
+    private String id;
 
-    private final String id;
-    private final List<Party> parties = new ArrayList<>();
-    private final List<Candidate> candidates = new ArrayList<>();
-    private final List<Region> regions = new ArrayList<>();
-    private final Map<String, Candidate> candidatesById = new HashMap<>();
-    private final Map<String, Candidate> candidatesByShortCode = new HashMap<>();
+    @OneToMany(mappedBy = "election", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Party> parties = new ArrayList<>();
+
+    @OneToMany(mappedBy = "election", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Candidate> candidates = new ArrayList<>();
+
+    @OneToMany(mappedBy = "election", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Region> regions = new ArrayList<>();
+
+    public Election() {}
 
     public Election(String id) {
         this.id = id;
     }
 
-    public String getId() {
-        return id;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    public List<Party> getParties() {
-        return parties;
-    }
+    public List<Party> getParties() { return parties; }
+    public List<Candidate> getCandidates() { return candidates; }
+    public List<Region> getRegions() { return regions; }
 
-    public List<Candidate> getCandidates() {
-        return candidates;
-    }
-
-    public void addParty(Party party) {
-        if (party == null || party.getId() == null) return;
-
-        Optional<Party> existing = parties.stream()
-                .filter(p -> p.getId().equals(party.getId()))
-                .findFirst();
-
-        if (existing.isPresent()) {
-            Party current = existing.get();
-
-            if (party.getVoteCount() > 0) {
-                current.setVoteCount(current.getVoteCount() + party.getVoteCount());
-            }
-        } else {
-            parties.add(party);
+    public void addParty(Party p) {
+        if (p != null && !parties.contains(p)) {
+            parties.add(p);
+            p.setElection(this);
         }
     }
 
-    public Optional<Party> findPartyById(String partyId) {
-        if (partyId == null) return Optional.empty();
-        return parties.stream()
-                .filter(p -> p.getId().equals(partyId))
-                .findFirst();
+    public Optional<Party> findPartyById(String pid) {
+        return parties.stream().filter(p -> p.getId().equals(pid)).findFirst();
     }
 
     public void addCandidate(Candidate c) {
-        if (c == null || c.getId() == null) return;
-
-        boolean exists = candidates.stream()
-                .anyMatch(existing -> existing.getId().equals(c.getId())
-                        && Objects.equals(existing.getPartyId(), c.getPartyId()));
-
-        if (!exists) {
+        if (c != null && !candidates.contains(c)) {
             candidates.add(c);
-            candidatesById.putIfAbsent(c.getId(), c);
-            if (c.getShortCode() != null && !c.getShortCode().isBlank()) {
-                candidatesByShortCode.putIfAbsent(c.getShortCode(), c);
-            }
+            c.setElection(this);
         }
     }
 
-    public Optional<Candidate> getCandidateById(String id) {
-        if (id == null || id.isBlank()) return Optional.empty();
-        return Optional.ofNullable(candidatesById.get(id));
+    public Optional<Candidate> getCandidateById(String cid) {
+        return candidates.stream().filter(c -> c.getId().equals(cid)).findFirst();
     }
 
-    public void addRegion(Region region) {
-        if (region == null) return;
-
-        boolean exists = regions.stream()
-                .anyMatch(r -> Objects.equals(r.getNumber(), region.getNumber())
-                        || Objects.equals(r.getName(), region.getName()));
-
-        if (!exists) {
-            regions.add(region);
+    public void addRegion(Region r) {
+        if (r != null && !regions.contains(r)) {
+            regions.add(r);
+            r.setElection(this);
         }
+    }
+
+    public Optional<Region> getRegionById(String rid) {
+        return regions.stream().filter(r -> r.getId().equals(rid)).findFirst();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Election)) return false;
+        Election election = (Election) o;
+        return Objects.equals(id, election.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

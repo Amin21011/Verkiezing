@@ -1,51 +1,107 @@
 package nl.hva.election_backend.model;
 
-public class Candidate {
+import jakarta.persistence.*;
+import java.util.Objects;
 
+@Entity
+@Table(name = "candidates")
+public class Candidate {
+    @Id
     private String id;
-    private String shortCode;
+    private String namePrefix;
     private String firstName;
     private String lastName;
-    private String partyId;
-    private String partyName;
+    private String fullName;
     private String gender;
-    private String residence;
-    private int votes;
 
-    public Candidate(String id, String shortCode, String firstName, String lastName, String partyId) {
+    private int votes = 0;
+    private boolean elected;
+    private Integer ranking;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "party_id")
+    private Party party;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "election_id")
+    private Election election;
+
+    public Candidate() {}
+
+    public Candidate(String id, String firstName, String lastName) {
         this.id = id;
-        this.shortCode = shortCode;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.partyId = partyId;
-        this.votes = 0;
+        updateFullName();
     }
 
-    // Getters & setters
-    public String getId() { return id; }
-    public String getShortCode() { return shortCode; }
+    public void updateFullName() {
+        StringBuilder sb = new StringBuilder();
+
+        if (firstName != null && !firstName.isBlank()) {
+            sb.append(firstName.trim());
+        }
+        if (namePrefix != null && !namePrefix.isBlank()) {
+            if (sb.length() > 0) sb.append(" ");
+            sb.append(namePrefix.trim());
+        }
+        if (lastName != null && !lastName.isBlank()) {
+            if (sb.length() > 0) sb.append(" ");
+            sb.append(lastName.trim());
+        }
+
+        this.fullName = sb.toString();
+    }
+
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }
-    public String getPartyId() { return partyId; }
-    public String getPartyName() { return partyName; }
-    public int getVotes() { return votes; }
+    public String getFullName() { return fullName; }
     public String getGender() { return gender; }
-    public String getResidence() { return residence; }
+    public int getVotes() { return votes; }
+    public String getId() { return id; }
+    public Integer getRanking() { return ranking; }
+    public Party getParty() { return party; }
+    public Election getElection() { return election; }
+    public boolean isElected() { return elected; }
 
-
+    public void addVotes(int votes) { this.votes += votes; }
     public void setId(String id) { this.id = id; }
-    public void setShortCode(String shortCode) { this.shortCode = shortCode; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
-    public void setPartyId(String partyId) { this.partyId = partyId; }
-    public void setPartyName(String partyName) { this.partyName = partyName; }
-    public void setVotes(int votes) { this.votes = votes; }
     public void setGender(String gender) { this.gender = gender; }
-    public void setResidence(String residence) { this.residence = residence; }
+    public void setVotes(int votes) { this.votes = votes; }
+    public void setElected(boolean elected) { this.elected = elected; }
+    public void setRanking(Integer ranking) { this.ranking = ranking; }
+    public void setElection(Election election) { this.election = election; }
+
+    public void setNamePrefix(String namePrefix) {
+        this.namePrefix = namePrefix;
+        updateFullName();
+    }
+
+    public void setParty(Party party) {
+        this.party = party;
+        if (party != null && !party.getCandidates().contains(this)) {
+            party.getCandidates().add(this);
+        }
+    }
 
     @Override
-    public String toString() {
-        return String.format("%s %s - ShortCode: %s - PartyId: %s - Aantal stemmen: %d",
-                firstName, lastName, shortCode, partyId, votes);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Candidate)) return false;
+        Candidate candidate = (Candidate) o;
+        return Objects.equals(id, candidate.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+
+    public void setPartyName(String name) {
+    }
+
+    public String getPartyId() {
+        return "";
     }
 }

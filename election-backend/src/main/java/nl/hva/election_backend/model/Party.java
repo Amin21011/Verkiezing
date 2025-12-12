@@ -1,36 +1,52 @@
 package nl.hva.election_backend.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
+import java.util.*;
 
+@Entity
+@Table(name = "parties")
 public class Party {
+    @Id
+    private String id;
 
-    private final String id;
-    private final String name;
-    private final String leaderName;
-    private final String website;
-
+    private String name;
     private int voteCount;
 
-    private final List<Candidate> candidates = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "election_id")
+    private Election election;
 
-    public Party(String id, String name, String leaderName, int voteCount, String website) {
+    @OneToMany(mappedBy = "party", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Candidate> candidates = new ArrayList<>();
+
+    public Party() {}
+
+    public Party(String id, String name, int voteCount) {
         this.id = id;
         this.name = name;
-        this.leaderName = leaderName;
         this.voteCount = voteCount;
-        this.website = website;
     }
 
     public String getId() { return id; }
     public String getName() { return name; }
-
     public int getVoteCount() { return voteCount; }
-    public void setVoteCount(int voteCount) { this.voteCount = voteCount; }
-
-    public String getLeaderName() { return leaderName; }
-    public String getWebsite() { return website; }
-
     public List<Candidate> getCandidates() { return candidates; }
-    public void addCandidate(Candidate c) { candidates.add(c); }
+    public Election getElection() { return election; }
+
+    public void setId(String id) { this.id = id; }
+
+    public void setVoteCount(int votes) {
+        this.voteCount = votes;
+    }
+
+    public void addVotes(int votes) { this.voteCount += votes; }
+
+
+    public void setElection(Election e) {
+        this.election = e;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

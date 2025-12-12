@@ -33,7 +33,7 @@ public class PathUtils {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 String fileName = file.getFileName().toString();
-                if (fileName.startsWith(prefix) && fileName.endsWith(".xml"))
+                if (fileName.startsWith(prefix) && (fileName.endsWith(".xml") || fileName.endsWith(".eml.xml")))
                     filesToScan.add(file);
                 return FileVisitResult.CONTINUE;
             }
