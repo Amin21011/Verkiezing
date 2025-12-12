@@ -13,8 +13,8 @@ spring:
       on-profile: prod
   datasource:
     url: jdbc:postgresql://ep-nameless-resonance-abdz6eaj-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channelBinding=require
-    username:
-    password:
+    username: amin
+    password: Amin_2025_secure!
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
