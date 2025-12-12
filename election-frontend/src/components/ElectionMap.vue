@@ -117,6 +117,53 @@ function onYearChange(event: Event) {
   setYear(Number(target.value))
 }
 
+function highlightConstituencies() {
+  setTimeout(() => {
+    const svg = mapContainer.value?.querySelector("svg")
+    if (!svg) return
+
+    // Verwijder oude markers
+    const oldMarkers = mapContainer.value!.querySelectorAll(".kies-marker")
+    oldMarkers.forEach(m => m.remove())
+
+    // Voor elke kieskring → marker toevoegen
+    constituencies.value.forEach((c: any) => {
+      const pos = constituencyPositions[c.constituencyName]
+      if (!pos) return
+
+      const marker = document.createElement("div")
+
+      marker.className =
+        "kies-marker absolute w-4 h-4 bg-red-600 rounded-full cursor-pointer shadow-md \
+         transition-transform duration-150 hover:scale-150 hover:bg-red-700"
+
+      marker.style.left = pos.x + "px"
+      marker.style.top = pos.y + "px"
+
+// tooltip bij hover
+      marker.title = c.constituencyName
+
+      marker.addEventListener("click", () => {
+        const data = constituencies.value.find(
+          (x: any) => x.constituencyName === c.constituencyName
+        )
+
+        if (!data) return
+
+        selectedProvince.value = {
+          provinceNaam: c.constituencyName,
+          stemmenPerPartij: data.stemmenPerPartij
+        }
+      })
+
+      mapContainer.value!.appendChild(marker)
+
+    })
+  }, 200)
+}
+
+
+
 function highlightProvinces() {
   setTimeout(() => {
     provinces.value.forEach((p) => {
