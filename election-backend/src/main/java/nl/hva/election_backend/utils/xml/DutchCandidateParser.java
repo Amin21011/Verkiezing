@@ -61,19 +61,28 @@ public class DutchCandidateParser {
 
                     if ("Candidate".equals(localName)) {
                         if (candidateId != null && firstName != null && lastName != null && currentPartyId != null) {
-                            // Gebruik echte ShortCode indien aanwezig
-                            String finalShortCode = (shortCode != null && !shortCode.isBlank())
-                                    ? shortCode
-                                    : (firstName.substring(0, 1) + lastName).replaceAll("\\s+", "");
 
-                            Candidate c = new Candidate(candidateId, finalShortCode, firstName, lastName, currentPartyId);
-                            c.setPartyId(currentPartyId);
-                            c.setGender(gender);
-                            c.setResidence(residence);
+                            // Maak candidate aan met bestaande constructor
+                            Candidate c = new Candidate(candidateId, firstName, lastName);
+
+                            // Koppel Party object
+                            String finalCurrentPartyId = currentPartyId;
+                            Party party = parties.stream()
+                                    .filter(p -> p.getId().equals(finalCurrentPartyId))
+                                    .findFirst()
+                                    .orElse(null);
+                            c.setParty(party);
+
+                            // Stel gender en residence in
+                            c.setGender(gender != null ? gender : "Onbekend");
+                            c.setResidence(residence != null ? residence : "Onbekend");
+
                             candidates.add(c);
                         }
-                        // reset voor volgende kandidaat
+
+                        // Reset voor volgende kandidaat
                         candidateId = shortCode = firstName = lastName = gender = residence = null;
+
                     } else if ("Affiliation".equals(localName)) {
                         currentPartyId = null;
                     }
