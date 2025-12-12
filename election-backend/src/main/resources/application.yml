@@ -6,6 +6,11 @@ spring:
 app:
   frontend:
       url: http://localhost:5173
+
+cohere:
+  api:
+    key: q47sY3cRMsZDga4RAqGrUYtuvZmKwNtslquubk8i
+
 ---
 spring:
   config:
