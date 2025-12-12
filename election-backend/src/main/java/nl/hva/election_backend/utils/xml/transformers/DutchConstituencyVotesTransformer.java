@@ -46,14 +46,14 @@ public class DutchConstituencyVotesTransformer implements VotesTransformer {
             for (int i = 0; i < selections.getLength(); i++) {
                 Element selection = (Element) selections.item(i);
 
-                NodeList affilationNodes = selection.getElementsByTagNameNS("*",  "AffilationIdentifier");
-                if (affilationNodes.getLength() == 0) {
+                NodeList affiliationNodes = selection.getElementsByTagNameNS("*",  "AffiliationIdentifier");
+                if (affiliationNodes.getLength() == 0) {
                     continue;
                 }
 
-                Element affilation = (Element) affilationNodes.item(0);
+                Element affiliation = (Element) affiliationNodes.item(0);
 
-                NodeList partijNaamNodes = affilation.getElementsByTagNameNS("*", "RegisteredName");
+                NodeList partijNaamNodes = affiliation.getElementsByTagNameNS("*", "RegisteredName");
                 if (partijNaamNodes.getLength() == 0) continue;
 
                 String partijNaam = partijNaamNodes.item(0).getTextContent().trim();
