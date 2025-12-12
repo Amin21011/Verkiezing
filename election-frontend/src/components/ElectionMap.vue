@@ -29,6 +29,7 @@ const currentMode = ref<`provinces` | `constituencies` | `national`>(`provinces`
 const constituencies = ref<any[]>([])
 
 const API_URL = `${import.meta.env.VITE_API_URL}/provinces/results`
+const API_CONSTITUENCIES = `${import.meta.env.VITE_API_URL}/constituencies/results`
 
 function switchMode(mode: `provinces` | `constituencies` | `national`) {
   currentMode.value = mode
@@ -64,6 +65,19 @@ async function loadData() {
     }
   } catch (err) {
     console.error('Fout bij ophalen:', err)
+  }
+}
+
+async function loadConstituencies() {
+  selectedProvince.value = null
+
+  const res = await fetch(`${API_CONSTITUENCIES}/${selectedYear.value}`)
+  constituencies.value = await res.json()
+
+  if (mapContainer.value) {
+    mapContainer.value.innerHTML = mapSvg
+
+    highlightConstituencies()
   }
 }
 
