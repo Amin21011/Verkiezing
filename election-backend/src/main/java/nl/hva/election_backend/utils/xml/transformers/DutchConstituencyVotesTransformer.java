@@ -2,7 +2,14 @@ package nl.hva.election_backend.utils.xml.transformers;
 
 import nl.hva.election_backend.model.Election;
 import nl.hva.election_backend.utils.xml.VotesTransformer;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -19,6 +26,28 @@ public class DutchConstituencyVotesTransformer implements VotesTransformer {
      */
     public DutchConstituencyVotesTransformer(Election election) {
         this.election = election;
+    }
+
+
+    public Map<String, Integer> parse(InputStream inputStream) {
+
+        Map<String, Integer> stemmenPerPartij = new HashMap<>();
+
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            Document doc = builder.parse(inputStream);
+            doc.getDocumentElement().normalize();
+
+            NodeList selections = doc.getElementsByTagNameNS("*", "Selection");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return stemmenPerPartij;
     }
 
     @Override
