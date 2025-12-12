@@ -43,6 +43,29 @@ public class DutchConstituencyVotesTransformer implements VotesTransformer {
 
             NodeList selections = doc.getElementsByTagNameNS("*", "Selection");
 
+            for (int i = 0; i < selections.getLength(); i++) {
+                Element selection = (Element) selections.item(i);
+
+                NodeList affilationNodes = selection.getElementsByTagNameNS("*",  "AffilationIdentifier");
+                if (affilationNodes.getLength() == 0) {
+                    continue;
+                }
+
+                Element affilation = (Element) affilationNodes.item(0);
+
+                NodeList partijNaamNodes = affilation.getElementsByTagNameNS("*", "RegisteredName");
+                if (partijNaamNodes.getLength() == 0) continue;
+
+                String partijNaam = partijNaamNodes.item(0).getTextContent().trim();
+
+                NodeList votesNodes = selection.getElementsByTagNameNS("*", "ValidVotes");
+                if (votesNodes.getLength() == 0) continue;
+
+                int stemmen = Integer.parseInt(votesNodes.item(0).getTextContent().trim());
+
+                stemmenPerPartij.merge(partijNaam, stemmen, Integer::sum);
+
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
