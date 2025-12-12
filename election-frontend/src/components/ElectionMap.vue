@@ -23,8 +23,20 @@ const selectedProvince = ref<ProvinceResult | null>(null)
 const mapContainer = ref<HTMLElement | null>(null)
 
 const selectedYear = ref(2025)
+
+
+const currentMode = ref<`provinces` | `constituencies` | `national`>(`provinces`)
+const constituencies = ref<any[]>([])
+
 const API_URL = `${import.meta.env.VITE_API_URL}/provinces/results`
 
+function switchMode(mode: `provinces` | `constituencies` | `national`) {
+  currentMode.value = mode
+
+  if (mode === `provinces`) loadData()
+  if (mode === `constituencies`) loadConstituencies()
+  if (mode === `national`) console.log("nog niet geimplementeerd")
+}
 const sortedVotes = computed(() => {
   if (!selectedProvince.value) return []
 
@@ -54,12 +66,15 @@ async function loadData() {
     console.error('Fout bij ophalen:', err)
   }
 }
+
+
 onMounted(loadData)
 
 function onYearChange(event: Event) {
   const target = event.target as HTMLSelectElement
   setYear(Number(target.value))
 }
+
 
 function highlightProvinces() {
   setTimeout(() => {
@@ -115,6 +130,33 @@ function highlightProvinces() {
         <option value="2025" selected>2025</option>
       </select>
     </div>
+
+    <div class="flex gap-3 mb-4">
+      <div
+        class="px-4 py-2 rounded-md border-2 shadow cursor-pointer bg-amber-200 border-amber-300 font-semibold"
+        :class="{ '!bg-amber-300 border-amber-400 shadow-md': currentMode === 'provinces' }"
+        @click="switchMode('provinces')"
+      >
+        Provincies
+      </div>
+
+      <div
+        class="px-4 py-2 rounded-md border-2 shadow cursor-pointer bg-amber-200 border-amber-300 font-semibold"
+        :class="{ '!bg-amber-300 border-amber-400 shadow-md': currentMode === 'constituencies' }"
+        @click="switchMode('constituencies')"
+      >
+        Kieskringen
+      </div>
+
+      <div
+        class="px-4 py-2 rounded-md border-2 shadow cursor-pointer bg-amber-200 border-amber-300 font-semibold"
+        :class="{ '!bg-amber-300 border-amber-400 shadow-md': currentMode === 'national' }"
+        @click="switchMode('national')"
+      >
+        Nationaal
+      </div>
+    </div>
+
 
     <!-- Container voor map + resultaten -->
     <div class="flex flex-col md:flex-row items-start w-full max-w-6xl gap-6">
@@ -244,4 +286,7 @@ svg path {
   stroke-width: 1.2;
   transition: fill 0.2s, stroke 0.3s;
 }
+
+
+
 </style>
