@@ -1,5 +1,6 @@
 package nl.hva.election_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -30,6 +31,10 @@ public class ForumPost {
     @JsonManagedReference
     private List<ForumComment> comments = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "topic_id")
+    @JsonBackReference
+    private Topic topic;
 
     public ForumPost() {}
 
