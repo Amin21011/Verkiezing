@@ -96,4 +96,12 @@ public class Candidate {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+
+    public void setPartyName(String name) {
+    }
+
+    public String getPartyId() {
+        return "";
+    }
 }
