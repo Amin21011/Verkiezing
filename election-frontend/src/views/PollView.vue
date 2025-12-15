@@ -47,21 +47,23 @@ async function vote(pollId: number, optionIndex: number) {
     return;
   }
 
-  if (previous !== undefined) {
-    await fetch(
-      `${import.meta.env.VITE_API_URL}/polls/${pollId}/reset/${previous}`,
-      { method: "PUT" }
-    );
-  }
-
-  await fetch(
-    `${import.meta.env.VITE_API_URL}/polls/${pollId}/vote/${optionIndex}`,
-    { method: "POST" }
-  );
-
+  // Update UI meteen
   userVotes.value[pollId] = optionIndex;
   saveUserVotes();
 
+  // Oude stem resetten
+  if (previous !== undefined) {
+    await fetch(`${import.meta.env.VITE_API_URL}/polls/${pollId}/reset/${previous}`, {
+      method: "PUT",
+    });
+  }
+
+  // Nieuwe stem toevoegen
+  await fetch(`${import.meta.env.VITE_API_URL}/polls/${pollId}/vote/${optionIndex}`, {
+    method: "POST",
+  });
+
+  // Polls opnieuw laden om percentages up-to-date te houden
   await loadPolls();
 }
 
