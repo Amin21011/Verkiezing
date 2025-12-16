@@ -2,6 +2,8 @@ package nl.hva.election_backend.api;
 
 import nl.hva.election_backend.model.ForumComment;
 import nl.hva.election_backend.model.ForumPost;
+import nl.hva.election_backend.model.Topic;
+import nl.hva.election_backend.service.TopicService;
 import nl.hva.election_backend.model.User;
 import nl.hva.election_backend.service.ForumCommentService;
 import nl.hva.election_backend.service.ForumPostService;
@@ -21,17 +23,26 @@ public class ForumPostController {
     private final JwtUtil jwtUtil;
     private final UserService userService;
     private final ForumCommentService forumCommentService;
+    private final TopicService topicService;
 
     public ForumPostController(
             ForumPostService forumPostService,
             JwtUtil jwtUtil,
             UserService userService,
-            ForumCommentService forumCommentService
+            ForumCommentService forumCommentService,
+            TopicService topicService
     ) {
         this.forumPostService = forumPostService;
         this.jwtUtil = jwtUtil;
         this.userService = userService;
         this.forumCommentService = forumCommentService;
+        this.topicService = topicService;
+    }
+
+    public static class ForumPostRequest {
+        public String title;
+        public String content;
+        public Long topicId;
     }
 
     private String extractEmail(String authHeader) {
@@ -55,21 +66,32 @@ public class ForumPostController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addPost(
-            @RequestBody ForumPost forumPost,
-            @RequestHeader(value = "Authorization", required = false) String authHeader
-    ) {
+    public ResponseEntity<?> addPost(@RequestBody ForumPostRequest request,
+                                     @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
             String email = extractEmail(authHeader);
             User user = userService.findByEmail(email);
+
+            ForumPost forumPost = new ForumPost();
+            forumPost.setTitle(request.title);
+            forumPost.setContent(request.content);
             forumPost.setUser(user);
             forumPost.setPostedAt(LocalDateTime.now());
+
+            if (request.topicId != null) {
+                Topic topic = topicService.getTopicById(request.topicId)
+                        .orElseThrow(() -> new RuntimeException("Topic niet gevonden"));
+                forumPost.setTopic(topic);
+            }
+
             ForumPost saved = forumPostService.addPost(forumPost);
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
             return ResponseEntity.status(401).body("Je moet ingelogd zijn");
         }
     }
+
+
 
     @PostMapping("/posts/{id}/comments")
     public ResponseEntity<?> addComment(
