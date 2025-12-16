@@ -4,6 +4,13 @@
 
     <!-- Nieuwe post -->
     <form @submit.prevent="submitPost" class="new-post">
+      <select v-model="selectedTopicId" required>
+        <option value="" disabled>-- Kies een topic --</option>
+        <option v-for="topic in topics" :key="topic.id" :value="topic.id">
+          {{ topic.name }}
+        </option>
+      </select>
+
       <input
         v-model="title"
         type="text"
@@ -19,24 +26,54 @@
     </form>
 
     <hr />
-
-
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { getToken } from "@/services/authService";
 
 const title = ref("");
 const content = ref("");
-const success = ref(false);
-const error = ref("");
+const selectedTopicId = ref<number | null>(null);
 
+// Type van topic
+interface Topic {
+  id: number;
+  name: string;
+}
+
+const topics = ref<Topic[]>([]);
+
+// Topics ophalen
+const fetchTopics = async () => {
+  try {
+    const res = await fetch("http://localhost:8080/api/topics");
+    if (!res.ok) throw new Error("Kon topics niet ophalen");
+    topics.value = await res.json() as Topic[];
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      alert(err.message);
+    } else {
+      alert("Er is een onbekende fout opgetreden bij het ophalen van topics");
+    }
+  }
+};
+
+onMounted(() => {
+  fetchTopics();
+});
+
+// Nieuwe post plaatsen
 const submitPost = async () => {
   const token = getToken();
   if (!token) {
     alert("Je moet ingelogd zijn om een post te plaatsen");
+    return;
+  }
+
+  if (!selectedTopicId.value) {
+    alert("Je moet een topic selecteren");
     return;
   }
 
@@ -50,6 +87,7 @@ const submitPost = async () => {
       body: JSON.stringify({
         title: title.value,
         content: content.value,
+        topicId: selectedTopicId.value
       }),
     });
 
@@ -57,13 +95,14 @@ const submitPost = async () => {
 
     const newPost = await res.json();
     window.location.href = `/forum/${newPost.id}`;
-
-  } catch (err: any) {
-    alert(err.message);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      alert(err.message);
+    } else {
+      alert("Er is een onbekende fout opgetreden bij het plaatsen van de post");
+    }
   }
 };
-
-
 </script>
 
 <style scoped>
