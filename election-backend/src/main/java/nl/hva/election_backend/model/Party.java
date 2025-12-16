@@ -41,12 +41,15 @@ public class Party {
 
     public void addVotes(int votes) { this.voteCount += votes; }
 
-
     public void setElection(Election e) {
         this.election = e;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSlug() {
+        return name.toLowerCase();
     }
 }
