@@ -49,7 +49,6 @@ public class Candidate {
             if (sb.length() > 0) sb.append(" ");
             sb.append(lastName.trim());
         }
-
         this.fullName = sb.toString();
     }
 
@@ -62,9 +61,11 @@ public class Candidate {
     public Integer getRanking() { return ranking; }
     public Party getParty() { return party; }
     public Election getElection() { return election; }
-    public boolean isElected() { return elected; }
+    public String getSlug() { return fullName.toLowerCase(); }
 
+    public boolean isElected() { return elected; }
     public void addVotes(int votes) { this.votes += votes; }
+
     public void setId(String id) { this.id = id; }
     public void setGender(String gender) { this.gender = gender; }
     public void setVotes(int votes) { this.votes = votes; }
@@ -87,8 +88,7 @@ public class Candidate {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Candidate)) return false;
-        Candidate candidate = (Candidate) o;
+        if (!(o instanceof Candidate candidate)) return false;
         return Objects.equals(id, candidate.id);
     }
 
@@ -97,11 +97,10 @@ public class Candidate {
         return Objects.hash(id);
     }
 
-
-    public void setPartyName(String name) {
+    public String getPartyId() {
+        return party.getId();
     }
 
-    public String getPartyId() {
-        return "";
+    public void setPartyName(String name) {
     }
 }
