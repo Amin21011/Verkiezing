@@ -6,6 +6,7 @@ import PartijenContent from '@/components/PartijenContent.vue'
 import PollView from '@/views/PollView.vue'
 import ChartContainer from '@/components/ChartContainer.vue'
 import BannerSection from '@/components/BannerSection.vue'
+import DailyFactCard from '@/components/DailyFactCard.vue'
 
 const tweedeGrid = [
   { title: 'Top Parties', component: PartijenContent },
@@ -16,6 +17,7 @@ const tweedeGrid = [
 <template>
   <BannerSection/>
   <ArticleSection/>
+  <DailyFactCard/>
   <HeroSection/>
   <GridSection :cards="tweedeGrid" />
   <ChartContainer/>
