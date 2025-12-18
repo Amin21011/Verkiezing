@@ -3,6 +3,11 @@ import { ref, onMounted } from "vue";
 import {getToken} from "@/services/authService.ts";
 import router from "@/router";
 
+interface Topic {
+  id: number;
+  name: string;
+}
+
 interface ForumPost {
   id: number;
   title: string;
@@ -10,6 +15,7 @@ interface ForumPost {
   postedAt: string;
   likeCount: number;
   user: { name: string };
+  topic?: Topic;
 }
 
 const posts = ref<ForumPost[]>([]);
@@ -34,12 +40,16 @@ async function fetchPosts() {
       .sort((a, b) => b.likeCount - a.likeCount)
       .slice(0, 5);
 
-  } catch (err: any) {
-    errorMsg.value = err.message;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      errorMsg.value = err.message;
+    } else {
+      errorMsg.value = "Er is een onbekende fout opgetreden";
+    }
   } finally {
     loading.value = false;
+    }
   }
-}
 
 function requireLogin() {
   if (!getToken()) {
@@ -137,6 +147,9 @@ onMounted(fetchPosts);
                 door {{ post.user?.name || 'Onbekend' }} •
                 {{ new Date(post.postedAt).toLocaleDateString('nl-NL') }} •
                 ❤️ {{ post.likeCount }}
+              </p>
+              <p v-if="post?.topic" class="text-sm text-gray-500 mb-2">
+                 {{ post.topic.name }}
               </p>
               <p class="text-gray-700 leading-relaxed line-clamp-3">
                 {{ post.content }}
