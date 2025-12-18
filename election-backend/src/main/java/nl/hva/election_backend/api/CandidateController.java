@@ -1,6 +1,6 @@
 package nl.hva.election_backend.api;
 
-import nl.hva.election_backend.model.Candidate;
+import nl.hva.election_backend.dto.model.CandidateDTO;
 import nl.hva.election_backend.service.CandidateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,28 +24,31 @@ public class CandidateController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Candidate>> getAllCandidates() {
+    public ResponseEntity<List<CandidateDTO>> getAllCandidates() {
         logger.info("Ophalen van alle kandidaten gestart");
         try {
-            List<Candidate> candidates = candidateService.getAllCandidates();
+            List<CandidateDTO> candidates = candidateService.getAllCandidates();
             logger.debug("Aantal kandidaten opgehaald: {}", candidates.size());
             return ResponseEntity.ok(candidates);
         } catch (Exception e) {
             logger.error("Fout bij ophalen kandidaten", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }
     }
 
     @GetMapping("/party/{partyId}")
-    public List<Candidate> getCandidatesByParty(@PathVariable String partyId) {
-        return candidateService.getCandidatesByParty(partyId);
+    public ResponseEntity<List<CandidateDTO>> getCandidatesByParty(
+            @PathVariable String partyId
+    ) {
+        return ResponseEntity.ok(candidateService.getCandidatesByParty(partyId));
     }
     @PostMapping("/compare")
-    public List<Candidate> compareCandidates(
+    public ResponseEntity<List<CandidateDTO>> compareCandidates(
             @RequestBody List<Map<String, String>> selections
     ) {
-        return candidateService.compareCandidates(selections);
+        return ResponseEntity.ok(candidateService.compareCandidates(selections));
     }
 
 }
