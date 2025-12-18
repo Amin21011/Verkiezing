@@ -57,10 +57,11 @@ public class CandidateService {
     private CandidateDTO toDto(Candidate c) {
         return new CandidateDTO(
                 c.getId(),
-                c.getFullName(),
-                c.getGender(),
+                c.getFirstName(),
+                c.getLastName(),
                 c.getParty() != null ? c.getParty().getId() : null,
                 c.getParty() != null ? c.getParty().getName() : null,
+                c.getGender(),
                 c.getVotes()
         );
     }
