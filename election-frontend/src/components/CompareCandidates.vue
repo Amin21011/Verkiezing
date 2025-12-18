@@ -208,9 +208,6 @@ const getCandidateName = (value: string) => {
             Geslacht: <span class="font-normal">{{ c.gender }}</span>
           </p>
           <p class="font-bold">
-            Woonplaats: <span class="font-normal">{{ c.residence }}</span>
-          </p>
-          <p class="font-bold">
             Stemmen: <span class="font-normal">{{ c.votes }}</span>
           </p>
         </div>

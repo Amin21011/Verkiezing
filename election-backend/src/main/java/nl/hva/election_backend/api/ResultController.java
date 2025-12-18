@@ -38,6 +38,7 @@ public class ResultController {
                         c.getLastName(),
                         c.getParty().getId(),
                         c.getParty().getName(),
+                        c.getGender(),
                         c.getVotes()
                 ))
                 .toList();
