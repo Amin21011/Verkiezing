@@ -1,13 +1,12 @@
 package nl.hva.election_backend.service;
 
+import nl.hva.election_backend.dto.model.CandidateDTO;
 import nl.hva.election_backend.model.Candidate;
 import nl.hva.election_backend.repository.CandidateRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
 @Service
 public class CandidateService {
 
@@ -17,28 +16,52 @@ public class CandidateService {
         this.candidateRepository = candidateRepository;
     }
 
-    public List<Candidate> getAllCandidates() {
-        return candidateRepository.findAll();
-    }
-
-    public List<Candidate> getCandidatesByParty(String partyId) {
-        return candidateRepository.findAll().stream()
-                .filter(c -> c.getParty() != null && c.getParty().getId().equals(partyId))
-                .collect(Collectors.toList());
+    /**
+     * Alle kandidaten (DTO)
+     */
+    public List<CandidateDTO> getAllCandidates() {
+        return candidateRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .toList();
     }
 
     /**
-     * Vergelijk kandidaten op basis van geselecteerde candidateId en partyId
+     * Kandidaten per partij
      */
-    public List<Candidate> compareCandidates(List<Map<String, String>> selections) {
-        return candidateRepository.findAll().stream()
-                .filter(c -> selections.stream()
-                        .anyMatch(s ->
-                                c.getId().equals(s.get("candidateId")) &&
-                                        c.getParty() != null &&
-                                        c.getParty().getId().equals(s.get("partyId"))
-                        )
-                )
-                .collect(Collectors.toList());
+    public List<CandidateDTO> getCandidatesByParty(String partyId) {
+        return candidateRepository.findByParty_Id(partyId)
+                .stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    /**
+     * Vergelijk geselecteerde kandidaten
+     */
+    public List<CandidateDTO> compareCandidates(List<Map<String, String>> selections) {
+        return candidateRepository.findAll()
+                .stream()
+                .filter(c -> selections.stream().anyMatch(s ->
+                        c.getId().equals(s.get("candidateId")) &&
+                                c.getParty() != null &&
+                                c.getParty().getId().equals(s.get("partyId"))
+                ))
+                .map(this::toDto)
+                .toList();
+    }
+
+    /**
+     * Mapper: Entity → DTO
+     */
+    private CandidateDTO toDto(Candidate c) {
+        return new CandidateDTO(
+                c.getId(),
+                c.getFullName(),
+                c.getGender(),
+                c.getParty() != null ? c.getParty().getId() : null,
+                c.getParty() != null ? c.getParty().getName() : null,
+                c.getVotes()
+        );
     }
 }
