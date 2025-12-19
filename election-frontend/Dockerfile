@@ -1,6 +1,6 @@
 # Stage 1: Build
 
-FROM node:23-alpine AS builder
+FROM node:lts-alpine AS builder
  
 WORKDIR /app
 
