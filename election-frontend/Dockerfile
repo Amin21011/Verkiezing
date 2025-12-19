@@ -1,16 +1,22 @@
 # Stage 1: Build
 
-FROM node:23-alpine AS builder
+FROM node:20-bullseye AS build
 
 ENV NPM_CONFIG_CACHE=/tmp/.npm
 ENV npm_config_loglevel=warn
+ENV npm_config_fund=false
+ENV npm_config_audit=false
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm cache clean --force && npm install --no-audit --no-fund --legacy-peer-deps
+
+RUN rm -rf /root/.npm \
+&& npm cache clean --force \
+&& npm install --no-progress
 
 COPY . .
+
 RUN npm run build
  
 # Stage 2: Serve
