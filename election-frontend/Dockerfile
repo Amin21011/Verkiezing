@@ -1,30 +1,27 @@
-# Stage 1: Build
-
-# Multi-stage build for Vue 3 application
-
-# Stage 1: Build the application
-FROM node:22-alpine AS build
+# ---- Build stage ----
+FROM node:lts-slim AS build
 WORKDIR /app
 
-# Copy package files and install dependencies
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
-# Copy source code and build
 COPY . .
 RUN npm run build
- 
-# Stage 2: Serve
 
-FROM nginx:alpine AS runner
- 
+# ---- Nginx stage ----
+FROM nginx:stable-alpine
+
+# Remove default nginx config
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Remove default html
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy built Vue files
 COPY --from=build /app/dist /usr/share/nginx/html
- 
-# NOTE: The default Nginx image listens on port 80. 
 
-# If you haven't provided a custom nginx.conf, you should EXPOSE 80
+# Copy our custom nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
- 
 CMD ["nginx", "-g", "daemon off;"]
- 
