@@ -108,31 +108,51 @@ Naam | Wat heb ik gisteren gedaan?                   | Wat ga ik vandaag doen?  
 
 ### Datum: 25-11-2025
 
-Naam | Wat heb ik gisteren gedaan?                                        | Wat ga ik vandaag doen?                                             | Wat houdt mij tegen?                                                                   | Opmerkingen / afspraken 
-| -- |--------------------------------------------------------------------|---------------------------------------------------------------------|----------------------------------------------------------------------------------------|-------------------------|
-| Morsal | Simulator afgekregen en admins kunnen nu lijst van gebruikers zien | Candidate chart weer werkend krijgen                                | Merge errors                                                                           | Geen                    | 
-| Betul | Niks kunnen doen                                                   | Bezig met ophalen uit de database en daarna kijken naar de frontend | Ik raak soms in de war door dubbele data en omdat ik ziek ben is mijn focus wat minder | Geen                    |
-| Ramzi | Begin gemaakt aan de kieskringen                                   | Verder aan de kieskringen                                           | Koorts                                                                                 | Geen                    | 
-| Amin | US Provincies vergelijken afgerond                                 | Search bar werkend krijgen en polls in database krijgen             | Connectie met de database doet soms beetje stroef                                      | Geen                    |
+Naam | Wat heb ik gisteren gedaan?                                        | Wat ga ik vandaag doen?                                             | Wat houdt mij tegen?                                                                    | Opmerkingen / afspraken 
+| -- |--------------------------------------------------------------------|---------------------------------------------------------------------|-----------------------------------------------------------------------------------------|-------------------------|
+| Morsal | Simulator afgekregen en admins kunnen nu lijst van gebruikers zien | Candidate chart weer werkend krijgen.                               | Merge errors                                                                            | Geen                    | 
+| Betul | Niks kunnen doen                                                   | Bezig met ophalen uit de database en daarna kijken naar de frontend | Ik raak soms in de war door dubbele data en omdat ik ziek ben is mijn focus wat minder. | Geen                    |
+| Ramzi | Begin gemaakt aan de kieskringen                                   | Verder aan de kieskringen.                                          | Koorts                                                                                  | Geen                    | 
+| Amin | US Provincies vergelijken afgerond                                 | Search bar werkend krijgen en polls in database krijgen.            | Connectie met de database doet soms beetje stroef.                                      | Geen                    |
 
 
 ## Sprint 5
 
 ### Datum: 09-12-2025
 
-Naam | Wat heb ik gisteren gedaan?                                            | Wat ga ik vandaag doen?                                     | Wat houdt mij tegen? / Obstakel                         | Opmerkingen / afspraken                                    
-| -- |------------------------------------------------------------------------|-------------------------------------------------------------|---------------------------------------------------------|------------------------------------------------------------|
-| Morsal | Sprint planning opgesteld en gewerkt aan import van xml naar database  | Verder aan de import werken                                 | Er komt momenteel steeds maar een deel in de database.  | Zsm afkrijgen zodat ik aan nieuwe userstories kan beginnen | 
-| Betul | Userstories opgesteld                                                  | Bezig geweest met de transformers van de gemeente bestanden | Endpoints zijn soms een beetje verwarrend               | Geen                                                       |
-| Ramzi | Vooruitgang aan de Kieskringen en die zijn daardoor bijna klaar        | Verder aan de kieskringen                                   | Moeite met de transformer                               | Geen                                                       | 
-| Amin | Een paar dingen verbeterd aan de research bar en userstories opgesteld | Merge request ingediend en begonnen kandidaat vergelijker   | Partij koppeling aan de kandidaat                       | Geen                                                       |
+Naam | Wat heb ik gisteren gedaan?                                            | Wat ga ik vandaag doen?                                     | Wat houdt mij tegen? / Obstakel                        | Opmerkingen / afspraken                                    
+| -- |------------------------------------------------------------------------|-------------------------------------------------------------|--------------------------------------------------------|------------------------------------------------------------|
+| Morsal | Sprint planning opgesteld en gewerkt aan import van xml naar database  | Verder aan de import werken                                 | Er komt momenteel steeds maar een deel in de database. | Zsm afkrijgen zodat ik aan nieuwe userstories kan beginnen | 
+| Betul | Userstories opgesteld                                                  | Bezig geweest met de transformers van de gemeente bestanden | Endpoints zijn soms een beetje verwarrend.             | Geen                                                       |
+| Ramzi | Vooruitgang aan de Kieskringen en die zijn daardoor bijna klaar        | Verder aan de kieskringen                                   | Moeite met de transformer.                             | Geen                                                       | 
+| Amin | Een paar dingen verbeterd aan de research bar en userstories opgesteld | Merge request ingediend en begonnen kandidaat vergelijker   | Partij koppeling aan de kandidaat.                     | Geen                                                       |
 
 
 ### Datum: 12-12-2025
 
- Naam   | Wat heb ik gisteren gedaan?                                                    | Wat ga ik vandaag doen?             | Wat houdt mij tegen? / Obstakel                         | Opmerkingen / afspraken 
-|--------|--------------------------------------------------------------------------------|-------------------------------------|---------------------------------------------------------|-------------------------|
-| Morsal | Front end voor fake news userstory gemaakt                                     | Services met ai model laten werken  | Goede gratis AI model vinden                      |  Geen                   |
-| Betul  | Begonnen aan de transformers en service en  heb een paar testbestanden gemaakt | Verder met de gemeente transformer. | Te lang blijven hangen bij 1 bepaald dingetje.          | Geen                    |
-| Ramzi  | Verder gewerkt aan kieskring transformer, bezig met edit en delete forum posts | Kieskring transformer afmaken       | Moeite met front end gedeelte voor nauwkeurigheid       | Geen                    | 
-| Amin   | Bezig geweest met kandidaat vergelijker                                        | Topics in de forum zetten           | Database                                                | Geen                    |
+ Naam   | Wat heb ik gisteren gedaan?                                                    | Wat ga ik vandaag doen?             | Wat houdt mij tegen? / Obstakel                    | Opmerkingen / afspraken 
+|--------|--------------------------------------------------------------------------------|-------------------------------------|----------------------------------------------------|-------------------------|
+| Morsal | Front end voor fake news userstory gemaakt                                     | Services met ai model laten werken  | Goede gratis AI model vinden.                      |  Geen                   |
+| Betul  | Begonnen aan de transformers en service en  heb een paar testbestanden gemaakt | Verder met de gemeente transformer. | Te lang blijven hangen bij 1 bepaald dingetje.     | Geen                    |
+| Ramzi  | Verder gewerkt aan kieskring transformer, bezig met edit en delete forum posts | Kieskring transformer afmaken       | Moeite met front end gedeelte voor nauwkeurigheid. | Geen                    | 
+| Amin   | Bezig geweest met kandidaat vergelijker                                        | Topics in de forum zetten           | Database.                                          | Geen                    |
+
+
+### Datum: 18-12-2025
+
+Naam | Wat heb ik gisteren gedaan?     | Wat ga ik vandaag doen?                                                       | Wat houdt mij tegen?               | Opmerkingen / afspraken 
+| -- |---------------------------------|-------------------------------------------------------------------------------|------------------------------------|-------------------------|
+| Morsal | Daily fact US afgekregen | Daily fact en fake news branches mergen met de dev en aan documentatie werken | Frontend dynamischer krijgen       | --                      | 
+| Betul | Niet iets afgekregen            | controller en service scheiden van de election gedeelte                       | Correcte parsing van xml bestanden | --                      | 
+| Ramzi | Gegevens in de database te krijgen | Verder gaan met de kieskringen en merge request hiervan sturen                | Server errors                      | --                      | 
+| Amin | topics in de forum kunnen zetten | kandidaten vergelijken en error fixen                                         | database doet vervelend            | --                      | 
+
+
+### Datum: 19-12-2025
+
+Naam | Wat heb ik gisteren gedaan? | Wat ga ik vandaag doen? | Wat houdt mij tegen? | Opmerkingen / afspraken
+| -- | -- | -- | -- | -- |
+| Morsal | | | |
+| Betul | | | |
+| Ramzi | | | |
+| Amin | | | |
