@@ -1,22 +1,17 @@
 # Stage 1: Build
 
-FROM node:20-bullseye AS build
+# Multi-stage build for Vue 3 application
 
-ENV NPM_CONFIG_CACHE=/tmp/.npm
-ENV npm_config_loglevel=warn
-ENV npm_config_fund=false
-ENV npm_config_audit=false
-
+# Stage 1: Build the application
+FROM node:22-alpine AS build
 WORKDIR /app
 
+# Copy package files and install dependencies
 COPY package*.json ./
+RUN npm ci
 
-RUN rm -rf /root/.npm \
-&& npm cache clean --force \
-&& npm install --no-progress
-
+# Copy source code and build
 COPY . .
-
 RUN npm run build
  
 # Stage 2: Serve
