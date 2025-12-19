@@ -18,7 +18,7 @@ RUN npm run build
 
 FROM nginx:alpine AS runner
  
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
  
 # NOTE: The default Nginx image listens on port 80. 
 
