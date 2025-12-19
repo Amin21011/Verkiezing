@@ -30,7 +30,7 @@ const constituencyPositions: Record<string, { x: number; y: number }> = {
   Den_Helder: { x: 615, y: 330 },
   Haarlem: { x: 600, y: 435 },
   Leiden: { x: 630, y: 510 },
-  s_Gravenhage: { x: 610, y: 540 },
+  "s-Gravenhage": { x: 610, y: 540 },
   Rotterdam: { x: 590, y: 600 },
   Dordrecht: { x: 620, y: 620 },
 
@@ -41,7 +41,7 @@ const constituencyPositions: Record<string, { x: number; y: number }> = {
   Arnhem: { x: 780, y: 550 },
   Nijmegen: { x: 770, y: 600 },
 
-  s_Hertogenbosch: { x: 700, y: 600 },
+  "s-Hertogenbosch": { x: 700, y: 600 },
   Tilburg: { x: 630, y: 680 },
   Middelburg: { x: 442, y: 705 },
   Maastricht: { x: 770, y: 875 },
