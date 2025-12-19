@@ -12,13 +12,13 @@ COPY package.json package-lock.json* ./
  
 # Ensure we are in development mode so devDependencies (Tailwind, Vite) are installed
 
-ENV NODE_ENV=development
+#ENV NODE_ENV=development
  
 # CHANGED: Use 'npm install' to ensure Linux binaries are fetched correctly
 
 # avoiding platform mismatches from the lockfile
 
-RUN npm install
+RUN npm run ci
  
 # Copy rest of the source
 
