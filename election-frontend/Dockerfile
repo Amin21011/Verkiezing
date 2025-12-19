@@ -1,35 +1,25 @@
-# =========================================
-# Stage 1: Build the Vue.js Application
-# =========================================
-ARG NODE_VERSION=23.11.0-alpine
+# Stage 1: Build
+FROM node:23.11.0-alpine AS builder
 
-FROM node:${NODE_VERSION} AS builder
-
-# Set working directory
 WORKDIR /app
 
-# Copy package files first (voor caching)
+# Copy package files
 COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN --mount=type=cache,target=/root/.npm npm ci
+# Zet NODE_ENV tijdelijk op development
+ENV NODE_ENV=development
 
-# Copy rest of the source code
+# Installeer alle dependencies inclusief devDependencies
+RUN npm ci
+
+# Copy rest of the source
 COPY . .
 
-# Build the Vue.js app
+# Build
 RUN npm run build
 
-# =========================================
-# Stage 2: Serve with Nginx
-# =========================================
+# Stage 2: Serve
 FROM nginx:alpine AS runner
-
-# Copy build output to Nginx default html folder
 COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Expose port 8080
 EXPOSE 8080
-
-# Start Nginx in foreground
 CMD ["nginx", "-g", "daemon off;"]
