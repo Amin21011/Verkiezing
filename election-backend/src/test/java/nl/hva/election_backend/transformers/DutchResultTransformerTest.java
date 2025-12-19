@@ -9,18 +9,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class DutchResultTransformerTest {
-    private Election election;
     private Party party;
     private Candidate candidate;
     private ResultRepository resultRepository;
     private CandidateRepository candidateRepository;
-    private RegionRepository regionRepository;
     private PartyRepository partyRepository;
     private DutchResultTransformer transformer;
 
     @BeforeEach
     void setUp() {
-        election = new Election("TK2023");
+        Election election = new Election("TK2023");
         party = new Party("vvd", "VVD", 500);
         election.addParty(party);
         candidate = new Candidate("vvd_1", "Mark", "Rutte");
@@ -30,7 +28,7 @@ class DutchResultTransformerTest {
 
         resultRepository = mock(ResultRepository.class);
         candidateRepository = mock(CandidateRepository.class);
-        regionRepository = mock(RegionRepository.class);
+        RegionRepository regionRepository = mock(RegionRepository.class);
         partyRepository = mock(PartyRepository.class);
 
         transformer = new DutchResultTransformer(
