@@ -59,7 +59,6 @@ public class AuthController {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body(Map.of("error", "Geen geldige token gevonden"));
         }
-
         String token = authHeader.substring(7);
         String email = jwtUtil.validateTokenAndGetEmail(token);
         User user = userService.findByEmail(email);
@@ -75,7 +74,6 @@ public class AuthController {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body("Geen geldige token gevonden");
         }
-
         String token = authHeader.substring(7);
         String email = jwtUtil.validateTokenAndGetEmail(token);
         User user = userService.findByEmail(email);
@@ -84,7 +82,6 @@ public class AuthController {
 
         user.setName(updatedUser.name());
         user.setEmail(updatedUser.email());
-
         User saved = userService.save(user);
             return ResponseEntity.ok(new UserDTO(saved.getId(), saved.getName(), saved.getEmail(), saved.getRole(), saved.getQuizBestMatch()));
     }

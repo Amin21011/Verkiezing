@@ -1,12 +1,8 @@
 package nl.hva.election_backend.dto;
 
 public class PasswordChangeRequest {
-
     private String oldPassword;
     private String newPassword;
-
-    public PasswordChangeRequest() {
-    }
 
     public PasswordChangeRequest(String oldPassword, String newPassword) {
         this.oldPassword = oldPassword;
@@ -17,15 +13,7 @@ public class PasswordChangeRequest {
         return oldPassword;
     }
 
-    public void setOldPassword(String oldPassword) {
-        this.oldPassword = oldPassword;
-    }
-
     public String getNewPassword() {
         return newPassword;
-    }
-
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
     }
 }
