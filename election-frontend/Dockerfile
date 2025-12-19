@@ -5,10 +5,10 @@ WORKDIR /app
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Installeer ALLE dependencies (inclusief Tailwind)
+# Installeer ALLE dependencies (inclusief Tailwind plugin)
 RUN npm ci
 
-# Copy source code
+# Copy rest of source code
 COPY . .
 
 # Build frontend
