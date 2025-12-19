@@ -18,7 +18,7 @@ COPY package.json package-lock.json* ./
 
 # avoiding platform mismatches from the lockfile
 
-RUN npm run ci
+RUN npm ci
  
 # Copy rest of the source
 
