@@ -24,6 +24,7 @@ public class FakeNewsService {
         int sentimentScore = detectSentiment(article);
         int biasScore = detectBias(article);
         int sourceScore = detectSourceReliability(req.getUrl());
+
         List<String> keywordWarnings = detectKeywords(article);
         int capsIntensity = detectCapsIntensity(article);
 
