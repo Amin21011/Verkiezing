@@ -113,3 +113,20 @@
   background: var(--retro-ink);
   border-radius: 2px;
 }
+
+html.dark {
+  --paper: #121212;
+  --ink: #eaeaea;
+  --graymain: #a1a1aa;
+  --highlight: #1f2933;
+  --shadow-press: -6px 6px 0 rgba(255,255,255,0.15);
+  --shadow-soft: 0 4px 30px rgba(0,0,0,0.6);
+
+  --retro-paper: #121212;
+  --retro-ink: #eaeaea;
+  --retro-red: #f87171;
+  --retro-gold: #facc15;
+  --retro-blue: #60a5fa;
+}
+
+
