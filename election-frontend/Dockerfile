@@ -2,46 +2,34 @@
 # Stage 1: Build the Vue.js Application
 # =========================================
 ARG NODE_VERSION=23.11.0-alpine
-ARG NGINX_VERSION=alpine3.22
 
-# Use a lightweight Node.js image for building (customizable via ARG)
 FROM node:${NODE_VERSION} AS builder
 
-# Set the working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy package-related files first to leverage Docker's caching mechanism
+# Copy package files first (voor caching)
 COPY package.json package-lock.json ./
 
-# Install project dependencies using npm ci (ensures a clean, reproducible install)
+# Install dependencies
 RUN --mount=type=cache,target=/root/.npm npm ci
 
-# Copy the rest of the application source code into the container
+# Copy rest of the source code
 COPY . .
 
-# Build the Vue.js application
+# Build the Vue.js app
 RUN npm run build
 
 # =========================================
-# Stage 2: Prepare Nginx to Serve Static Files
+# Stage 2: Serve with Nginx
 # =========================================
-
 FROM nginx:alpine AS runner
 
-# Use a built-in non-root user for security best practices
-#USER nginx
+# Copy build output to Nginx default html folder
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy custom Nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
-
-
-# Copy the static build output from the build stage to Nginx's default HTML serving directory
-COPY --chown=nginx:nginx --from=builder /app/dist /usr/share/nginx/html
-
-# Expose port 8080 to allow HTTP traffic
-# Note: The default NGINX container now listens on port 8080 instead of 80
+# Expose port 8080
 EXPOSE 8080
 
-# Start Nginx directly with custom config
-ENTRYPOINT ["nginx", "-c", "/etc/nginx/nginx.conf"]
-CMD ["-g", "daemon off;"]
+# Start Nginx in foreground
+CMD ["nginx", "-g", "daemon off;"]
