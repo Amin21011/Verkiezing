@@ -54,7 +54,15 @@
     position:relative;overflow:hidden;
   }
 
-  .news-grid{@apply grid gap-8 md:grid-cols-2 max-w-6xl w-full px-6 py-12;}
+
+
+  .news-grid{
+    @apply grid gap-8 max-w-6xl w-full px-6 py-12;
+  }
+
+  @screen md {
+    .news-grid {@apply grid-cols-2}
+  }
 }
 
 @layer utilities {
