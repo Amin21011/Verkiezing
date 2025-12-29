@@ -53,18 +53,17 @@ const constituencyPositions: Record<string, { x: number; y: number }> = {
 
 
 
-const currentMode = ref<`provinces` | `constituencies` | `national`>(`provinces`)
+const currentMode = ref<`provinces` | `constituencies` >(`provinces`)
 const constituencies = ref<any[]>([])
 
 const API_URL = `${import.meta.env.VITE_API_URL}/provinces/results`
 const API_CONSTITUENCIES = `${import.meta.env.VITE_API_URL}/constituencies/results`
 
-function switchMode(mode: `provinces` | `constituencies` | `national`) {
+function switchMode(mode: `provinces` | `constituencies` ) {
   currentMode.value = mode
 
   if (mode === `provinces`) loadData()
   if (mode === `constituencies`) loadConstituencies()
-  if (mode === `national`) console.log("nog niet geimplementeerd")
 }
 const sortedVotes = computed(() => {
   if (!selectedProvince.value) return []
@@ -132,11 +131,11 @@ function highlightConstituencies() {
     const svg = mapContainer.value?.querySelector("svg")
     if (!svg) return
 
-    // Verwijder oude markers
+
     const oldMarkers = mapContainer.value!.querySelectorAll(".kies-marker")
     oldMarkers.forEach(m => m.remove())
 
-    // Voor elke kieskring → marker toevoegen
+
     constituencies.value.forEach((c: any) => {
       const name = c.constituencies.name
       const pos = constituencyPositions[name]
