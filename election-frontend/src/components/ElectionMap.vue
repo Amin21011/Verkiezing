@@ -114,8 +114,18 @@ onMounted(loadData)
 
 function onYearChange(event: Event) {
   const target = event.target as HTMLSelectElement
-  setYear(Number(target.value))
+  selectedYear.value = Number(target.value)
+  setYear(selectedYear.value)
+
+  if (currentMode.value === 'provinces') {
+    loadData()
+  }
+
+  if (currentMode.value === 'constituencies') {
+    loadConstituencies()
+  }
 }
+
 
 function highlightConstituencies() {
   setTimeout(() => {
@@ -128,7 +138,8 @@ function highlightConstituencies() {
 
     // Voor elke kieskring → marker toevoegen
     constituencies.value.forEach((c: any) => {
-      const pos = constituencyPositions[c.constituencyName]
+      const name = c.constituencies.name
+      const pos = constituencyPositions[name]
       if (!pos) return
 
       const marker = document.createElement("div")
@@ -140,23 +151,28 @@ function highlightConstituencies() {
       marker.style.left = pos.x + "px"
       marker.style.top = pos.y + "px"
 
-// tooltip bij hover
-      marker.title = c.constituencyName
+      marker.title = name
 
       marker.addEventListener("click", () => {
-        const data = constituencies.value.find(
-          (x: any) => x.constituencyName === c.constituencyName
+        const data = constituencies.value.filter(
+          (x: any) => x.constituencies.name === name
         )
 
-        if (!data) return
+        const stemmenPerPartij: Record<string, number> = {}
+
+        data.forEach((row: any) => {
+          stemmenPerPartij[row.partyNames] =
+            (stemmenPerPartij[row.partyNames] || 0) + row.votes
+        })
 
         selectedProvince.value = {
-          provinceNaam: c.constituencyName,
-          stemmenPerPartij: data.stemmenPerPartij
+          provinceNaam: name,
+          stemmenPerPartij
         }
       })
 
       mapContainer.value!.appendChild(marker)
+
 
     })
   }, 200)
