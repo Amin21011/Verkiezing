@@ -11,6 +11,7 @@
         placeholder="Nieuw topic aanmaken"
       />
       <button @click="createTopic">Topic aanmaken</button>
+      <p v-if="topicError" class="error-msg">{{ topicError }}</p>
     </div>
 
     <hr />
@@ -52,6 +53,8 @@ const content = ref("");
 const selectedTopicId = ref<number | null>(null);
 const newTopicName = ref("");
 
+const topicError = ref("");
+
 // Type van topic
 interface Topic {
   id: number;
@@ -67,16 +70,13 @@ const fetchTopics = async () => {
     if (!res.ok) throw new Error("Kon topics niet ophalen");
     topics.value = (await res.json()) as Topic[];
   } catch (err: unknown) {
-    if (err instanceof Error) {
-      alert(err.message);
-    } else {
-      alert("Er is een onbekende fout opgetreden bij het ophalen van topics");
-    }
+    topicError.value = err instanceof Error ? err.message : "Er is een onbekende fout opgetreden";
   }
 };
 
 // Nieuwe topic aanmaken
 const createTopic = async () => {
+  topicError.value = ""; // reset error
   if (!newTopicName.value.trim()) return;
 
   try {
@@ -88,7 +88,8 @@ const createTopic = async () => {
 
     if (!res.ok) {
       const text = await res.text();
-      throw new Error(text || "Kon topic niet aanmaken");
+      topicError.value = text || "Kon topic niet aanmaken";
+      return;
     }
 
     const created: Topic = await res.json();
@@ -96,8 +97,7 @@ const createTopic = async () => {
     selectedTopicId.value = created.id; // automatisch selecteren
     newTopicName.value = ""; // reset input
   } catch (err) {
-    console.error(err);
-    alert(err instanceof Error ? err.message : "Er is iets misgegaan");
+    topicError.value = err instanceof Error ? err.message : "Er is iets misgegaan";
   }
 };
 
@@ -105,12 +105,12 @@ const createTopic = async () => {
 const submitPost = async () => {
   const token = getToken();
   if (!token) {
-    alert("Je moet ingelogd zijn om een post te plaatsen");
+    topicError.value = "Je moet ingelogd zijn om een post te plaatsen";
     return;
   }
 
   if (!selectedTopicId.value) {
-    alert("Je moet een topic selecteren");
+    topicError.value = "Je moet een topic selecteren";
     return;
   }
 
@@ -128,26 +128,20 @@ const submitPost = async () => {
       }),
     });
 
-    if (!res.ok) throw new Error("Kon post niet aanmaken");
+    if (!res.ok) {
+      const text = await res.text();
+      topicError.value = text || "Kon post niet aanmaken";
+      return;
+    }
 
     const newPost = await res.json();
     window.location.href = `/forum/${newPost.id}`;
   } catch (err: unknown) {
-    if (err instanceof Error) {
-      alert(err.message);
-    } else {
-      alert("Er is een onbekende fout opgetreden bij het plaatsen van de post");
-    }
+    topicError.value = err instanceof Error ? err.message : "Er is een onbekende fout opgetreden";
   }
 };
 
-onMounted(() => {
-  fetchTopics();
-});
-
-onMounted(() => {
-  fetchTopics();
-});
+onMounted(fetchTopics);
 </script>
 
 <style scoped>
@@ -221,5 +215,12 @@ button {
 
 button:hover {
   background-color: #00591a;
+}
+
+/* Error message styling */
+.error-msg {
+  color: #d32f2f;
+  font-weight: 600;
+  margin-top: 0.5rem;
 }
 </style>
