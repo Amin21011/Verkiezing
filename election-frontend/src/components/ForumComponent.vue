@@ -3,6 +3,8 @@ import { ref, onMounted } from "vue";
 import {getToken} from "@/services/authService.ts";
 import router from "@/router";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 interface Topic {
   id: number;
   name: string;
@@ -29,7 +31,7 @@ const showLoginPrompt = ref(false);
 async function fetchPosts() {
   loading.value = true;
   try {
-    const res = await fetch("http://localhost:8080/api/forum/posts");
+    const res = await fetch(`${API_URL}/forum/posts`);
     if (!res.ok) throw new Error("Kon posts niet ophalen");
     const data = await res.json();
 
