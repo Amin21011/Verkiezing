@@ -19,7 +19,7 @@ public class TopicService {
     public Topic addTopic(Topic topic) {
         // Duplicate check
         if (topicRepository.findByNameIgnoreCase(topic.getName()).isPresent()) {
-            throw new IllegalArgumentException("Duplicate topic names are not allowed");
+            throw new IllegalArgumentException("Topic naam bestaat al");
         }
         return topicRepository.save(topic);
     }
