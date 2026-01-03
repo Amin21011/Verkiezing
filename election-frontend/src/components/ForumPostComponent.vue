@@ -46,6 +46,7 @@
 import { ref, onMounted } from "vue";
 import { getToken } from "@/services/authService";
 
+const API_URL = import.meta.env.VITE_API_URL;
 const title = ref("");
 const content = ref("");
 const selectedTopicId = ref<number | null>(null);
@@ -62,7 +63,7 @@ const topics = ref<Topic[]>([]);
 // Topics ophalen
 const fetchTopics = async () => {
   try {
-    const res = await fetch("http://localhost:8080/api/topics");
+    const res = await fetch(`${API_URL}/topics`);
     if (!res.ok) throw new Error("Kon topics niet ophalen");
     topics.value = (await res.json()) as Topic[];
   } catch (err: unknown) {
@@ -79,7 +80,7 @@ const createTopic = async () => {
   if (!newTopicName.value.trim()) return;
 
   try {
-    const res = await fetch("http://localhost:8080/api/topics", {
+    const res = await fetch(`${API_URL}/topics`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: newTopicName.value.trim() }),
@@ -114,7 +115,7 @@ const submitPost = async () => {
   }
 
   try {
-    const res = await fetch("http://localhost:8080/api/forum", {
+    const res = await fetch(`${API_URL}/forum`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -139,6 +140,10 @@ const submitPost = async () => {
     }
   }
 };
+
+onMounted(() => {
+  fetchTopics();
+});
 
 onMounted(() => {
   fetchTopics();
