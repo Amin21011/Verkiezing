@@ -2,6 +2,10 @@
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import { partyColors } from "@/assets/partyColors";
+import { Bar } from "vue-chartjs";
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from "chart.js";
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 interface Candidate {
   id: string;
@@ -97,6 +101,29 @@ const getCandidateName = (value: string) => {
   const c = allCandidates.value.find(c => `${c.id}-${c.partyId}` === value);
   return c ? `${c.firstName} ${c.lastName}` : "";
 };
+
+// Bar chart data
+const chartData = computed(() => ({
+  labels: comparedCandidates.value.map(c => `${c.firstName} ${c.lastName}`),
+  datasets: [
+    {
+      label: "Stemmen",
+      data: comparedCandidates.value.map(c => c.votes),
+      backgroundColor: comparedCandidates.value.map(
+        c => partyColors[c.partyName] || "#00712D"
+      ),
+    },
+  ],
+}));
+
+// Bar chart opties
+const chartOptions = {
+  responsive: true,
+  plugins: {
+    legend: { display: false }, // legend uitzetten zodat er geen vinkoptie is
+    title: { display: true, text: "Vergelijking stemmen per kandidaat" },
+  },
+};
 </script>
 
 <template>
@@ -189,29 +216,9 @@ const getCandidateName = (value: string) => {
     <p v-if="loading" class="text-center text-gray-500">Vergelijken...</p>
     <p v-if="error" class="text-center text-red-500">{{ error }}</p>
 
-    <div v-if="comparedCandidates.length === 2" class="grid grid-cols-2 gap-4 mt-4">
-      <div
-        v-for="c in comparedCandidates"
-        :key="c.id + c.partyId"
-        class="border rounded-lg p-4"
-      >
-        <p class="text-xl font-semibold">{{ c.firstName }} {{ c.lastName }}</p>
-        <p class="text-gray-600">Partij: {{ c.partyName }}</p>
-        <div class="mt-2 space-y-1">
-          <p class="font-bold">
-            Lijst Positie: <span class="font-normal">{{ c.id }}</span>
-          </p>
-          <p class="font-bold">
-            Partij: <span class="font-normal">{{ c.partyName }}</span>
-          </p>
-          <p class="font-bold">
-            Geslacht: <span class="font-normal">{{ c.gender }}</span>
-          </p>
-          <p class="font-bold">
-            Stemmen: <span class="font-normal">{{ c.votes }}</span>
-          </p>
-        </div>
-      </div>
+    <!-- Bar chart -->
+    <div v-if="comparedCandidates.length === 2" class="mt-6">
+      <Bar :data="chartData" :options="chartOptions" />
     </div>
   </div>
 </template>
