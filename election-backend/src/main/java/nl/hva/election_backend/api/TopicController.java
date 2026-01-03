@@ -31,9 +31,13 @@ public class TopicController {
     }
 
     @PostMapping
-    public ResponseEntity<Topic> addTopic(@RequestBody TopicDTO dto) {
-        Topic topic = new Topic(dto.getName());
-        Topic saved = topicService.addTopic(topic);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<?> addTopic(@RequestBody TopicDTO dto) {
+        try {
+            Topic topic = new Topic(dto.getName());
+            Topic saved = topicService.addTopic(topic);
+            return ResponseEntity.ok(saved);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
