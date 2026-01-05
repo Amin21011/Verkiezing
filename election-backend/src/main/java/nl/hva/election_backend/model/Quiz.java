@@ -1,5 +1,6 @@
 package nl.hva.election_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.*;
 
@@ -13,6 +14,7 @@ public class Quiz {
     private String title;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Question> questions;
 
     public Long getId() {

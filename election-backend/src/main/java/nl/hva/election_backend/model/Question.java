@@ -1,6 +1,7 @@
 package nl.hva.election_backend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.*;
 
@@ -14,10 +15,11 @@ public class Question {
     private String text;
 
     @ManyToOne
-    @JsonIgnore
+    @JsonBackReference
     private Quiz quiz;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("question-partyPositions")
     private List<PartyPosition> partyPositions;
 
     public Long getId() {

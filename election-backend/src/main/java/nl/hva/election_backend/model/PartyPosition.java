@@ -1,5 +1,6 @@
 package nl.hva.election_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,6 +16,8 @@ public class PartyPosition {
     private Position position;
 
     @ManyToOne
+    @JoinColumn(name = "question_id")
+    @JsonBackReference("question-partyPositions")
     private Question question;
 
     public Long getId() {
