@@ -4,22 +4,17 @@ import java.util.Map;
 
 public class QuizResult {
     private final String bestMatchingParty;
-    private final Map<String, Double> partyScores;
+    private final Map<String, Double> percentages;
 
-    public QuizResult(String bestMatchingParty, Map<String, Double> partyScores) {
+    public QuizResult(String bestMatchingParty, Map<String, Double> percentages) {
         this.bestMatchingParty = bestMatchingParty;
-        this.partyScores = partyScores;
+        this.percentages = percentages;
     }
 
     public String getBestMatchingParty() {
         return bestMatchingParty;
     }
-
-    public String getBestMatch() {
-        return bestMatchingParty;
-    }
-
-    public Map<String, Double> getPartyScores() {
-        return partyScores;
+    public Map<String, Double> getPercentages() {
+        return percentages;
     }
 }
