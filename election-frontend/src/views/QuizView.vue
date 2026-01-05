@@ -1,52 +1,65 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import { getToken } from "@/services/authService.ts";
+import { ref, computed, onMounted, watch } from "vue";
+import { getToken } from "@/services/authService";
 
 // Types
-type Question = { id: string; text: string; };
-type PartyScore = { party: string; score: number; };
-type QuizResult = { bestMatchingParty?: string; bestMatch?: string; partyScores: Record<string, number>; };
+type Question = {
+  id: string;
+  text: string;
+};
+
+type QuizResult = {
+  bestMatch: string;
+  percentages: Record<string, number>;
+};
+
+type PartyScore = {
+  party: string;
+  score: number;
+};
 
 // state
 const questions = ref<Question[]>([]);
 const answers = ref<Record<string, string>>({});
 const result = ref<QuizResult | null>(null);
+
 const loading = ref(true);
 const errorMessage = ref("");
 const globalError = ref("");
 
+const bios = ref<Record<string, string>>({});
+
 const isLoggedIn = computed(() => !!getToken());
+
+/* =========================
+   QUIZ LADEN
+========================= */
 async function loadQuiz() {
   loading.value = true;
   globalError.value = "";
 
   try {
     const response = await fetch("http://localhost:8080/quiz");
-
-    if (!response.ok) {
-      throw new Error("Kon de quiz niet laden");
-    }
+    if (!response.ok) throw new Error();
 
     const data = await response.json();
     questions.value = data.questions ?? [];
-  } catch (e) {
-    console.error("Fout bij laden quiz:", e);
+  } catch {
     globalError.value = "Er ging iets mis bij het laden van de quiz.";
   } finally {
     loading.value = false;
   }
 }
 
-// quiz versturen
+/* =========================
+   QUIZ VERSTUREN
+========================= */
 async function submitQuiz() {
-  // validatie
-  const unanswered = questions.value.filter((q) => !answers.value[q.id]);
-  if (unanswered.length > 0) {
+  const unanswered = questions.value.filter(q => !answers.value[q.id]);
+  if (unanswered.length) {
     errorMessage.value = "Beantwoord alle vragen voordat je doorgaat.";
     return;
   }
-  errorMessage.value = "";
-  globalError.value = "";
 
   const token = getToken();
   if (!token) {
@@ -61,43 +74,60 @@ async function submitQuiz() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(answers.value),
+      body: JSON.stringify(Object.fromEntries(Object.entries(answers.value))),
     });
 
-    if (!response.ok) {
-      const text = await response.text();
-      console.error("Backend fout bij quiz/result:", text);
-      throw new Error("Quiz verwerken mislukt");
-    }
+    if (!response.ok) throw new Error();
 
-    const data: QuizResult = await response.json();
-    result.value = data;
-  } catch (e) {
-    console.error(e);
-    globalError.value =
-      "Er ging iets mis bij het berekenen of opslaan van jouw resultaat.";
+    result.value = await response.json();
+  } catch {
+    globalError.value = "Quiz verwerken mislukt.";
   }
 }
 
-// gesorteerde resultaten
+/* =========================
+   RESULTATEN SORTEREN
+========================= */
 const sortedResults = computed<PartyScore[]>(() => {
-  if (!result.value || !result.value.partyScores) return [];
-  return Object.entries(result.value.partyScores)
+  if (!result.value) return [];
+
+  return Object.entries(result.value.percentages)
     .map(([party, score]) => ({ party, score }))
     .sort((a, b) => b.score - a.score);
 });
 
-// reset
+const topThree = computed(() => sortedResults.value.slice(0, 3));
+
+/* =========================
+   BIOGRAPHY OPHALEN
+========================= */
+async function loadBio(party: string) {
+  if (bios.value[party]) return;
+
+  try {
+    const res = await fetch(`http://localhost:8080/candidates/${party}/bio`);
+    bios.value[party] = await res.text();
+  } catch {
+    bios.value[party] = "Biography unavailable";
+  }
+}
+
+watch(topThree, (list) => {
+  list.forEach(item => loadBio(item.party));
+});
+
+/* =========================
+   RESET
+========================= */
 function resetQuiz() {
   answers.value = {};
   result.value = null;
   errorMessage.value = "";
   globalError.value = "";
+  bios.value = {};
 }
 
-onMounted(() => {
-  loadQuiz();
-});
+onMounted(loadQuiz);
 </script>
 
 <template>
@@ -192,36 +222,48 @@ onMounted(() => {
         </div>
       </form>
 
-      <!-- Resultaat -->
-      <div v-if="result && sortedResults.length"
-        class="mt-10 bg-white/80 backdrop-blur-sm border border-gray-300 rounded-xl shadow-lg p-8 text-center">
-        <h2 class="text-3xl font-bold text-ink mb-3">
-          Jouw beste match:
-          <span class="text-indigo-700">
-            {{ sortedResults[0].party }} 🎉
-          </span>
-        </h2>
+<!-- RESULTAAT -->
+<div v-if="result && sortedResults.length"
+  class="mt-10 bg-white/80 border border-gray-300 rounded-xl shadow-lg p-8"
+>
+  <h2 class="text-3xl font-bold text-center mb-6">
+    Jouw beste match:
+    <span class="text-indigo-700">
+      {{ sortedResults[0].party }}
+    </span>
+  </h2>
 
-        <p class="text-gray-700 mb-4 italic">
-          Bekijk hoe de andere partijen scoren:
-        </p>
-        <div class="bg-gray-50 border border-gray-200 rounded-md text-left max-h-60 overflow-y-auto p-4">
-          <div
-            v-for="item in sortedResults"
-            :key="item.party"
-            class="flex justify-between border-b border-gray-200 py-1">
-            <span class="font-medium text-ink">{{ item.party }}</span>
-            <span class="text-gray-700">
-              {{ item.score.toFixed(1) }}%
-            </span>
-          </div>
-        </div>
+  <!-- TOP 3 KANDIDATEN -->
+  <div class="grid gap-6">
+    <div
+      v-for="item in topThree"
+      :key="item.party"
+      class="border border-gray-300 rounded-lg p-5 bg-white"
+    >
+      <h3 class="text-xl font-bold mb-2">
+        {{ item.party }} – {{ item.score.toFixed(1) }}%
+      </h3>
 
-        <button @click="resetQuiz"
-          class="mt-6 bg-indigo-700 text-white px-5 py-2 rounded-lg hover:bg-indigo-800 transition shadow-md">
-          Opnieuw proberen
-        </button>
-      </div>
+      <p class="text-gray-700 text-sm leading-relaxed">
+        {{ bios[item.party] || "Biography unavailable" }}
+      </p>
+
+      <router-link
+        :to="`/candidates/${item.party}`"
+        class="text-indigo-700 underline mt-3 inline-block"
+      >
+        Bekijk volledig profiel
+      </router-link>
+    </div>
+  </div>
+
+  <button
+    @click="resetQuiz"
+    class="mt-8 bg-indigo-700 text-white px-6 py-2 rounded-lg hover:bg-indigo-800"
+  >
+    Opnieuw proberen
+  </button>
+</div>
     </div>
   </div>
 </template>
