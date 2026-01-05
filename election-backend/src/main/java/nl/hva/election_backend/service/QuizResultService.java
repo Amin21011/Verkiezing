@@ -1,9 +1,6 @@
 package nl.hva.election_backend.service;
 
-import nl.hva.election_backend.model.Question;
-import nl.hva.election_backend.model.Quiz;
-import nl.hva.election_backend.model.QuizResult;
-import nl.hva.election_backend.model.User;
+import nl.hva.election_backend.model.*;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -19,31 +16,39 @@ public class QuizResultService {
         this.quizService = quizService;
     }
 
+    public QuizResult processQuiz(Map<String, String> userAnswers, String email) {
+        QuizResult result = calculateResult(userAnswers);
+        saveQuizResult(email, result.getBestMatchingParty());
+        return result;
+    }
+
     public QuizResult calculateResult(Map<String, String> userAnswers) {
 
         Quiz quiz = quizService.getQuiz();
         Map<String, Double> scores = new HashMap<>();
+        if (quiz.getQuestions() == null || quiz.getQuestions().isEmpty()) {
+            return new QuizResult("Geen vragen", Map.of());
+        }
 
         for (Question question : quiz.getQuestions()) {
-            String userAnswer = userAnswers.get(question.getId());
+            String userAnswer = userAnswers.get(String.valueOf(question.getId()));
             if (userAnswer == null) continue;
 
-            for (Map.Entry<String, String> entry : question.getPartyPositions().entrySet()) {
+            if (question.getPartyPositions() == null || question.getPartyPositions().isEmpty()) {
+                continue;
+            }
 
-                String party = entry.getKey();
-                String partyAnswer = entry.getValue();
+            for (PartyPosition partyPosition : question.getPartyPositions()) {
+                String party = partyPosition.getParty();
+                String partyAnswer = partyPosition.getPosition().name();
+                String normalizedUserAnswer = userAnswer.toUpperCase();
 
-                if (partyAnswer.equalsIgnoreCase(userAnswer)) {
+                if (partyAnswer.equals(normalizedUserAnswer)) {
                     scores.put(party, scores.getOrDefault(party, 0.0) + 1.0);
-
-                } else if (partyAnswer.equalsIgnoreCase("Neutraal")
-                        && userAnswer.equalsIgnoreCase("Neutraal")) {
-
-                    scores.put(party, scores.getOrDefault(party, 0.0) + 1.0);
-
-                } else if (partyAnswer.equalsIgnoreCase("Neutraal")
-                        || userAnswer.equalsIgnoreCase("Neutraal")) {
-
+                } else if (
+                        partyAnswer.equals("NEUTRAAL") ||
+                                normalizedUserAnswer.equals("NEUTRAAL")
+                ) {
                     scores.put(party, scores.getOrDefault(party, 0.0) + 0.5);
                 }
             }
