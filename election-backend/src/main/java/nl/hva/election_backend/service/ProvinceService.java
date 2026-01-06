@@ -1,12 +1,18 @@
 package nl.hva.election_backend.service;
 
-import nl.hva.election_backend.model.ConstituencyVotes;
-import nl.hva.election_backend.model.ProvinceResult;
+import nl.hva.election_backend.model.*;
 import nl.hva.election_backend.repository.ConstituencyVotesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
 import java.util.*;
 
 @Service
