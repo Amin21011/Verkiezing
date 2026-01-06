@@ -1,23 +1,20 @@
 package nl.hva.election_backend.dto.model;
 import nl.hva.election_backend.model.User;
-import java.time.LocalDate;
 
-public record UserDTO(
+public record AdminDTO(
         Long id,
         String name,
         String email,
         String role,
-        String quizBestMatch,
-        LocalDate birthDate
+        String quizBestMatch
 ) {
-    public static UserDTO from(User u) {
-        return new UserDTO(
+    public static AdminDTO from(User u) {
+        return new AdminDTO(
                 u.getId(),
                 u.getName(),
                 u.getEmail(),
                 u.getRole(),
-                u.getQuizBestMatch(),
-                u.getBirthDate()
+                u.getQuizBestMatch()
         );
     }
 }
