@@ -1,5 +1,7 @@
+const API_URL = import.meta.env.VITE_API_URL;
+
 export async function getDailyFacts(): Promise<DailyFact[]> {
-  const res = await fetch("http://localhost:8080/api/statistics/daily-fact", {
+  const res = await fetch(`${API_URL}/statistics/daily-fact`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
