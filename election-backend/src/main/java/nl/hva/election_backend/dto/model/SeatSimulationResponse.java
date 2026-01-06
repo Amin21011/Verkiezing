@@ -1,4 +1,4 @@
-package nl.hva.election_backend.dto;
+package nl.hva.election_backend.dto.model;
 
 import java.util.List;
 

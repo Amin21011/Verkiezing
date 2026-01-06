@@ -1,5 +1,5 @@
 package nl.hva.election_backend.service;
-import nl.hva.election_backend.dto.DailyFactResponse;
+import nl.hva.election_backend.dto.model.DailyFactResponse;
 import nl.hva.election_backend.dto.SmallestPartyWinView;
 import nl.hva.election_backend.model.Candidate;
 import nl.hva.election_backend.model.Election;

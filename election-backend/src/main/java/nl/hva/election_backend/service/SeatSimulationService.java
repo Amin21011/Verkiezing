@@ -1,7 +1,7 @@
 package nl.hva.election_backend.service;
 
-import nl.hva.election_backend.dto.SeatSimulationRequest;
-import nl.hva.election_backend.dto.SeatSimulationResponse;
+import nl.hva.election_backend.dto.model.SeatSimulationRequest;
+import nl.hva.election_backend.dto.model.SeatSimulationResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

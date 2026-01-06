@@ -4,7 +4,7 @@
 
 ## Back-end (Ramzi)
 
-### How did we deploy and why? (Morsal)
+### How did we deploy and why did we choose this method? (Morsal)
 
-### Diagram: 
+### Diagram: (Betul)
 

@@ -1,5 +1,5 @@
 package nl.hva.election_backend.api;
-import nl.hva.election_backend.dto.SeatSimulationRequest;
+import nl.hva.election_backend.dto.model.SeatSimulationRequest;
 import nl.hva.election_backend.service.SeatSimulationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,6 +1,6 @@
 package nl.hva.election_backend.services;
-import nl.hva.election_backend.dto.SeatSimulationRequest;
-import nl.hva.election_backend.dto.SeatSimulationResponse;
+import nl.hva.election_backend.dto.model.SeatSimulationRequest;
+import nl.hva.election_backend.dto.model.SeatSimulationResponse;
 import nl.hva.election_backend.service.ResultService;
 import nl.hva.election_backend.service.SeatSimulationService;
 import org.junit.jupiter.api.Test;

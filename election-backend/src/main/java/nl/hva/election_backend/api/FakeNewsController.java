@@ -1,7 +1,7 @@
 package nl.hva.election_backend.api;
 
 import nl.hva.election_backend.dto.FakeNewsRequest;
-import nl.hva.election_backend.dto.FakeNewsResponse;
+import nl.hva.election_backend.dto.model.FakeNewsResponse;
 import nl.hva.election_backend.service.FakeNewsService;
 import org.springframework.web.bind.annotation.*;
 
