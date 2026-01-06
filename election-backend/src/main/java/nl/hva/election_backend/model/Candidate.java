@@ -61,11 +61,8 @@ public class Candidate {
     public Integer getRanking() { return ranking; }
     public Party getParty() { return party; }
     public Election getElection() { return election; }
-    public String getSlug() { return fullName.toLowerCase(); }
 
     public boolean isElected() { return elected; }
-    public void addVotes(int votes) { this.votes += votes; }
-
     public void setId(String id) { this.id = id; }
     public void setGender(String gender) { this.gender = gender; }
     public void setVotes(int votes) { this.votes = votes; }
