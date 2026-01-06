@@ -12,6 +12,9 @@ import MapView from '@/views/MapView.vue'
 import SearchResultsView from '@/views/SearchResultsView.vue'
 import SimulatorView from '@/views/SimulatorView.vue'
 import AdminPollView from '@/views/AdminPollView.vue'
+import FakeNewsView from '@/views/FakeNewsView.vue'
+import AnalyseView from '@/views/AnalyseView.vue'
+import CompareCandidatesView from '@/views/CompareCandidatesView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,7 +55,7 @@ const router = createRouter({
       component: LoginView
     },
     {
-      path: '/account',
+      path: '/profile',
       name: 'account',
       component: AccountView,
       meta: { requiresAuth: true },
@@ -88,6 +91,16 @@ const router = createRouter({
       component: MapView
     },
     {
+      path: `/fake-news`,
+      name: `fake news`,
+      component: FakeNewsView
+    },
+    {
+      path: `/analyse`,
+      name: `analyses`,
+      component: AnalyseView
+    },
+    {
       path: '/search',
       name: 'search',
       component: SearchResultsView
@@ -96,6 +109,11 @@ const router = createRouter({
       path: '/admin-poll',
       name: 'admin-poll',
       component: AdminPollView
+    },
+    {
+      path: '/compare-candidates',
+      name: 'compare-candidates',
+      component: CompareCandidatesView
     }
   ],
 });

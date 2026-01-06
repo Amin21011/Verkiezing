@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { login, register } from '../services/authService'
-import { showToast } from '@/helpers/useFlash.ts'
+import { showToast } from '@/composables/useFlash.ts'
 import { useRouter } from 'vue-router'
 
 const name = ref('')

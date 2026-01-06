@@ -6,6 +6,11 @@ spring:
 app:
   frontend:
       url: http://localhost:5173
+
+cohere:
+  api:
+    key: q47sY3cRMsZDga4RAqGrUYtuvZmKwNtslquubk8i
+
 ---
 spring:
   config:
@@ -13,8 +18,8 @@ spring:
       on-profile: prod
   datasource:
     url: jdbc:postgresql://ep-nameless-resonance-abdz6eaj-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channelBinding=require
-    username:
-    password:
+    username: amin
+    password: Amin_2025_secure!
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -36,9 +41,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
----
+    show-sql: true
+  sql:
+    init:
+      mode: always
+
 server:
   port: 8080
 

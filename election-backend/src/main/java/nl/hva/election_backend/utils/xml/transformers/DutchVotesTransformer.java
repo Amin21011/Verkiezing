@@ -1,12 +1,10 @@
 package nl.hva.election_backend.utils.xml.transformers;
-
 import nl.hva.election_backend.model.*;
 import nl.hva.election_backend.repository.*;
 import nl.hva.election_backend.utils.xml.TagAndAttributeNames;
 import nl.hva.election_backend.utils.xml.VotesTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.Map;
 

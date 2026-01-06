@@ -1,123 +1,78 @@
 package nl.hva.election_backend.api;
 
+import nl.hva.election_backend.dto.model.AdminDTO;
 import nl.hva.election_backend.dto.model.UserDTO;
 import nl.hva.election_backend.model.User;
 import nl.hva.election_backend.repository.UserRepository;
 import nl.hva.election_backend.security.JwtUtil;
 import nl.hva.election_backend.service.UserService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-
 @RestController
-@RequestMapping("api/auth/admin")
+@RequestMapping("/api/auth/admin")
 public class AdminController {
-    private final UserService userService;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final JwtUtil jwtUtil;
 
-    public AdminController(UserService userService, UserRepository userRepository, JwtUtil jwtUtil) {
-        this.userService = userService;
+    public AdminController(UserRepository userRepository, UserService userService, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
+        this.userService = userService;
         this.jwtUtil = jwtUtil;
     }
 
-    private ResponseEntity<?> validateAdmin(String authHeader) {
+    private User requireAdmin(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(401)
-                    .body(Map.of("error", "Geen geldige token gevonden"));
+            throw new RuntimeException("Geen geldige token");
         }
 
-        try {
-            String token = authHeader.substring(7);
-            String email = jwtUtil.validateTokenAndGetEmail(token);
-            User user = userService.findByEmail(email);
+        String token = authHeader.substring(7);
+        String email = jwtUtil.validateTokenAndGetEmail(token);
+        User user = userService.findByEmail(email);
 
-            if (!"ADMIN".equals(user.getRole())) {
-                return ResponseEntity.status(403)
-                        .body(Map.of("error", "Geen toegang — alleen admin toegestaan"));
-            }
-            return null;
-        } catch (Exception e) {
-            return ResponseEntity.status(401)
-                    .body(Map.of("error", "Token ongeldig of verlopen"));
+        if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
+            throw new RuntimeException("Geen adminrechten");
         }
+        return user;
     }
 
-    @GetMapping
-    public ResponseEntity<?> getAllNormalUsers(@RequestHeader("Authorization") String authHeader) {
-        ResponseEntity<?> authCheck = validateAdmin(authHeader);
-        if (authCheck != null) return authCheck;
-
-        List<User> users = userRepository.findAll();
-        List<UserDTO> result = users.stream()
-                .filter(u -> "USER".equalsIgnoreCase(u.getRole()))
-                .map(u -> new UserDTO(
-                        u.getId(),
-                        u.getName(),
-                        u.getEmail(),
-                        u.getRole(),
-                        u.getQuizBestMatch()
-                ))
+    @GetMapping("/users")
+    public List<AdminDTO> getAllUsers(@RequestHeader("Authorization") String authHeader) {
+        requireAdmin(authHeader);
+        return userRepository.findAll().stream()
+                .map(AdminDTO::from)
                 .toList();
-
-        return ResponseEntity.ok(result);
     }
 
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id) {
-
-        ResponseEntity<?> authCheck = validateAdmin(authHeader);
-        if (authCheck != null) return authCheck;
-
-        Optional<User> userOpt = userRepository.findById(id);
-
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.status(404)
-                    .body(Map.of("error", "Gebruiker niet gevonden"));
-        }
-        userRepository.delete(userOpt.get());
-
-        return ResponseEntity.ok(
-                Map.of("message", "Gebruiker succesvol verwijderd")
-        );
+    @GetMapping("/admins")
+    public List<AdminDTO> getAdmins(@RequestHeader("Authorization") String authHeader) {
+        requireAdmin(authHeader);
+        return userRepository.findAll().stream()
+                .filter(u -> "ADMIN".equalsIgnoreCase(u.getRole()))
+                .map(AdminDTO::from)
+                .toList();
     }
 
-    @PutMapping ("/{id}/role")
-    public ResponseEntity<?> updateRole(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id,
-            @RequestParam String role) {
+    @PutMapping("/{id}/role")
+    public UserDTO updateRole(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestParam String role) {
+        User admin = requireAdmin(authHeader);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Gebruiker niet gevonden"));
 
-        ResponseEntity<?> authCheck = validateAdmin(authHeader);
-        if (authCheck != null) return authCheck;
-
-        Optional<User> userOpt = userRepository.findById(id);
-
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.status(404)
-                    .body(Map.of("error", "Gebruiker niet gevonden"));
+        if (user.getId().equals(admin.getId())) {
+            throw new RuntimeException("Je kunt je eigen rol niet aanpassen");
         }
 
-        if (!List.of("USER", "ADMIN").contains(role.toUpperCase())) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Ongeldige rol. Gebruik: USER, EDITOR, ADMIN"));
-        }
-
-        User user = userOpt.get();
         user.setRole(role.toUpperCase());
         userRepository.save(user);
+        return UserDTO.from(user);
+    }
 
-        return ResponseEntity.ok(
-                Map.of(
-                        "message", "Rol succesvol aangepast",
-                        "email", user.getEmail(),
-                        "role", user.getRole()
-                )
-        );
+    @DeleteMapping("/{id}")
+    public Map<String, String> deleteUser(@RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
+        requireAdmin(authHeader);
+        userRepository.deleteById(id);
+        return Map.of("message", "Gebruiker verwijderd");
     }
 }

@@ -1,7 +1,6 @@
 package nl.hva.election_backend.service;
 
-import nl.hva.election_backend.model.Election;
-import nl.hva.election_backend.model.ProvinceResult;
+import nl.hva.election_backend.model.*;
 import nl.hva.election_backend.repository.ResultRepository;
 import nl.hva.election_backend.utils.xml.transformers.DutchNationalVotesTransformer;
 import org.slf4j.Logger;
@@ -9,17 +8,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import java.io.IOException;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
 import java.io.InputStream;
 import java.util.*;
 
 @Service
 public class ProvinceService {
+
     private static final Logger logger = LoggerFactory.getLogger(ProvinceService.class);
     private final Map<String, List<String>> provincieKieskringenMap;
-    ResultRepository resultRepository;
+    private final ResultRepository resultRepository;
 
-    public ProvinceService() {
+    public ProvinceService(ResultRepository resultRepository) {
+        this.resultRepository = resultRepository;
         this.provincieKieskringenMap = new HashMap<>();
         provincieKieskringenMap.put("Groningen", List.of("Groningen"));
         provincieKieskringenMap.put("Friesland", List.of("Leeuwarden"));
@@ -38,11 +44,14 @@ public class ProvinceService {
 
     public List<ProvinceResult> getProvincieResultaten(int year) {
         List<ProvinceResult> resultaten = new ArrayList<>();
+        Election election = loadElection(year);
+
         for (String provincie : provincieKieskringenMap.keySet()) {
             Map<String, Integer> totaalStemmen = new HashMap<>();
+
             for (String kieskring : provincieKieskringenMap.get(provincie)) {
                 String resourcePath = String.format(
-                        "TK2023_HvA_UvA/Telling_TK%d_kieskring_%s.eml.xml",
+                        "TK2023_HvA_UvA/Telling_%d/Telling_TK%d_kieskring_%s.eml.xml",
                         year, year, kieskring
                 );
                 Resource resource = new ClassPathResource(resourcePath);
@@ -53,33 +62,86 @@ public class ProvinceService {
                 }
 
                 try (InputStream inputStream = resource.getInputStream()) {
-                    Election election = new Election("TK" + year);
-                    ResultRepository resultRepo = (ResultRepository) resultRepository.findByElection(election);
-                    DutchNationalVotesTransformer transformer = new DutchNationalVotesTransformer(election, resultRepo);
+                    DutchNationalVotesTransformer transformer = new DutchNationalVotesTransformer(election, resultRepository);
                     Map<String, Integer> stemmenKieskring = transformer.parse(inputStream);
 
                     stemmenKieskring.forEach((partij, stemmen) ->
                             totaalStemmen.merge(partij, stemmen, Integer::sum)
                     );
 
-                } catch (IOException e) {
-                    logger.error("Fout bij het verwerken van kieskring {} (resource: {})", kieskring, resourcePath, e);
+                } catch (Exception e) {
+                    logger.error("Fout bij verwerken van kieskring {} (pad: {})", kieskring, resourcePath, e);
                 }
             }
             resultaten.add(new ProvinceResult(provincie, totaalStemmen));
         }
+
         return resultaten;
     }
 
     public List<ProvinceResult> compareProvinces(int year, List<String> selectedProvinces) {
         List<ProvinceResult> allResults = getProvincieResultaten(year);
         List<ProvinceResult> filtered = new ArrayList<>();
-
         for (ProvinceResult result : allResults) {
             if (selectedProvinces.contains(result.getProvinceNaam())) {
                 filtered.add(result);
             }
         }
         return filtered;
+    }
+
+    // Laadt partijen en kandidaten zonder ResultLoader
+    private Election loadElection(int year) {
+        Election election = new Election("TK" + year);
+
+        // Partijen laden
+        try {
+            Resource partiesResource = new ClassPathResource("TK" + year + "/Verkiezingsdefinitie_TK" + year + ".eml.xml");
+            if (partiesResource.exists()) {
+                var docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                var doc = docBuilder.parse(partiesResource.getInputStream());
+                NodeList partyNodes = doc.getElementsByTagName("PoliticalEntity");
+
+                for (int i = 0; i < partyNodes.getLength(); i++) {
+                    Node node = partyNodes.item(i);
+                    if (node instanceof Element p) {
+                        String id = p.getAttribute("Id");
+                        String name = p.getElementsByTagName("RegisteredName").item(0).getTextContent();
+                        election.addParty(new Party(id, name, 0)); // voteCount = 0
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Fout bij laden van partijen", e);
+        }
+
+        // Kandidaten laden
+        try {
+            Resource folderResource = new ClassPathResource("TK" + year);
+            File folder = folderResource.getFile();
+            File[] candidateFiles = folder.listFiles((d, n) -> n.toLowerCase().startsWith("kandidatenlijsten_") && n.endsWith(".eml.xml"));
+            if (candidateFiles != null) {
+                for (File f : candidateFiles) {
+                    var docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                    var doc = docBuilder.parse(f);
+                    NodeList candidateNodes = doc.getElementsByTagName("Candidate");
+
+                    for (int i = 0; i < candidateNodes.getLength(); i++) {
+                        Node node = candidateNodes.item(i);
+                        if (node instanceof Element c) {
+                            String id = c.getAttribute("Id");
+                            String name = c.getElementsByTagName("Name").item(0).getTextContent();
+                            Element affiliation = (Element) c.getElementsByTagName("AffiliationIdentifier").item(0);
+                            String partyId = affiliation.getAttribute("Id");
+                            election.addCandidate(new Candidate(id, name, partyId));
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Fout bij laden van kandidaten", e);
+        }
+
+        return election;
     }
 }

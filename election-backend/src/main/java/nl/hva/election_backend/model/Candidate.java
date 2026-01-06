@@ -13,6 +13,7 @@ public class Candidate {
     private String lastName;
     private String fullName;
     private String gender;
+    private String residence;
 
     private int votes = 0;
     private boolean elected;
@@ -62,6 +63,8 @@ public class Candidate {
     public Integer getRanking() { return ranking; }
     public Party getParty() { return party; }
     public Election getElection() { return election; }
+    public String getResidence() { return residence; }
+
     public boolean isElected() { return elected; }
 
     public void addVotes(int votes) { this.votes += votes; }
@@ -71,6 +74,7 @@ public class Candidate {
     public void setElected(boolean elected) { this.elected = elected; }
     public void setRanking(Integer ranking) { this.ranking = ranking; }
     public void setElection(Election election) { this.election = election; }
+    public void setResidence(String residence) { this.residence = residence; }
 
     public void setNamePrefix(String namePrefix) {
         this.namePrefix = namePrefix;
