@@ -1,6 +1,7 @@
 package nl.hva.election_backend.dto.model;
 import nl.hva.election_backend.model.User;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record UserDTO(
         Long id,
@@ -8,7 +9,8 @@ public record UserDTO(
         String email,
         String role,
         String quizBestMatch,
-        LocalDate birthDate
+        LocalDate birthDate,
+        LocalDateTime createdAt
 ) {
     public static UserDTO from(User u) {
         return new UserDTO(
@@ -17,7 +19,8 @@ public record UserDTO(
                 u.getEmail(),
                 u.getRole(),
                 u.getQuizBestMatch(),
-                u.getBirthDate()
+                u.getBirthDate(),
+                u.getCreatedAt()
         );
     }
 }
