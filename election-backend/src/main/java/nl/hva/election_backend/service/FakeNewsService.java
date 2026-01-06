@@ -1,7 +1,7 @@
 package nl.hva.election_backend.service;
 import nl.hva.election_backend.dto.AIResult;
 import nl.hva.election_backend.dto.FakeNewsRequest;
-import nl.hva.election_backend.dto.FakeNewsResponse;
+import nl.hva.election_backend.dto.model.FakeNewsResponse;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
 import java.util.*;
@@ -11,7 +11,7 @@ public class FakeNewsService {
     private final FakeNewsAiService aiService;
     private static final List<String> POPULIST_KEYWORDS = List.of(
             "schandalig", "corrupt", "leugen", "oplichterij", "elite", "propaganda",
-            "belachelijk", "NEP", "WAARHEID", "EXPOSED"
+            "belachelijk", "NEP", "WAARHEID", "EXPOSED", "TRUTH", "FAKE"
     );
 
     public FakeNewsService(FakeNewsAiService aiService) {
@@ -20,42 +20,41 @@ public class FakeNewsService {
 
     public FakeNewsResponse analyze(FakeNewsRequest req) {
         String article = extractArticleText(req);
-
         int sentimentScore = detectSentiment(article);
         int biasScore = detectBias(article);
-        int sourceScore = detectSourceReliability(req.getUrl());
-
-        List<String> keywordWarnings = detectKeywords(article);
-        int capsIntensity = detectCapsIntensity(article);
-
-        int nlpScore = (int) (
-                biasScore * 0.35 +
-                        capsIntensity * 0.25 +
-                        sentimentScore * 0.20 +
-                        (keywordWarnings.size() * 10) +
-                        (100 - sourceScore) * 0.20
-        );
-        nlpScore = Math.min(100, nlpScore);
-
 
         AIResult ai = aiService.analyzeTextWithAIModels(article);
-
-        int fakeScore = ai.getFakeNewsScore();
         Map<String, Double> ml = ai.getMultiLabel();
 
+        double weightedAiScore = (ml.getOrDefault("disinformation", 0.0) * 0.6) +
+                (ml.getOrDefault("clickbait", 0.0) * 0.4);
 
-        int finalScore = (int) (nlpScore * 0.5 + fakeScore * 0.5);
-        finalScore = Math.min(100, finalScore);
+        int finalScore = calculateFinalRiskScore(biasScore, sentimentScore, (int)(weightedAiScore * 100));
+        String verdict = generateHumanVerdict(finalScore, ml);
 
         return new FakeNewsResponse(
                 finalScore,
                 sentimentScoreToLabel(sentimentScore),
                 biasScore,
-                sourceScore,
-                keywordWarnings,
-                fakeScore,
-                ml
+                detectSourceReliability(req.getUrl()),
+                detectKeywords(article),
+                ai.getFakeNewsScore(),
+                ml,
+                verdict
         );
+    }
+
+    private int calculateFinalRiskScore(int bias, int sentiment, int aiScore) {
+        // Formule: AI weegt voor 60% mee, Bias voor 20%, Sentiment voor 20%
+        double total = (aiScore * 0.6) + (bias * 0.2) + (sentiment * 0.2);
+        return (int) Math.min(100, Math.max(0, total));
+    }
+
+    private String generateHumanVerdict(int score, Map<String, Double> ml) {
+        if (score > 75) return "KRITIEK: Dit artikel vertoont sterke kenmerken van gecoördineerde desinformatie.";
+        if (score > 50) return "WAARSCHUWING: Sterke clickbait of subjectieve bias gedetecteerde. Controleer feiten.";
+        if (ml.getOrDefault("clickbait", 0.0) > 0.7) return "OPMERKING: De inhoud lijkt feitelijk, maar de kop is misleidend (Clickbait).";
+        return "GELOOFWAARDIG: Geen significante manipulatieve patronen gevonden.";
     }
 
     private String extractArticleText(FakeNewsRequest req) {
@@ -91,12 +90,6 @@ public class FakeNewsService {
             }
         }
         return found;
-    }
-
-    private int detectCapsIntensity(String text) {
-        long caps = text.chars().filter(Character::isUpperCase).count();
-        float ratio = (caps / Math.max(text.length(), 1f)) * 100f;
-        return Math.min(100, (int) ratio * 3);
     }
 
     private int detectSourceReliability(String url) {
