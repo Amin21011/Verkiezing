@@ -250,14 +250,6 @@ function highlightProvinces() {
       >
         Kieskringen
       </div>
-
-      <div
-        class="px-4 py-2 rounded-md border-2 shadow cursor-pointer bg-amber-200 border-amber-300 font-semibold"
-        :class="{ '!bg-amber-300 border-amber-400 shadow-md': currentMode === 'national' }"
-        @click="switchMode('national')"
-      >
-        Nationaal
-      </div>
     </div>
 
 
