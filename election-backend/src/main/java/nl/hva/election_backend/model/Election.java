@@ -24,11 +24,11 @@ public class Election {
     }
 
     public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
     public List<Party> getParties() { return parties; }
     public List<Candidate> getCandidates() { return candidates; }
     public List<Region> getRegions() { return regions; }
+
+    public void setId(String id) { this.id = id; }
 
     public void addParty(Party p) {
         if (p != null && !parties.contains(p)) {

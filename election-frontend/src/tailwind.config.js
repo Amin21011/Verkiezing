@@ -1,7 +1,7 @@
-/** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ["./index.html","./src/**/*.{vue,js,ts,jsx,tsx}"],
-  theme:{
+  theme: {
     extend: {
       colors: {
         retro: {
@@ -9,22 +9,17 @@ export default {
           ink: '#1a1a1a',
           red: '#b23a48',
           gold: '#d9c79c',
-          blue: '#466b8c'
+          blue: '#466b8c',
+          paperDark: '#121212',
+          inkDark: '#eaeaea'
         }
       },
       fontFamily: {
         retroHead: ['"DM Serif Display"', 'serif'],
         retroBody: ['"Libre Baskerville"', 'serif'],
         retroMono: ['"IBM Plex Mono"', 'monospace']
-      },
-      boxShadow: {
-        retroSoft: '0 6px 25px rgba(0,0,0,0.08)',
-        retroInset: 'inset 0 2px 4px rgba(0,0,0,0.06)'
-      },
-      borderWidth: {
-        3: '3px'
       }
     }
   },
-  plugins:[]
+  plugins: []
 }

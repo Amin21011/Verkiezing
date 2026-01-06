@@ -1,6 +1,5 @@
 package nl.hva.election_backend.api;
-
-import nl.hva.election_backend.dto.SeatSimulationRequest;
+import nl.hva.election_backend.dto.model.SeatSimulationRequest;
 import nl.hva.election_backend.service.SeatSimulationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +19,6 @@ public class SimulationController {
 
     @PostMapping("/seats")
     public ResponseEntity<?> simulate(@RequestBody SeatSimulationRequest req) {
-
         if (req.turnout() < 0 || req.turnout() > 100)
             return ResponseEntity.badRequest().body("Turnout must be 0-100");
 

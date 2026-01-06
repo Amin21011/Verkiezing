@@ -2,16 +2,68 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* =========================
+   DESIGN TOKENS
+   ========================= */
 
 :root {
   --paper: #fdfcf7;
   --ink: #1c1c1c;
   --graymain: #555555;
+
   --accent: #e63946;
   --highlight: #fffae5;
-  --shadow-press: -6px 6px 0 var(--ink);
-  --shadow-soft: 0 4px 30px rgba(0,0,0,0.1);
+
+  --border: rgba(28,28,28,0.25);
+  --soft: rgba(28,28,28,0.08);
+
+  --shadow-hard: -6px 6px 0 var(--ink);
+  --shadow-offset: -10px 10px 0 rgba(0,0,0,0.15);
+  --shadow-soft: 0 6px 30px rgba(0,0,0,0.12);
+
+  --retro-paper: #f8f5f0;
+  --retro-ink: #1a1a1a;
+  --retro-red: #b23a48;
+  --retro-gold: #d9c79c;
+  --retro-blue: #476a8a;
 }
+
+/* =========================
+   DARK MODE (ENIGE BRON)
+   ========================= */
+
+html.dark {
+  --paper: #181613;
+  --ink: #f1ede4;
+  --graymain: #c4bfb6;
+
+  --highlight: #2a2621;
+  --border: rgba(241,237,228,0.25);
+  --soft: rgba(241,237,228,0.12);
+
+  --shadow-hard: -6px 6px 0 rgba(241,237,228,0.15);
+  --shadow-offset: -10px 10px 0 rgba(0,0,0,0.35);
+  --shadow-soft: 0 10px 40px rgba(0,0,0,0.8);
+
+  --retro-paper: #181613;
+  --retro-ink: #f1ede4;
+  --retro-red: #f08080;
+  --retro-gold: #e6c97a;
+  --retro-blue: #7aa2c7;
+}
+
+.bg-paper { background-color: var(--paper); }
+.text-ink { color: var(--ink); }
+.text-graymain { color: var(--graymain); }
+.border-ink { border-color: var(--ink); }
+
+.bg-paper-soft { background-color: var(--paper); }
+.text-muted { color: var(--graymain); }
+.border-soft { border-color: var(--border); }
+
+.shadow-hard { box-shadow: var(--shadow-hard); }
+.shadow-soft { box-shadow: var(--shadow-soft); }
+
 
 @layer base {
   html {
@@ -24,75 +76,111 @@
   body {
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
-    transition: color .3s, background-color .3s;
+    transition: background-color .3s ease, color .3s ease;
   }
 
-  h1,h2,h3,h4,h5,h6 {
+  h1, h2, h3, h4, h5, h6 {
     font-family: "Playfair Display", serif;
     font-weight: 800;
     color: var(--ink);
     letter-spacing: -0.015em;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.03);
   }
 
-  a { color:#4b5563; transition:color .2s; }
-  a:hover { color:var(--ink); }
+  p {
+    line-height: 1.65;
+  }
+
+  a {
+    color: #4b5563;
+    transition: color .2s ease;
+  }
+
+  a:hover {
+    color: var(--ink);
+  }
 }
 
 @layer components {
   .btn-primary {
-    background:var(--ink);color:#fff;
-    border:2px solid var(--ink);
-    padding:.75rem 1.5rem;transition:all .3s;
+    background: var(--ink);
+    color: #fff;
+    border: 2px solid var(--ink);
+    padding: .75rem 1.5rem;
+    transition: all .3s ease;
   }
+
   .btn-primary:hover {
-    background:#fff;color:var(--ink);
-    box-shadow:var(--shadow-press);
+    background: #fff;
+    color: var(--ink);
+    box-shadow: var(--shadow-hard);
   }
 
   .section-wrapper {
-    border-top:8px solid var(--ink);
-    border-bottom:8px solid var(--ink);
-    background-color:var(--paper);
-    box-shadow:var(--shadow-soft);
-    position:relative;overflow:hidden;
+    border-top: 8px solid var(--ink);
+    border-bottom: 8px solid var(--ink);
+    background-color: var(--paper);
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    overflow: hidden;
   }
 
-  .news-grid{@apply grid gap-8 md:grid-cols-2 max-w-6xl w-full px-6 py-12;}
+  .news-grid {
+    @apply grid gap-8 md:grid-cols-2 max-w-6xl w-full px-6 py-12;
+  }
 }
 
 @layer utilities {
-  .shadow-press{box-shadow:var(--shadow-press);}
-  .font-headline{font-family:"Playfair Display",serif;}
-  .font-body{font-family:"Merriweather",serif;}
-  .bg-paper{background-color:var(--paper);}
-  .text-ink{color:var(--ink);}
-  .border-ink{border-color:var(--ink);}
+  .shadow-hard { box-shadow: var(--shadow-hard); }
+  .shadow-offset { box-shadow: var(--shadow-offset); }
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+
+  .font-headline { font-family: "Playfair Display", serif; }
+  .font-body { font-family: "Merriweather", serif; }
+
+  .bg-paper { background-color: var(--paper); }
+  .text-ink { color: var(--ink); }
+  .border-ink { border-color: var(--ink); }
+
+  .tracking-press {
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .leading-news {
+    line-height: 1.65;
+  }
 }
 
-@keyframes tickerScroll {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+.paper-layer {
+  position: relative;
 }
 
-
-:root {
-  --retro-paper: #f8f5f0;
-  --retro-ink: #1a1a1a;
-  --retro-red: #b23a48;
-  --retro-gold: #d9c79c;
-  --retro-blue: #466b8c;
-  --retro-shadow: rgba(0, 0, 0, 0.12);
+.paper-layer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    url('https://www.transparenttextures.com/patterns/paper-fibers.png'),
+    url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  pointer-events: none;
 }
 
-.retro-texture {
-  background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
-  opacity: 0.08;
+.hover-print {
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.hover-print:hover {
+  transform: translate(-2px, 2px);
+  box-shadow: var(--shadow-hard);
 }
 
 @keyframes printFade {
   from {
     opacity: 0;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     transform: translateY(10px);
   }
   to {
@@ -106,10 +194,24 @@
   animation: printFade 0.8s ease forwards;
 }
 
-.rule-line {
-  width: 80px;
-  height: 3px;
-  margin: 1rem auto;
-  background: var(--retro-ink);
-  border-radius: 2px;
+@keyframes tickerScroll {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+html.dark {
+  --paper: #181613;
+  --ink: #f1ede4;
+  --graymain: #c4bfb6;
+  --highlight: #2a2621;
+
+  --shadow-hard: -6px 6px 0 rgba(241,237,228,0.15);
+  --shadow-offset: -10px 10px 0 rgba(0,0,0,0.35);
+  --shadow-soft: 0 10px 40px rgba(0,0,0,0.8);
+
+  --retro-paper: #181613;
+  --retro-ink: #f1ede4;
+  --retro-red: #f08080;
+  --retro-gold: #e6c97a;
+  --retro-blue: #7aa2c7;
 }

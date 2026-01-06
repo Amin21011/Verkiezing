@@ -19,8 +19,8 @@ public class PartyController1 {
         return partyService1.getAllPartiesRandomized();
     }
 
-    @GetMapping("/{id}")
-    public Party1 getPartyById(@PathVariable Long id) {
-        return partyService1.getPartyById(id);
-    }
+//    @GetMapping("/{id}")
+//    public Party1 getPartyById(@PathVariable Long id) {
+//        return partyService1.getPartyById(id);
+//    }
 }
