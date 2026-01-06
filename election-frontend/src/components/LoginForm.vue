@@ -5,7 +5,7 @@ import router from '@/router'
 const email = ref('')
 const password = ref('')
 import { login } from "../services/authService";
-import { showToast } from '@/helpers/useFlash.ts'
+import { showToast } from '@/composables/useFlash.ts'
 
 const handleLogin = async () => {
   try {
