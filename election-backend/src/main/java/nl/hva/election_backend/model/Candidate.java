@@ -13,6 +13,7 @@ public class Candidate {
     private String lastName;
     private String fullName;
     private String gender;
+    private String residence;
 
     private int votes = 0;
     private boolean elected;
@@ -49,6 +50,7 @@ public class Candidate {
             if (sb.length() > 0) sb.append(" ");
             sb.append(lastName.trim());
         }
+
         this.fullName = sb.toString();
     }
 
@@ -61,14 +63,18 @@ public class Candidate {
     public Integer getRanking() { return ranking; }
     public Party getParty() { return party; }
     public Election getElection() { return election; }
+    public String getResidence() { return residence; }
 
     public boolean isElected() { return elected; }
+
+    public void addVotes(int votes) { this.votes += votes; }
     public void setId(String id) { this.id = id; }
     public void setGender(String gender) { this.gender = gender; }
     public void setVotes(int votes) { this.votes = votes; }
     public void setElected(boolean elected) { this.elected = elected; }
     public void setRanking(Integer ranking) { this.ranking = ranking; }
     public void setElection(Election election) { this.election = election; }
+    public void setResidence(String residence) { this.residence = residence; }
 
     public void setNamePrefix(String namePrefix) {
         this.namePrefix = namePrefix;
@@ -85,7 +91,8 @@ public class Candidate {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Candidate candidate)) return false;
+        if (!(o instanceof Candidate)) return false;
+        Candidate candidate = (Candidate) o;
         return Objects.equals(id, candidate.id);
     }
 
@@ -94,10 +101,11 @@ public class Candidate {
         return Objects.hash(id);
     }
 
-    public String getPartyId() {
-        return party.getId();
-    }
 
     public void setPartyName(String name) {
+    }
+
+    public String getPartyId() {
+        return "";
     }
 }

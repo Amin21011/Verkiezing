@@ -7,6 +7,11 @@ interface User {
   name: string;
 }
 
+interface Topic {
+  id: number;
+  name: string;
+}
+
 interface ForumComment {
   id: number;
   comment: string;
@@ -20,6 +25,7 @@ interface ForumPost {
   content: string;
   postedAt: string;
   user: User;
+  topic?: Topic;
   comments?: ForumComment[];
   likeCount?: number;
   dislikeCount?: number;
@@ -57,9 +63,13 @@ async function fetchPost() {
     const id = route.params.id;
     const res = await fetch(`${API_URL}/forum/posts/${id}`);
     if (!res.ok) throw new Error("Kon vraag niet ophalen");
-    post.value = await res.json();
-  } catch (err: any) {
-    errorMsg.value = err.message;
+    post.value = await res.json() as ForumPost;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      errorMsg.value = err.message;
+    } else {
+      errorMsg.value = "Er is een onbekende fout opgetreden";
+    }
   } finally {
     loading.value = false;
   }
@@ -87,6 +97,8 @@ async function submitComment() {
 
     newComment.value = "";
     await fetchPost();
+  } catch (err: unknown) {
+    if (err instanceof Error) alert(err.message);
   } finally {
     submitting.value = false;
   }
@@ -169,10 +181,13 @@ onMounted(fetchPost);
       <div v-else>
         <h1 class="text-2xl font-bold text-[#00712D] mb-2">{{ post?.title }}</h1>
         <p class="text-sm text-gray-500 mb-4">
-          door {{ post?.user?.name || "Onbekend" }} •
+          <strong>door</strong> {{ post?.user?.name || "Onbekend" }} •
           {{ new Date(post?.postedAt || "").toLocaleDateString("nl-NL") }}
         </p>
-        <p class="text-gray-800 leading-relaxed whitespace-pre-line mb-8">
+        <p v-if="post?.topic" class="text-sm text-gray-600 mb-4">
+          <strong>Topic:</strong> {{ post.topic.name }}
+        </p>
+        <p class="text-gray-500 leading-relaxed whitespace-pre-line mb-8">
           {{ post?.content }}
         </p>
 

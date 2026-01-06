@@ -6,5 +6,6 @@ public record CandidateDTO(
         String lastName,
         String partyId,
         String partyName,
+        String gender,
         int votes
 ) {}

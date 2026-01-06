@@ -1,6 +1,11 @@
-version: "3.8"
 
 services:
+  frontend:
+    build: ./election-frontend
+    container_name: election-frontend-prod
+    restart: always
+    ports:
+      - "9000:8080"
   db:
     image: postgres:16
     container_name: election-postgres

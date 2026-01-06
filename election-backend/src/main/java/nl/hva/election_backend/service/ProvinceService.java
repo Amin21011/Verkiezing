@@ -72,4 +72,59 @@ public class ProvinceService {
                 .filter(p -> selectedProvinces.contains(p.getProvinceNaam()))
                 .toList();
     }
+
+    // Laadt partijen en kandidaten zonder ResultLoader
+    private Election loadElection(int year) {
+        Election election = new Election("TK" + year);
+
+        // Partijen laden
+        try {
+            Resource partiesResource = new ClassPathResource("TK" + year + "/Verkiezingsdefinitie_TK" + year + ".eml.xml");
+            if (partiesResource.exists()) {
+                var docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                var doc = docBuilder.parse(partiesResource.getInputStream());
+                NodeList partyNodes = doc.getElementsByTagName("PoliticalEntity");
+
+                for (int i = 0; i < partyNodes.getLength(); i++) {
+                    Node node = partyNodes.item(i);
+                    if (node instanceof Element p) {
+                        String id = p.getAttribute("Id");
+                        String name = p.getElementsByTagName("RegisteredName").item(0).getTextContent();
+                        election.addParty(new Party(id, name, 0)); // voteCount = 0
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Fout bij laden van partijen", e);
+        }
+
+        // Kandidaten laden
+        try {
+            Resource folderResource = new ClassPathResource("TK" + year);
+            File folder = folderResource.getFile();
+            File[] candidateFiles = folder.listFiles((d, n) -> n.toLowerCase().startsWith("kandidatenlijsten_") && n.endsWith(".eml.xml"));
+            if (candidateFiles != null) {
+                for (File f : candidateFiles) {
+                    var docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                    var doc = docBuilder.parse(f);
+                    NodeList candidateNodes = doc.getElementsByTagName("Candidate");
+
+                    for (int i = 0; i < candidateNodes.getLength(); i++) {
+                        Node node = candidateNodes.item(i);
+                        if (node instanceof Element c) {
+                            String id = c.getAttribute("Id");
+                            String name = c.getElementsByTagName("Name").item(0).getTextContent();
+                            Element affiliation = (Element) c.getElementsByTagName("AffiliationIdentifier").item(0);
+                            String partyId = affiliation.getAttribute("Id");
+                            election.addCandidate(new Candidate(id, name, partyId));
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Fout bij laden van kandidaten", e);
+        }
+
+        return election;
+    }
 }

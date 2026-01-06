@@ -14,6 +14,7 @@ import SimulatorView from '@/views/SimulatorView.vue'
 import AdminPollView from '@/views/AdminPollView.vue'
 import FakeNewsView from '@/views/FakeNewsView.vue'
 import AnalyseView from '@/views/AnalyseView.vue'
+import CompareCandidatesView from '@/views/CompareCandidatesView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -108,6 +109,11 @@ const router = createRouter({
       path: '/admin-poll',
       name: 'admin-poll',
       component: AdminPollView
+    },
+    {
+      path: '/compare-candidates',
+      name: 'compare-candidates',
+      component: CompareCandidatesView
     }
   ],
 });
