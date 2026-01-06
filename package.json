@@ -1,8 +1,10 @@
 {
   "dependencies": {
+    "@tailwindcss/postcss": "^4.1.18",
     "axios": "^1.12.2",
     "chart.js": "^4.5.1",
     "jwt-decode": "^4.0.0",
+    "tailwindcss": "^4.1.18",
     "vue-chartjs": "^5.3.3"
   },
   "devDependencies": {
