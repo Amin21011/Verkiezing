@@ -3,7 +3,6 @@ package nl.hva.election_backend.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -24,12 +23,12 @@ public class User {
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "created_at")
+    private LocalDate createdAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = LocalDate.now();
     }
 
     public Long getId() { return id; }
@@ -39,7 +38,7 @@ public class User {
     public String getRole() { return role; }
     public String getQuizBestMatch() { return quizBestMatch; }
     public LocalDate getBirthDate() { return birthDate; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDate getCreatedAt() { return createdAt; }
 
     public void setName(String name) { this.name = name; }
     public void setEmail(String email) { this.email = email; }
