@@ -1,69 +1,51 @@
-<script setup lang="ts">
-const currentDate = new Date().toLocaleDateString('nl-NL', {
-  day: '2-digit',
-  month: 'long',
-  year: 'numeric',
-})
-</script>
-
 <template>
-  <section class="relative bg-retro-paper border-b-[6px] border-retro-ink/70 py-24 md:py-32 px-6 md:px-12 text-center overflow-hidden">
-    <div class="absolute inset-0 opacity-[0.06] bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] pointer-events-none"></div>
-
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#f6f3ed]/60 to-[#f6f3ed] pointer-events-none"></div>
-
+  <section class="relative overflow-hidden text-center bg-paper text-ink dark:bg-[var(--paper)] dark:text-[var(--ink)] py-24 md:py-32 px-6 md:px-12 border-y-2 border-ink dark:border-[var(--ink)]">
+    <div class="absolute inset-0 pointer-events-none opacity-[0.05]" style="background-image:url('https://www.transparenttextures.com/patterns/newsprint.png')"></div>
+    <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(circle,_transparent_30%,_rgba(0,0,0,0.08)_100%)] dark:bg-[radial-gradient(circle,_transparent_35%,_rgba(0,0,0,0.35)_100%)]"></div>
     <div class="relative z-10 max-w-4xl mx-auto">
-      <p class="uppercase tracking-[0.2em] text-sm font-mono text-gray-500 mb-4">
-        Editie — {{ currentDate }}</p>
 
-      <h1 class="font-retroHead text-5xl md:text-7xl font-extrabold text-retro-ink tracking-tight leading-[1.15] retro-title">
-        <span class="block font-normal italic text-graymain">
-          De stem van de toekomst in druk
+      <p class="uppercase tracking-[0.45em] text-[10px] font-mono font-bold text-graymain dark:text-[#b9b2a5] mb-6">
+        Gelimiteerde Oplage — Editie No. 04
+      </p>
+
+      <h1 class="mt-5 font-['Crimson_Pro'] text-3xl md:text-5xl font-extrabold uppercase tracking-tight text-ink">
+       <span class="block italic serif text-ink dark:text-[var(--ink)]">
+          De stem van de toekomst </span>
+        <span class="block mt-2 uppercase text-2xl md:text-2xl tracking-[0.3em] font-bold">
+          gedrukt in data
         </span>
       </h1>
 
-      <p class="mt-6 text-lg md:text-xl font-retroBody text-graymain leading-relaxed max-w-2xl mx-auto italic">
-        Ontdek de resultaten, kandidaten en inzichten in onze digitale editie van vandaag.
+      <div class="mt-10 mb-10 flex justify-center items-center gap-4 opacity-40"></div>
+
+      <p class="max-w-2xl mx-auto font-['Merriweather'] italic text-base md:text-lg leading-relaxed text-graymain dark:text-[#c9c2b4]">
+        Verkiezingen ontleed zoals ze bedoeld zijn: in cijfers, context en scherpe observaties — samengesteld door de redactie van
+        <span class="font-bold not-italic">de KIESKRANT</span>.
       </p>
 
-      <div class="mt-10 h-[4px] w-32 mx-auto bg-gradient-to-r from-retro-red via-retro-gold to-retro-blue rounded-full"></div>
-
-      <div class="mt-10">
-        <button class="px-10 py-3 font-retroHead text-lg bg-retro-ink text-retro-paper border-2 border-retro-ink hover:bg-transparent hover:text-retro-ink shadow-press transition-all duration-300 uppercase tracking-wide">
-          Lees de editie ☕
+      <div class="mt-16">
+        <button class="relative px-10 py-4 font-mono text-[11px] uppercase tracking-[0.35em] border-2 border-ink dark:border-[var(--ink)] bg-paper dark:bg-[var(--paper)] text-ink dark:text-[var(--ink)] hover:bg-ink hover:text-paper dark:hover:bg-[var(--ink)] dark:hover:text-black transition-colors duration-300">
+          Bekijk de editie
         </button>
       </div>
     </div>
-
-    <div class="absolute bottom-0 left-0 w-full h-[5px] bg-gradient-to-r from-retro-red via-retro-gold to-retro-blue opacity-90"></div>
+    <div class="absolute bottom-3 left-1/2 -translate-x-1/2 w-[92%] h-[1px] bg-ink/30 dark:bg-[var(--ink)]/30"></div>
   </section>
 </template>
 
 <style scoped>
-.font-retroHead {
-  font-family: 'Playfair Display', serif;
+h1,
+p {
+  animation: pressFade 1.8s ease-out;
 }
-.font-retroBody {
-  font-family: 'Merriweather', serif;
-}
-.bg-retro-paper {
-  background-color: var(--paper, #fdfcf7);
-}
-.text-retro-ink {
-  color: var(--ink, #1a1a1a);
-}
-.retro-title {
-  animation: fadeInHeadline 1s ease forwards;
-}
-@keyframes fadeInHeadline {
+
+@keyframes pressFade {
   from {
     opacity: 0;
-    letter-spacing: 0.1em;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    letter-spacing: 0;
     transform: translateY(0);
   }
 }

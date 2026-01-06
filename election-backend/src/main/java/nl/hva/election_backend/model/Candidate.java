@@ -64,6 +64,7 @@ public class Candidate {
     public Party getParty() { return party; }
     public Election getElection() { return election; }
     public String getResidence() { return residence; }
+
     public boolean isElected() { return elected; }
 
     public void addVotes(int votes) { this.votes += votes; }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/electionresults")
+@RequestMapping("/api")
 public class ResultController {
     private final ResultService resultService;
 
@@ -48,7 +48,6 @@ public class ResultController {
     public PartyDTO getPartyById(@PathVariable String id) {
         Party p = resultService.getPartyById(id);
         if (p == null) return null;
-
         return new PartyDTO(
                 p.getId(),
                 p.getName(),

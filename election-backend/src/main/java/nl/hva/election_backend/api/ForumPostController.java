@@ -91,6 +91,12 @@ public class ForumPostController {
         }
     }
 
+    @DeleteMapping("/posts/{id}")
+    public ResponseEntity<?> deletePost(@PathVariable long id) {
+        forumPostService.deletePost(id);
+        return ResponseEntity.ok().build();
+    }
+
 
 
     @PostMapping("/posts/{id}/comments")

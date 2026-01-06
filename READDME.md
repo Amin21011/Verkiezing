@@ -96,7 +96,7 @@ Use these settings in your application-dev.yml:
 
 ### Connecting Through DB Tools (Optional)
 
-Use these settings in:
+You can use these settings in:
 
 - IntelliJ Database Tool
 - DBeaver
@@ -113,7 +113,6 @@ Use these settings in:
 
 - Do not modify or drop tables
 - Contact admin (Morsal) for permission issues
-
 - SSL error → ensure the URL includes ?sslmode=require&channelBinding=require
 - “Permission denied” → request updated privileges
 - No data visible → ensure active Spring profile is dev

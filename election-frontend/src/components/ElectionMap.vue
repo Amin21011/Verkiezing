@@ -23,8 +23,49 @@ const selectedProvince = ref<ProvinceResult | null>(null)
 const mapContainer = ref<HTMLElement | null>(null)
 
 const selectedYear = ref(2025)
-const API_URL = `${import.meta.env.VITE_API_URL}/provinces/results`
 
+const constituencyPositions: Record<string, { x: number; y: number }> = {
+  Amsterdam: { x: 650, y: 475 },
+
+  Den_Helder: { x: 615, y: 330 },
+  Haarlem: { x: 600, y: 435 },
+  Leiden: { x: 630, y: 510 },
+  s_Gravenhage: { x: 610, y: 540 },
+  Rotterdam: { x: 590, y: 600 },
+  Dordrecht: { x: 620, y: 620 },
+
+  Utrecht: { x: 678, y: 550 },
+  Lelystad: { x: 730, y: 450 },
+  Zwolle: { x: 830, y: 440 },
+
+  Arnhem: { x: 780, y: 550 },
+  Nijmegen: { x: 770, y: 600 },
+
+  s_Hertogenbosch: { x: 700, y: 600 },
+  Tilburg: { x: 630, y: 680 },
+  Middelburg: { x: 442, y: 705 },
+  Maastricht: { x: 770, y: 875 },
+  Assen: { x: 760, y: 330 },
+  Groningen: { x: 880, y: 250 },
+  Leeuwarden: { x: 775, y: 260 },
+};
+
+
+
+
+const currentMode = ref<`provinces` | `constituencies` | `national`>(`provinces`)
+const constituencies = ref<any[]>([])
+
+const API_URL = `${import.meta.env.VITE_API_URL}/provinces/results`
+const API_CONSTITUENCIES = `${import.meta.env.VITE_API_URL}/constituencies/results`
+
+function switchMode(mode: `provinces` | `constituencies` | `national`) {
+  currentMode.value = mode
+
+  if (mode === `provinces`) loadData()
+  if (mode === `constituencies`) loadConstituencies()
+  if (mode === `national`) console.log("nog niet geimplementeerd")
+}
 const sortedVotes = computed(() => {
   if (!selectedProvince.value) return []
 
@@ -54,12 +95,74 @@ async function loadData() {
     console.error('Fout bij ophalen:', err)
   }
 }
+
+async function loadConstituencies() {
+  selectedProvince.value = null
+
+  const res = await fetch(`${API_CONSTITUENCIES}/${selectedYear.value}`)
+  constituencies.value = await res.json()
+
+  if (mapContainer.value) {
+    mapContainer.value.innerHTML = mapSvg
+
+    highlightConstituencies()
+  }
+}
+
+
 onMounted(loadData)
 
 function onYearChange(event: Event) {
   const target = event.target as HTMLSelectElement
   setYear(Number(target.value))
 }
+
+function highlightConstituencies() {
+  setTimeout(() => {
+    const svg = mapContainer.value?.querySelector("svg")
+    if (!svg) return
+
+    // Verwijder oude markers
+    const oldMarkers = mapContainer.value!.querySelectorAll(".kies-marker")
+    oldMarkers.forEach(m => m.remove())
+
+    // Voor elke kieskring → marker toevoegen
+    constituencies.value.forEach((c: any) => {
+      const pos = constituencyPositions[c.constituencyName]
+      if (!pos) return
+
+      const marker = document.createElement("div")
+
+      marker.className =
+        "kies-marker absolute w-4 h-4 bg-red-600 rounded-full cursor-pointer shadow-md \
+         transition-transform duration-150 hover:scale-150 hover:bg-red-700"
+
+      marker.style.left = pos.x + "px"
+      marker.style.top = pos.y + "px"
+
+// tooltip bij hover
+      marker.title = c.constituencyName
+
+      marker.addEventListener("click", () => {
+        const data = constituencies.value.find(
+          (x: any) => x.constituencyName === c.constituencyName
+        )
+
+        if (!data) return
+
+        selectedProvince.value = {
+          provinceNaam: c.constituencyName,
+          stemmenPerPartij: data.stemmenPerPartij
+        }
+      })
+
+      mapContainer.value!.appendChild(marker)
+
+    })
+  }, 200)
+}
+
+
 
 function highlightProvinces() {
   setTimeout(() => {
@@ -115,6 +218,33 @@ function highlightProvinces() {
         <option value="2025" selected>2025</option>
       </select>
     </div>
+
+    <div class="flex gap-3 mb-4">
+      <div
+        class="px-4 py-2 rounded-md border-2 shadow cursor-pointer bg-amber-200 border-amber-300 font-semibold"
+        :class="{ '!bg-amber-300 border-amber-400 shadow-md': currentMode === 'provinces' }"
+        @click="switchMode('provinces')"
+      >
+        Provincies
+      </div>
+
+      <div
+        class="px-4 py-2 rounded-md border-2 shadow cursor-pointer bg-amber-200 border-amber-300 font-semibold"
+        :class="{ '!bg-amber-300 border-amber-400 shadow-md': currentMode === 'constituencies' }"
+        @click="switchMode('constituencies')"
+      >
+        Kieskringen
+      </div>
+
+      <div
+        class="px-4 py-2 rounded-md border-2 shadow cursor-pointer bg-amber-200 border-amber-300 font-semibold"
+        :class="{ '!bg-amber-300 border-amber-400 shadow-md': currentMode === 'national' }"
+        @click="switchMode('national')"
+      >
+        Nationaal
+      </div>
+    </div>
+
 
     <!-- Container voor map + resultaten -->
     <div class="flex flex-col md:flex-row items-start w-full max-w-6xl gap-6">
@@ -244,4 +374,7 @@ svg path {
   stroke-width: 1.2;
   transition: fill 0.2s, stroke 0.3s;
 }
+
+
+
 </style>

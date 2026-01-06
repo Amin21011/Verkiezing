@@ -32,6 +32,12 @@ public class ForumPostService {
         return forumRepository.save(forumPost);
     }
 
+    public void deletePost(long postId) {
+        ForumPost post = forumRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post niet gevonden"));
+        forumRepository.delete(post);
+    }
+
     public ForumPost likePost(long postId, String email) {
         User user = userService.findByEmail(email);
         ForumPost post = forumRepository.findById(postId)

@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import HomePage from '../components/HomePage.vue'
-import '../assets/main.css'
+import HeroSection from '@/components/HeroSection.vue'
+import ArticleSection from '@/components/ArticleSection.vue'
+import BannerSection from '@/components/BannerSection.vue'
+import DailyFactCards from '@/components/DailyFactCards.vue'
 </script>
 
 <template>
-  <main>
-    <HomePage />
-  </main>
+  <BannerSection/>
+  <ArticleSection/>
+  <HeroSection/>
+  <DailyFactCards/>
 </template>

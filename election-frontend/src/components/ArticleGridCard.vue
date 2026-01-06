@@ -1,42 +1,38 @@
 <script setup lang="ts">
-import router from '@/router'
-
 defineProps<{
   title: string
-  date?: string
-  summary?: string
-  image?: string
-  category?: string
+  summary: string
+  date: string | null
+  category: string
+  link: string
 }>()
-
-const goToNews = () => router.push('/latest-news')
-
 </script>
 
 <template>
-  <article class="relative bg-white border-4 border-ink shadow-press hover:shadow-[-10px_10px_0_#1c1c1c] transition-all duration-300 flex flex-col overflow-hidden">
-    <div v-if="image" class="overflow-hidden h-48 md:h-56">
-      <img :src="image" :alt="title" class="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-500" />
+  <article class="group relative bg-paper border-t-2 border-ink pt-6 pb-5 px-1 transition-colors duration-300 hover:bg-white/60">
+    <div class="flex items-center gap-3 mb-3 text-xs font-mono uppercase tracking-widest">
+      <span class="text-ink">{{ category }}</span>
+      <span class="text-graymain">—</span>
+      <time class="text-graymain">
+        {{ date }}
+      </time>
     </div>
 
-    <div class="flex flex-col justify-between flex-grow p-6 space-y-3">
-      <div class="flex justify-between items-center text-xs uppercase font-mono tracking-widest text-graymain">
-        <span v-if="category" class="bg-highlight text-ink px-2 py-1 rounded-sm font-semibold">
-          {{ category }}</span>
-        <span v-if="date">{{ date }}</span>
-      </div>
+    <h3 class="font-headline text-xl md:text-2xl font-extrabold leading-snug text-ink mb-3 group-hover:underline underline-offset-4">
+      {{ title }}
+    </h3>
 
-      <h3 class="text-2xl font-headline font-bold leading-snug text-ink hover:text-accent cursor-pointer" @click="goToNews">
-        {{ title }}</h3>
+    <p class="font-body text-base md:text-lg leading-relaxed max-w-prose line-clamp-3 text-graymain dark:text-[#c9c2b4]">
+      {{ summary }}
+    </p>
 
-      <p v-if="summary" class="font-body text-graymain text-base leading-relaxed">
-        {{ summary }}</p>
-
-      <div class="mt-4" @click="goToNews">
-        <a class="font-mono text-xs uppercase tracking-widest text-ink border-b-2 border-ink hover:text-accent hover:border-accent transition cursor-pointer" >
-          Lees meer → </a> </div>
+    <div class="mt-4">
+      <a :href="link" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-widest text-[var(--accent)] hover:underline underline-offset-4">
+        Lees artikel
+        <span class="transition-transform group-hover:translate-x-1">→</span>
+      </a>
     </div>
 
-    <div class="absolute bottom-0 left-0 w-full h-[6px] bg-gradient-to-r from-accent via-yellow-400 to-blue-500"></div>
+    <a :href="link" target="_blank" rel="noopener" class="absolute inset-0" aria-label="Lees artikel"></a>
   </article>
 </template>
