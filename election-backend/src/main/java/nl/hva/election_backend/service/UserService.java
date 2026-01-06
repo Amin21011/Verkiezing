@@ -1,15 +1,14 @@
 package nl.hva.election_backend.service;
-
 import nl.hva.election_backend.model.User;
 import nl.hva.election_backend.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 
 @Service
 public class UserService {
-
     private final UserRepository repository;
     private final BCryptPasswordEncoder passwordEncoder;
 
@@ -28,7 +27,6 @@ public class UserService {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole("USER");
-
         return repository.save(user);
     }
 
@@ -52,6 +50,17 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(newPassword));
         repository.save(user);
+    }
+
+    public User updateBirthDate(String email, LocalDate birthDate) {
+        User user = findByEmail(email);
+        user.setBirthDate(birthDate);
+        return repository.save(user);
+    }
+
+    public void deleteUser(String email) {
+        User user = findByEmail(email);
+        repository.delete(user);
     }
 }
 

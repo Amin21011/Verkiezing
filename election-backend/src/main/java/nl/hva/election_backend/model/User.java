@@ -2,6 +2,8 @@ package nl.hva.election_backend.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -18,19 +20,38 @@ public class User {
     @Column(nullable = true)
     private String quizBestMatch;
 
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
+
+    @Column(name = "created_at")
+    private LocalDate createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDate.now();
+    }
+
     public Long getId() { return id; }
     public String getName() { return name; }
     public String getEmail() { return email; }
     public String getPassword() { return password; }
     public String getRole() { return role; }
-    public String getQuizBestMatch() {
-        return quizBestMatch;
-    }
+    public String getQuizBestMatch() { return quizBestMatch; }
+    public LocalDate getBirthDate() { return birthDate; }
+    public LocalDate getCreatedAt() { return createdAt; }
 
     public void setName(String name) { this.name = name; }
     public void setEmail(String email) { this.email = email; }
     public void setPassword(String password) { this.password = password; }
     public void setRole(String role) { this.role = role; }
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public void setQuizBestMatch(String quizBestMatch) {
         this.quizBestMatch = quizBestMatch;
     }

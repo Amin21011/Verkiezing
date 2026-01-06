@@ -10,7 +10,28 @@ function authHeaders() {
 }
 
 export async function fetchAllUsers() {
-  const res = await fetch(`${BASE}`, { headers: authHeaders() });
+  const res = await fetch(`${BASE}/users`, {
+    headers: authHeaders(),
+  });
+
+  if (!res.ok) {
+    throw new Error("Gebruikers ophalen mislukt");
+  }
+
+  return await res.json();
+}
+
+
+export async function updateUserRole(id: number, role: "USER" | "ADMIN") {
+  const res = await fetch(`${BASE}/${id}/role?role=${role}`, {
+    method: "PUT",
+    headers: authHeaders(),
+  });
+
+  if (!res.ok) {
+    throw new Error("Rol aanpassen mislukt");
+  }
+
   return await res.json();
 }
 
@@ -19,13 +40,10 @@ export async function deleteUser(id: number) {
     method: "DELETE",
     headers: authHeaders(),
   });
-  return await res.json();
-}
 
-export async function updateUserRole(id: number, role: string) {
-  const res = await fetch(`${BASE}/${id}/role?role=${role}`, {
-    method: "PUT",
-    headers: authHeaders(),
-  });
+  if (!res.ok) {
+    throw new Error("Gebruiker verwijderen mislukt");
+  }
+
   return await res.json();
 }

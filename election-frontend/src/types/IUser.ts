@@ -5,4 +5,5 @@ export interface AuthUser {
   email: string
   role: 'USER' | 'ADMIN'
   quizBestMatch: string
+  createdAt: string
 }
