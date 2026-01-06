@@ -19,5 +19,16 @@ services:
       timeout: 5s
       retries: 5
 
+  backend:
+    build:
+      context: ./election-backend
+      dockerfile: Dockerfile
+    container_name: election-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   postgres_data:
