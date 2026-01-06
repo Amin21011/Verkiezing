@@ -37,9 +37,3 @@ onMounted(async () => {
     </p>
   </div>
 </template>
-
-<style scoped>
-p {
-  font-size: 1rem;
-}
-</style>

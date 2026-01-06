@@ -1,5 +1,4 @@
 package nl.hva.election_backend.service;
-
 import nl.hva.election_backend.model.User;
 import nl.hva.election_backend.repository.UserRepository;
 import nl.hva.election_backend.security.JwtUtil;
@@ -9,7 +8,6 @@ import java.util.NoSuchElementException;
 
 @Service
 public class AuthService {
-
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -28,7 +26,6 @@ public class AuthService {
         if (!encoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("Het ingevoerde wachtwoord is onjuist.");
         }
-
         return jwtUtil.generateToken(user);
     }
 
@@ -40,7 +37,6 @@ public class AuthService {
         if (password.length() < 8) {
             throw new IllegalArgumentException("Het wachtwoord moet minimaal 8 tekens lang zijn.");
         }
-
         return userService.registerUser(name, email, password);
     }
 }

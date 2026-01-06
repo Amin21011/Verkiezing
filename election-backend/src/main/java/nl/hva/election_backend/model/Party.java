@@ -39,8 +39,9 @@ public class Party {
         this.voteCount = votes;
     }
 
-    public void addVotes(int votes) { this.voteCount += votes; }
-
+    public void addCandidate(Candidate candidate) {
+        candidates.add(candidate);
+    }
 
     public void setElection(Election e) {
         this.election = e;

@@ -1,6 +1,9 @@
-# There we go
+# Introduction
 
-Dit is het begin van de documentatie van jullie project. Jullie mogen het zelf inrichten zoals je wil,
-maar overleg wel eerst even met je Product Owner (PO) en met je docenten.
+Content: 
 
-[Let go](starting.md)
+- [Api](api.md)
+- [Design](design.md)
+- [Deployment](deployment.md)
+- [DoD](DoD.md)
+- [Samenwerkingscontract](Samenwerkingscontract.md)

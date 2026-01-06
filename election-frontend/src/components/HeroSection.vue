@@ -1,3 +1,30 @@
+<script setup lang="ts">
+import { useRouter } from 'vue-router'
+
+const router = useRouter();
+
+function goToSimulate() {
+  router.push('/simulator');
+}
+
+import { ref, onMounted } from "vue";
+
+const slogans = [
+  "Niet stemmen?",
+  "Twijfel je nog?",
+  "Jouw stem telt!",
+];
+
+const currentIndex = ref(0);
+
+onMounted(() => {
+  setInterval(() => {
+    currentIndex.value = (currentIndex.value + 1) % slogans.length;
+  }, 4000); // elke 4 seconden nieuwe slogan
+});
+</script>
+
+
 <template>
   <section class="bg-paper relative flex flex-col md:flex-row items-center justify-between max-w-7xl mx-auto px-8 py-16 md:py-20 transition-transform duration-500">
     <div class="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/newsprint.png')]"></div>
@@ -20,43 +47,22 @@
         Lees. Denk. Kies. — <span class="font-bold">De toekomst begint bij jouw stem.</span>
       </p>
 
-      <button
-        class="mt-8 px-8 py-3 border-2 border-accent text-accent font-bold uppercase tracking-widest bg-transparent hover:bg-accent hover:text-white transition-all duration-300">
+      <button @click="goToSimulate" class="mt-8 px-8 py-3 border-2 border-accent text-accent font-bold uppercase tracking-widest bg-transparent hover:bg-accent hover:text-white transition-all duration-300">
         Ontdek jouw invloed
       </button>
     </div>
 
     <div class="relative z-10 mt-10 md:mt-0 md:w-1/2 flex justify-center md:justify-end">
       <div class="border-4 border-ink shadow-press hover:shadow-[-10px_10px_0_#1c1c1c] transition-all duration-300">
-        <img
-          src="@/assets/img/hero.png"
+        <img src="@/assets/img/hero.png"
           class="max-h-80 object-cover grayscale hover:grayscale-0 transition duration-500"
-          alt="Stem 2025"
-        />
+          alt="Stem 2025" />
       </div>
     </div>
 
     <div class="absolute -bottom-[6px] left-0 w-full h-[6px] bg-gradient-to-r from-[#c62828] via-[#ef6c00] to-[#fbc02d]"></div>
   </section>
 </template>
-
-<script setup lang="ts">
-import { ref, onMounted } from "vue";
-
-const slogans = [
-  "Niet stemmen?",
-  "Twijfel je nog?",
-  "Jouw stem telt!",
-];
-
-const currentIndex = ref(0);
-
-onMounted(() => {
-  setInterval(() => {
-    currentIndex.value = (currentIndex.value + 1) % slogans.length;
-  }, 4000); // elke 4 seconden nieuwe slogan
-});
-</script>
 
 <style scoped>
 @keyframes typing {

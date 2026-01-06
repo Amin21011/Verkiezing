@@ -1,59 +1,98 @@
 <script setup lang="ts">
-import ArticleGridCard from './ArticleGridCard.vue'
+import { ref, onMounted, computed } from "vue"
+import ArticleGridCard from "./ArticleGridCard.vue"
 
-const featuredArticle = {
-  title: 'Generatie Z toch meer geïnteresseerd in de politiek dan de meeste tot nu toe dachten',
-  summary:
-    'Jongeren keren zich massaal naar de stembus. Nu nog hopen dat dit het verschil gaat maken wat Nederland al die tijd al nodig had.',
-  date: '10 okt 2025',
-  category: 'Algemeen',
-  image: '/src/assets/img/cover.webp'
+interface NewsItem {
+  title: string
+  link: string
+  description: string
+  publishedAt: string | null
 }
 
-const subArticles = [
-  {
-    title: 'Nieuwe partij breekt door bij jongeren',
-    summary: 'Steeds meer jongeren sluiten zich aan bij progressieve bewegingen.',
-    date: '9 okt 2025',
-    category: 'Politiek',
-    image: '/src/assets/img/hero.png'
-  },
-  {
-    title: 'Quiz: Hoe goed ken jij de top-partijen?',
-    summary: 'Test je kennis en ontdek welke partij het meest bij jou past.',
-    date: '9 okt 2025',
-    category: 'Interactief',
-    image: '/src/assets/img/hero.png'
+const API_URL = `${import.meta.env.VITE_API_URL}/news/rijksoverheid?limit=4`
+const newsItems = ref<NewsItem[]>([])
+const loading = ref(true)
+const errorMsg = ref("")
+
+function formatDate(iso: string | null): string {
+  if (!iso) return ""
+  try {
+    return new Date(iso).toLocaleDateString("nl-NL", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })
+  } catch {
+    return ""
   }
-]
+}
+
+async function loadNews() {
+  try {
+    const res = await fetch(API_URL)
+    if (!res.ok) throw new Error(`HTTP fout: ${res.status}`)
+    const raw: NewsItem[] = await res.json()
+
+    newsItems.value = raw.map((it) => ({
+      ...it,
+      publishedAt: formatDate(it.publishedAt),
+    }))
+  } catch (err) {
+    errorMsg.value = err instanceof Error ? err.message : "Onbekende fout"
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(loadNews)
+
+const featured = computed(() => newsItems.value[0])
+const rest = computed(() => newsItems.value.slice(1))
 </script>
 
 <template>
-  <section class="section-wrapper flex flex-col items-center py-16 px-4 md:px-8 bg-paper">
-    <div class="text-center mb-12">
-      <span class="font-mono uppercase tracking-widest text-graymain text-sm border-b-4 border-accent pb-1">Actueel Deze Week</span>
-      <h2 class="mt-4 font-headline text-5xl md:text-6xl font-extrabold uppercase tracking-tight text-ink">De Stem van een Nieuwe Generatie</h2>
-      <p class="subtitle mt-4 max-w-2xl mx-auto">Ontdek de verhalen, cijfers en bewegingen die de verkiezingen van 2025 vormen.</p>
-    </div>
+  <section class="bg-paper text-ink py-20 px-4 md:px-8">
+    <div class="max-w-7xl mx-auto">
+      <header class="text-center mb-16 max-w-3xl mx-auto">
+      <span class="inline-block font-mono uppercase tracking-widest text-sm text-graymain border-b-4 border-[var(--accent)] pb-1 dark:text-[#b9b2a5] dark:border-[#b9b2a5]">
+        Actueel
+      </span>
 
-    <div class="relative w-full max-w-7xl mb-16 bg-white border-4 border-ink shadow-press hover:shadow-[-10px_10px_0_#1c1c1c] transition-all duration-300 overflow-hidden">
-      <img :src="featuredArticle.image" alt="Hoofdartikel afbeelding" class="w-full h-[420px] object-cover grayscale hover:grayscale-0 transition duration-700" />
-      <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <h2 class="mt-5 font-headline text-3xl md:text-5xl font-extrabold uppercase tracking-tight text-ink">
+          Laatste Overheidsnieuws </h2>
 
-        <div class="absolute bottom-0 p-8 text-white">
-          <p class="font-mono text-xs uppercase tracking-widest bg-accent text-ink inline-block px-3 py-1 rounded-sm mb-3">
-            {{ featuredArticle.category }}</p>
-          <h3 class="text-4xl md:text-5xl font-headline font-extrabold mb-2 leading-tight text-white">
-            {{ featuredArticle.title }}</h3>
-          <p class="font-body text-lg text-gray-100 max-w-2xl">{{ featuredArticle.summary }}</p>
-          <span class="block text-sm mt-2 text-gray-300">{{ featuredArticle.date }}</span>
+        <p class="mt-4 text-sm text-graymain dark:text-[#c9c2b4]">
+          Betrouwbare updates en officiële aankondigingen die invloed hebben op jouw stem. </p>
+      </header>
+
+      <article v-if="featured" class="group relative mb-20 pb-8 border-y-2 border-ink bg-paper hover:bg-white/60 dark:hover:bg-black/20 transition-colors">
+        <div class="max-w-4xl mx-auto px-1">
+          <div class="flex items-center gap-3 pt-6 mb-4 text-xs font-mono uppercase tracking-widest text-graymain dark:text-[#b9b2a5]">
+            <span>Rijksoverheid</span>
+            <span>—</span>
+            <time>{{ featured.publishedAt }}</time>
+          </div>
+
+          <h3 class="font-headline text-2xl md:text-3xl font-extrabold leading-snug text-ink mb-3 group-hover:underline underline-offset-4">
+            {{ featured.title }} </h3>
+
+          <p class="font-body text-base md:text-lg leading-relaxed max-w-prose line-clamp-3 text-graymain dark:text-[#c9c2b4]">
+            {{ featured.description }} </p>
+
+          <div class="mt-4">
+            <a :href="featured.link" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-widest text-ink dark:text-[#e6e0d6] hover:underline underline-offset-4">
+              Lees artikel
+              <span class="transition-transform group-hover:translate-x-1">→</span>
+            </a>
+          </div>
         </div>
-      </div>
+        <a :href="featured.link" target="_blank" rel="noopener" class="absolute inset-0" aria-label="Lees featured artikel"></a>
+      </article>
 
-      <div class="grid w-full max-w-7xl gap-8 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-        <ArticleGridCard v-for="(article, i) in subArticles" :key="i" v-bind="article"/>
+      <div class="grid gap-10 sm:grid-cols-1 md:grid-cols-3">
+        <ArticleGridCard v-for="(item, i) in rest" :key="i" :title="item.title" :summary="item.description" :date="item.publishedAt" category="Rijksoverheid" :link="item.link" />
       </div>
-
-      <div class="w-full h-[6px] bg-gradient-to-r from-accent via-yellow-400 to-blue-500 mt-16"></div>
+      <div class="mt-20 h-[6px] bg-gradient-to-r from-[var(--accent)] via-[var(--highlight)] to-[var(--secondary)] dark:from-[#b9b2a5] dark:via-[#c9c2b4] dark:to-[#e6e0d6]"></div>
+    </div>
   </section>
 </template>
