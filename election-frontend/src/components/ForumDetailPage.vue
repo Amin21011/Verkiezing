@@ -34,6 +34,8 @@ const loading = ref(true);
 const errorMsg = ref("");
 const submitting = ref(false);
 
+const API_URL = import.meta.env.VITE_API_URL
+
 const showLoginPrompt = ref(false);
 
 function requireLogin() {
@@ -53,7 +55,7 @@ async function fetchPost() {
   loading.value = true;
   try {
     const id = route.params.id;
-    const res = await fetch(`http://localhost:8080/api/forum/posts/${id}`);
+    const res = await fetch(`${API_URL}/forum/posts/${id}`);
     if (!res.ok) throw new Error("Kon vraag niet ophalen");
     post.value = await res.json();
   } catch (err: any) {
@@ -96,7 +98,7 @@ async function likePost() {
   const token = getToken();
   const id = route.params.id;
 
-  const res = await fetch(`http://localhost:8080/api/forum/posts/${id}/like`, {
+  const res = await fetch(`${API_URL}/forum/posts/${id}/like`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -110,7 +112,7 @@ async function dislikePost() {
   const token = getToken();
   const id = route.params.id;
 
-  const res = await fetch(`http://localhost:8080/api/forum/posts/${id}/dislike`, {
+  const res = await fetch(`${API_URL}/forum/posts/${id}/dislike`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   });
