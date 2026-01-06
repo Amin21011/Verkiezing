@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { toast } from '@/helpers/useFlash'
+import { toast } from '@/composables/useFlash.ts'
 </script>
 
 <template>
@@ -8,8 +8,7 @@ import { toast } from '@/helpers/useFlash'
     <div v-if="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-[9998] flex justify-center">
       <div :class="['px-6 py-3 rounded-md shadow-md border border-zinc-800/20 font-headline tracking-wide text-base md:text-lg transition-all duration-300 backdrop-blur-sm',
           toast.type === 'error' ? 'bg-[#fcebea] text-[#611818]'
-            : toast.type === 'success'
-            ? 'bg-[#e9f7ef] text-[#1b4332]'
+            : toast.type === 'success' ? 'bg-[#e9f7ef] text-[#1b4332]'
             : 'bg-[#f7f6f2] text-[#1e1e1e]']">
         {{ toast.message }}
       </div>
