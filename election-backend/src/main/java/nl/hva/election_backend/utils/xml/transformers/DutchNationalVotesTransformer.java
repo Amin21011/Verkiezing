@@ -1,9 +1,10 @@
 package nl.hva.election_backend.utils.xml.transformers;
+
 import nl.hva.election_backend.model.*;
 import nl.hva.election_backend.repository.ResultRepository;
 import nl.hva.election_backend.utils.xml.VotesTransformer;
 import org.w3c.dom.*;
-import javax.xml.parsers.*;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,10 +21,10 @@ public class DutchNationalVotesTransformer implements VotesTransformer {
 
     public Map<String, Integer> parse(InputStream inputStream) {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            var factory = DocumentBuilderFactory.newInstance();
             factory.setIgnoringElementContentWhitespace(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(inputStream);
+            var builder = factory.newDocumentBuilder();
+            var doc = builder.parse(inputStream);
             doc.getDocumentElement().normalize();
 
             NodeList selections = doc.getElementsByTagName("Selection");
@@ -38,7 +39,6 @@ public class DutchNationalVotesTransformer implements VotesTransformer {
                     stemmenPerPartij.merge(partijNaam, stemmen, Integer::sum);
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -49,7 +49,6 @@ public class DutchNationalVotesTransformer implements VotesTransformer {
     public void registerPartyVotes(boolean aggregated, Map<String, String> electionData) {
         String partij = electionData.get("RegisteredName");
         String stemmenStr = electionData.get("ValidVotes");
-
         if (partij != null && stemmenStr != null) {
             try {
                 int stemmen = Integer.parseInt(stemmenStr);
@@ -62,32 +61,23 @@ public class DutchNationalVotesTransformer implements VotesTransformer {
     public void registerCandidateVotes(boolean aggregated, Map<String, String> data) {
         String candId = data.get("CandidateIdentifier-Id");
         String votesStr = data.get("ValidVotes");
-
         if (candId == null || votesStr == null) return;
         int votes = Integer.parseInt(votesStr);
 
         Candidate c = election.getCandidateById(candId).orElse(null);
+        if (c == null) return;
 
-        if (c == null) {
-            System.out.println("⚠ Candidate not found in national votes: " + candId);
-            return;
-        }
-
-        Region r = election.getRegionById("NL")
-                .orElseGet(() -> {
-                    Region nr = new Region("NL", "Nederland", "National");
-                    election.addRegion(nr);
-                    return nr;
-                });
+        Region r = election.getRegionById("NL").orElseGet(() -> {
+            Region nr = new Region("NL", "Nederland", "National");
+            election.addRegion(nr);
+            return nr;
+        });
 
         resultRepository.save(new Result(election, r, c.getParty(), c, votes));
-        System.out.printf("NATIONAL candidate votes: %s → %d%n", c.getFullName(), votes);
     }
 
     @Override
-    public void registerMetadata(boolean aggregated, Map<String, String> electionData) {
-        System.out.printf("%s meta data: %s\n", aggregated ? "National" : "Constituency", electionData);
-    }
+    public void registerMetadata(boolean aggregated, Map<String, String> electionData) {}
 
     public Map<String, Integer> getStemmenPerPartij() {
         return stemmenPerPartij;

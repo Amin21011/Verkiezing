@@ -1,5 +1,7 @@
 package nl.hva.election_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -30,6 +32,10 @@ public class ForumPost {
     @JsonManagedReference
     private List<ForumComment> comments = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "topic_id")
+    @JsonIgnoreProperties("posts")
+    private Topic topic;
 
     public ForumPost() {}
 
@@ -59,6 +65,8 @@ public class ForumPost {
     }
     public User getUser() { return user; }
 
+    public Topic getTopic() { return topic; }
+
     public List<ForumComment> getComments() {
         return comments;
     }
@@ -74,6 +82,10 @@ public class ForumPost {
     }
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setTopic(Topic topic) {
+        this.topic = topic;
     }
 
     public void setComments(List<ForumComment> comments) {
