@@ -54,7 +54,6 @@ public class AuthController {
         String token = authHeader.substring(7);
         String email = jwtUtil.validateTokenAndGetEmail(token);
         User user = userService.findByEmail(email);
-
         return ResponseEntity.ok(UserDTO.from(user));
     }
 
@@ -86,7 +85,7 @@ public class AuthController {
     @PutMapping("/update")
     public ResponseEntity<UserDTO> updateUser(@RequestHeader(value = "Authorization", required = false) String authHeader, @RequestBody UserDTO updatedUser
     ) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer")) {
             return ResponseEntity.status(401).build();
         }
         String token = authHeader.substring(7);
@@ -113,7 +112,7 @@ public class AuthController {
 
     @PutMapping("/change-password")
     public ResponseEntity<MessageResponse> changePassword(@RequestHeader(value = "Authorization", required = false) String authHeader, @RequestBody PasswordChangeRequest request) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer")) {
             return ResponseEntity
                     .status(401)
                     .body(new MessageResponse("Geen geldige token gevonden"));

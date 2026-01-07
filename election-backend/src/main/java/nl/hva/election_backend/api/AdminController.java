@@ -3,6 +3,7 @@ import nl.hva.election_backend.dto.model.AdminDTO;
 import nl.hva.election_backend.dto.model.UserDTO;
 import nl.hva.election_backend.helpers.ForbiddenException;
 import nl.hva.election_backend.helpers.ResourceNotFoundException;
+import nl.hva.election_backend.helpers.UnauthorizedException;
 import nl.hva.election_backend.model.User;
 import nl.hva.election_backend.repository.UserRepository;
 import nl.hva.election_backend.security.JwtUtil;
@@ -25,8 +26,9 @@ public class AdminController {
 
     private User requireAdmin(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new RuntimeException("Geen geldige token");
+            throw new UnauthorizedException("Geen geldige token");
         }
+
         String token = authHeader.substring(7);
         String email = jwtUtil.validateTokenAndGetEmail(token);
         User user = userService.findByEmail(email);
