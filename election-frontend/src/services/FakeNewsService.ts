@@ -1,8 +1,10 @@
 import { publicFetch } from "@/helpers/publicFetch";
 
+export const API_URL = `${import.meta.env.VITE_API_URL}`
+
 export async function analyzeFakeNews(payload: { text?: string; url?: string }) {
   const res = await publicFetch(
-    `${import.meta.env.VITE_API_URL}/analysis/fake-news`,
+    `${API_URL}/analysis/fake-news`,
     {
       method: "POST",
       body: JSON.stringify(payload),
