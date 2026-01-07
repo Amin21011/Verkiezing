@@ -13,11 +13,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A helper-class used for traversing a directory structure which contains the Dutch election data.
- */
 public class PathUtils {
-
     /**
      * Starting from @{code sourceLocation} searches the folder and any folder contained in it for files with the
      * specified {@code prefix}.
@@ -82,5 +78,4 @@ public class PathUtils {
             throw new RuntimeException(e);
         }
     }
-
 }
