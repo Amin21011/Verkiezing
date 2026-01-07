@@ -1,4 +1,4 @@
-package nl.hva.election_backend.dto.model;
+package nl.hva.election_backend.dto;
 
 
 public class TopicDTO {
