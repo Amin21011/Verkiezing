@@ -153,18 +153,17 @@ onMounted(loadQuiz);
 </script>
 
 <template>
-  <div class="min-h-screen w-full bg-paper text-ink font-body flex flex-col items-center py-16 px-6 relative">
+<div class="min-h-screen w-full bg-paper text-ink font-body paper-layer flex flex-col items-center py-16 px-6 relative">
     <div class="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/newsprint.png')]"></div>
 
     <div class="relative z-10 text-center max-w-2xl">
-      <h1 class="text-5xl font-headline font-bold mb-4 tracking-tight text-ink drop-shadow-sm">
+    <h1 class="text-5xl font-headline retro-title mb-4 text-ink tracking-press">
         Welke partij past het beste bij jou? 🤓
       </h1>
       <p class="text-lg text-gray-700 italic mb-10 leading-relaxed">
         Ontdek met een paar korte vragen welke politieke partij het dichtst bij jouw mening staat.
       </p>
     </div>
-
     <!-- Laden -->
     <div v-if="loading" class="text-gray-600 text-lg animate-pulse mt-10">
       Even geduld... de quiz wordt geladen.
@@ -179,7 +178,7 @@ onMounted(loadQuiz);
     <!-- Quiz -->
     <div v-else class="w-full max-w-3xl relative z-10 mt-6">
       <form @submit.prevent="submitQuiz"
-        class="space-y-8 bg-white/70 backdrop-blur-sm border border-gray-300 rounded-xl shadow-lg p-8">
+        class="space-y-8 bg-paper-soft border-soft border rounded-xl shadow-soft p-8 hover-print">
 
         <div v-for="question in questions" :key="question.id" class="border-b border-gray-300 pb-4 last:border-none">
           <p class="font-semibold text-xl text-ink mb-3">{{ question.text }}</p>
@@ -208,7 +207,7 @@ onMounted(loadQuiz);
         <div class="flex justify-center mt-6">
           <button v-if="isLoggedIn"
             type="submit"
-            class="bg-indigo-700 text-white px-8 py-3 rounded-lg text-lg hover:bg-indigo-800 transition shadow-md">
+            class="bg-black hover:bg-[#8e2f3b] text-white px-8 py-3 rounded-lg text-lg transition shadow-md">
             Bekijk mijn resultaat
           </button>
 
@@ -225,11 +224,11 @@ onMounted(loadQuiz);
 
       <!-- RESULTAAT -->
       <div v-if="result && sortedResults.length"
-        class="mt-10 bg-white/80 border border-gray-300 rounded-xl shadow-lg p-8">
+        class="mt-10 bg-paper-soft border-soft border rounded-xl shadow-soft p-8 paper-layer">
 
         <h2 class="text-3xl font-bold text-center mb-6">
           Jouw beste match:
-          <span class="text-indigo-700">{{ sortedResults[0].party }}</span>
+          <span class="text-black-700">{{ sortedResults[0].party }}</span>
         </h2>
 
         <!-- Alle partijen tonen -->
@@ -260,7 +259,7 @@ onMounted(loadQuiz);
         </div>
 
         <button @click="resetQuiz"
-          class="mt-8 bg-indigo-700 text-white px-6 py-2 rounded-lg hover:bg-indigo-800">
+          class="btn-primary text-lg px-8 py-3">
           Opnieuw proberen
         </button>
       </div>
@@ -268,14 +267,5 @@ onMounted(loadQuiz);
   </div>
 </template>
 
-
-<style scoped>
-@import "@/assets/base.css";
-@import "tailwindcss";
-
-.answers input[type="radio"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-}
+<style>
 </style>
