@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/quiz")
+@RequestMapping("/api/quiz")
 public class QuizController {
 
     private final QuizService quizService;
