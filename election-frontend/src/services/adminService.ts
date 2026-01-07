@@ -1,6 +1,6 @@
 import { getToken } from "@/services/authService";
-
-const BASE = "http://localhost:8080/api/auth/admin";
+const API_URL = import.meta.env.VITE_API_URL;
+const BASE = `${API_URL}/auth/admin`;
 
 function authHeaders() {
   return {

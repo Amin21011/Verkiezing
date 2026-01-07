@@ -30,7 +30,7 @@ const constituencyPositions: Record<string, { x: number; y: number }> = {
   Den_Helder: { x: 615, y: 330 },
   Haarlem: { x: 600, y: 435 },
   Leiden: { x: 630, y: 510 },
-  s_Gravenhage: { x: 610, y: 540 },
+  "s-Gravenhage": { x: 610, y: 540 },
   Rotterdam: { x: 590, y: 600 },
   Dordrecht: { x: 620, y: 620 },
 
@@ -41,7 +41,7 @@ const constituencyPositions: Record<string, { x: number; y: number }> = {
   Arnhem: { x: 780, y: 550 },
   Nijmegen: { x: 770, y: 600 },
 
-  s_Hertogenbosch: { x: 700, y: 600 },
+  "s-Hertogenbosch": { x: 700, y: 600 },
   Tilburg: { x: 630, y: 680 },
   Middelburg: { x: 442, y: 705 },
   Maastricht: { x: 770, y: 875 },
@@ -53,18 +53,17 @@ const constituencyPositions: Record<string, { x: number; y: number }> = {
 
 
 
-const currentMode = ref<`provinces` | `constituencies` | `national`>(`provinces`)
+const currentMode = ref<`provinces` | `constituencies` >(`provinces`)
 const constituencies = ref<any[]>([])
 
 const API_URL = `${import.meta.env.VITE_API_URL}/provinces/results`
 const API_CONSTITUENCIES = `${import.meta.env.VITE_API_URL}/constituencies/results`
 
-function switchMode(mode: `provinces` | `constituencies` | `national`) {
+function switchMode(mode: `provinces` | `constituencies` ) {
   currentMode.value = mode
 
   if (mode === `provinces`) loadData()
   if (mode === `constituencies`) loadConstituencies()
-  if (mode === `national`) console.log("nog niet geimplementeerd")
 }
 const sortedVotes = computed(() => {
   if (!selectedProvince.value) return []
@@ -114,21 +113,32 @@ onMounted(loadData)
 
 function onYearChange(event: Event) {
   const target = event.target as HTMLSelectElement
-  setYear(Number(target.value))
+  selectedYear.value = Number(target.value)
+  setYear(selectedYear.value)
+
+  if (currentMode.value === 'provinces') {
+    loadData()
+  }
+
+  if (currentMode.value === 'constituencies') {
+    loadConstituencies()
+  }
 }
+
 
 function highlightConstituencies() {
   setTimeout(() => {
     const svg = mapContainer.value?.querySelector("svg")
     if (!svg) return
 
-    // Verwijder oude markers
+
     const oldMarkers = mapContainer.value!.querySelectorAll(".kies-marker")
     oldMarkers.forEach(m => m.remove())
 
-    // Voor elke kieskring → marker toevoegen
+
     constituencies.value.forEach((c: any) => {
-      const pos = constituencyPositions[c.constituencyName]
+      const name = c.constituencies.name
+      const pos = constituencyPositions[name]
       if (!pos) return
 
       const marker = document.createElement("div")
@@ -140,23 +150,28 @@ function highlightConstituencies() {
       marker.style.left = pos.x + "px"
       marker.style.top = pos.y + "px"
 
-// tooltip bij hover
-      marker.title = c.constituencyName
+      marker.title = name
 
       marker.addEventListener("click", () => {
-        const data = constituencies.value.find(
-          (x: any) => x.constituencyName === c.constituencyName
+        const data = constituencies.value.filter(
+          (x: any) => x.constituencies.name === name
         )
 
-        if (!data) return
+        const stemmenPerPartij: Record<string, number> = {}
+
+        data.forEach((row: any) => {
+          stemmenPerPartij[row.partyNames] =
+            (stemmenPerPartij[row.partyNames] || 0) + row.votes
+        })
 
         selectedProvince.value = {
-          provinceNaam: c.constituencyName,
-          stemmenPerPartij: data.stemmenPerPartij
+          provinceNaam: name,
+          stemmenPerPartij
         }
       })
 
       mapContainer.value!.appendChild(marker)
+
 
     })
   }, 200)
@@ -234,14 +249,6 @@ function highlightProvinces() {
         @click="switchMode('constituencies')"
       >
         Kieskringen
-      </div>
-
-      <div
-        class="px-4 py-2 rounded-md border-2 shadow cursor-pointer bg-amber-200 border-amber-300 font-semibold"
-        :class="{ '!bg-amber-300 border-amber-400 shadow-md': currentMode === 'national' }"
-        @click="switchMode('national')"
-      >
-        Nationaal
       </div>
     </div>
 

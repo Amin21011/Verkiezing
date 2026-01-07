@@ -15,13 +15,16 @@ const loading = ref(true);
 const errorMessage = ref("");
 const globalError = ref("");
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const isLoggedIn = computed(() => !!getToken());
 async function loadQuiz() {
   loading.value = true;
   globalError.value = "";
 
   try {
-    const response = await fetch("http://localhost:8080/quiz");
+    const response = await fetch(`${API_URL}/quiz`);
+
 
     if (!response.ok) {
       throw new Error("Kon de quiz niet laden");
@@ -55,7 +58,7 @@ async function submitQuiz() {
   }
 
   try {
-    const response = await fetch("http://localhost:8080/quiz/result", {
+    const response = await fetch(`${API_URL}/quiz/result`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

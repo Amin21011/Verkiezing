@@ -5,7 +5,7 @@ spring:
     active: prod
 app:
   frontend:
-      url: http://localhost:5173
+      url: http://localhost:5172
 
 cohere:
   api:
@@ -18,8 +18,8 @@ spring:
       on-profile: prod
   datasource:
     url: jdbc:postgresql://ep-nameless-resonance-abdz6eaj-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channelBinding=require
-    username: amin
-    password: Amin_2025_secure!
+    username: neondb_owner
+    password: npg_D2KUFQY8OdGn
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -34,7 +34,7 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:postgresql://localhost:5433/electiondb
+    url: jdbc:postgresql://localhost:5432/electiondb
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver

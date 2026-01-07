@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/quiz")
+@RequestMapping("/api/quiz")
 public class QuizController {
 
     private final QuizService quizService;
@@ -33,7 +33,7 @@ public class QuizController {
         return quizService.getQuiz();
     }
 
-    @PostMapping("/result")
+    @PostMapping("/api/result")
     public QuizResult getResult(
             @RequestHeader("Authorization") String authHeader,
             @RequestBody Map<String, String> userAnswers

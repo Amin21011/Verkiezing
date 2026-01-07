@@ -1,8 +1,7 @@
 package nl.hva.election_backend.service;
 
 import nl.hva.election_backend.model.*;
-import nl.hva.election_backend.repository.ResultRepository;
-import nl.hva.election_backend.utils.xml.transformers.DutchNationalVotesTransformer;
+import nl.hva.election_backend.repository.ConstituencyVotesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -14,19 +13,19 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.io.InputStream;
 import java.util.*;
 
 @Service
 public class ProvinceService {
 
     private static final Logger logger = LoggerFactory.getLogger(ProvinceService.class);
-    private final Map<String, List<String>> provincieKieskringenMap;
-    private final ResultRepository resultRepository;
 
-    public ProvinceService(ResultRepository resultRepository) {
-        this.resultRepository = resultRepository;
-        this.provincieKieskringenMap = new HashMap<>();
+    private final ConstituencyVotesRepository constituencyVotesRepo;
+    private final Map<String, List<String>> provincieKieskringenMap = new HashMap<>();
+
+    public ProvinceService(ConstituencyVotesRepository constituencyVotesRepo) {
+        this.constituencyVotesRepo = constituencyVotesRepo;
+
         provincieKieskringenMap.put("Groningen", List.of("Groningen"));
         provincieKieskringenMap.put("Friesland", List.of("Leeuwarden"));
         provincieKieskringenMap.put("Drenthe", List.of("Assen"));
@@ -39,55 +38,45 @@ public class ProvinceService {
         provincieKieskringenMap.put("Zeeland", List.of("Middelburg"));
         provincieKieskringenMap.put("Noord-Brabant", List.of("Tilburg", "s-Hertogenbosch"));
         provincieKieskringenMap.put("Limburg", List.of("Maastricht"));
-        logger.info("ProvincieService initialized with {} provinces", provincieKieskringenMap.size());
+
+        logger.info("ProvinceService initialized (DB-backed)");
     }
 
     public List<ProvinceResult> getProvincieResultaten(int year) {
+
+        List<ConstituencyVotes> allVotes =
+                constituencyVotesRepo.findByYear(year);
+
         List<ProvinceResult> resultaten = new ArrayList<>();
-        Election election = loadElection(year);
 
         for (String provincie : provincieKieskringenMap.keySet()) {
-            Map<String, Integer> totaalStemmen = new HashMap<>();
 
-            for (String kieskring : provincieKieskringenMap.get(provincie)) {
-                String resourcePath = String.format(
-                        "TK2023_HvA_UvA/Telling_%d/Telling_TK%d_kieskring_%s.eml.xml",
-                        year, year, kieskring
-                );
-                Resource resource = new ClassPathResource(resourcePath);
+            Map<String, Integer> stemmenPerPartij = new HashMap<>();
+            List<String> kieskringen = provincieKieskringenMap.get(provincie);
 
-                if (!resource.exists()) {
-                    logger.warn("Kon geen resource vinden voor kieskring {} (pad: {})", kieskring, resourcePath);
+            for (ConstituencyVotes vote : allVotes) {
+
+                if (!kieskringen.contains(vote.getConstituencies().getName())) {
                     continue;
                 }
 
-                try (InputStream inputStream = resource.getInputStream()) {
-                    DutchNationalVotesTransformer transformer = new DutchNationalVotesTransformer(election, resultRepository);
-                    Map<String, Integer> stemmenKieskring = transformer.parse(inputStream);
-
-                    stemmenKieskring.forEach((partij, stemmen) ->
-                            totaalStemmen.merge(partij, stemmen, Integer::sum)
-                    );
-
-                } catch (Exception e) {
-                    logger.error("Fout bij verwerken van kieskring {} (pad: {})", kieskring, resourcePath, e);
-                }
+                stemmenPerPartij.merge(
+                        vote.getPartyNames(),
+                        vote.getVotes(),
+                        Integer::sum
+                );
             }
-            resultaten.add(new ProvinceResult(provincie, totaalStemmen));
+
+            resultaten.add(new ProvinceResult(provincie, stemmenPerPartij));
         }
 
         return resultaten;
     }
 
     public List<ProvinceResult> compareProvinces(int year, List<String> selectedProvinces) {
-        List<ProvinceResult> allResults = getProvincieResultaten(year);
-        List<ProvinceResult> filtered = new ArrayList<>();
-        for (ProvinceResult result : allResults) {
-            if (selectedProvinces.contains(result.getProvinceNaam())) {
-                filtered.add(result);
-            }
-        }
-        return filtered;
+        return getProvincieResultaten(year).stream()
+                .filter(p -> selectedProvinces.contains(p.getProvinceNaam()))
+                .toList();
     }
 
     // Laadt partijen en kandidaten zonder ResultLoader
