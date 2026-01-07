@@ -1,14 +1,16 @@
 package nl.hva.election_backend.api;
-
 import nl.hva.election_backend.dto.model.AdminDTO;
 import nl.hva.election_backend.dto.model.UserDTO;
+import nl.hva.election_backend.helpers.ForbiddenException;
+import nl.hva.election_backend.helpers.ResourceNotFoundException;
+import nl.hva.election_backend.helpers.UnauthorizedException;
 import nl.hva.election_backend.model.User;
 import nl.hva.election_backend.repository.UserRepository;
 import nl.hva.election_backend.security.JwtUtil;
 import nl.hva.election_backend.service.UserService;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.*;
+
 @RestController
 @RequestMapping("/api/auth/admin")
 public class AdminController {
@@ -24,7 +26,7 @@ public class AdminController {
 
     private User requireAdmin(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new RuntimeException("Geen geldige token");
+            throw new UnauthorizedException("Geen geldige token");
         }
 
         String token = authHeader.substring(7);
@@ -32,7 +34,7 @@ public class AdminController {
         User user = userService.findByEmail(email);
 
         if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
-            throw new RuntimeException("Geen adminrechten");
+            throw new ForbiddenException("Geen adminrechten");
         }
         return user;
     }
@@ -58,12 +60,12 @@ public class AdminController {
     public UserDTO updateRole(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestParam String role) {
         User admin = requireAdmin(authHeader);
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Gebruiker niet gevonden"));
-
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Gebruiker niet gevonden")
+                );
         if (user.getId().equals(admin.getId())) {
-            throw new RuntimeException("Je kunt je eigen rol niet aanpassen");
+            throw new ForbiddenException("Je kunt je eigen rol niet aanpassen");
         }
-
         user.setRole(role.toUpperCase());
         userRepository.save(user);
         return UserDTO.from(user);

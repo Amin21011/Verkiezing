@@ -67,7 +67,6 @@ type PartyScore = { party: string; score: number };
 const questions = ref<Question[]>([]);
 const answers = ref<Record<string, string>>({});
 const result = ref<QuizResult | null>(null);
-
 const loading = ref(true);
 const errorMessage = ref("");
 const globalError = ref("");
@@ -75,10 +74,6 @@ const globalError = ref("");
 const topCandidates = ref<any[]>([]);
 
 const isLoggedIn = computed(() => !!getToken());
-
-/* =========================
-   QUIZ LADEN
-========================= */
 async function loadQuiz() {
   loading.value = true;
   globalError.value = "";
@@ -96,9 +91,6 @@ async function loadQuiz() {
   }
 }
 
-/* =========================
-   TOP 3 KANDIDATEN LADEN
-========================= */
 async function loadTopCandidates(partyId: string) {
   try {
     const res = await fetch(
@@ -120,9 +112,6 @@ async function loadTopCandidates(partyId: string) {
   }
 }
 
-/* =========================
-   QUIZ VERSTUREN
-========================= */
 async function submitQuiz() {
   const unanswered = questions.value.filter(q => !answers.value[q.id]);
   if (unanswered.length) {
@@ -162,9 +151,6 @@ async function submitQuiz() {
   }
 }
 
-/* =========================
-   RESULTATEN SORTEREN
-========================= */
 const sortedResults = computed<PartyScore[]>(() => {
   if (!result.value) return [];
 
@@ -173,9 +159,6 @@ const sortedResults = computed<PartyScore[]>(() => {
     .sort((a, b) => b.score - a.score);
 });
 
-/* =========================
-   RESET
-========================= */
 function resetQuiz() {
   answers.value = {};
   result.value = null;
@@ -199,12 +182,13 @@ onMounted(loadQuiz);
         Ontdek met een paar korte vragen welke politieke partij het dichtst bij jouw mening staat.
       </p>
     </div>
+
     <!-- Laden -->
     <div v-if="loading" class="text-gray-600 text-lg animate-pulse mt-10">
       Even geduld... de quiz wordt geladen.
     </div>
 
-    <!-- Fout -->
+    <!-- Fout bij laden -->
     <p v-if="!loading && globalError"
       class="relative z-10 mt-6 text-red-700 font-semibold bg-red-50 border border-red-200 rounded-md px-4 py-2">
       {{ globalError }}
@@ -250,6 +234,7 @@ onMounted(loadQuiz);
             <button disabled class="bg-gray-400 cursor-not-allowed text-white px-8 py-3 rounded-lg text-lg opacity-70 shadow">
               Log in om jouw resultaat te zien
             </button>
+
             <p class="mt-2 text-indigo-900 cursor-pointer" @click="$router.push('/login')">
               Inloggen / Registreren
             </p>
@@ -257,7 +242,6 @@ onMounted(loadQuiz);
         </div>
       </form>
 
-      <!-- RESULTAAT -->
       <div v-if="result && sortedResults.length"
         class="mt-10 bg-paper-soft border-soft border rounded-xl shadow-soft p-8 paper-layer">
 

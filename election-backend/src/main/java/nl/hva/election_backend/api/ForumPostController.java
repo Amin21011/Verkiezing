@@ -9,6 +9,7 @@ import nl.hva.election_backend.service.ForumCommentService;
 import nl.hva.election_backend.service.ForumPostService;
 import nl.hva.election_backend.service.UserService;
 import nl.hva.election_backend.security.JwtUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -87,7 +88,7 @@ public class ForumPostController {
             ForumPost saved = forumPostService.addPost(forumPost);
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
-            return ResponseEntity.status(401).body("Je moet ingelogd zijn");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Je moet ingelogd zijn");
         }
     }
 
@@ -110,7 +111,7 @@ public class ForumPostController {
             ForumComment saved = forumCommentService.addComment(id, forumComment, email);
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
-            return ResponseEntity.status(401).body("Je moet ingelogd zijn");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Je moet ingelogd zijn");
         }
     }
 
@@ -124,7 +125,7 @@ public class ForumPostController {
             ForumPost updated = forumPostService.likePost(id, email);
             return ResponseEntity.ok(updated);
         } catch (Exception e) {
-            return ResponseEntity.status(401).body("Je moet ingelogd zijn");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Je moet ingelogd zijn");
         }
     }
 
@@ -138,7 +139,7 @@ public class ForumPostController {
             ForumPost updated = forumPostService.dislikePost(id, email);
             return ResponseEntity.ok(updated);
         } catch (Exception e) {
-            return ResponseEntity.status(401).body("Je moet ingelogd zijn");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Je moet ingelogd zijn");
         }
     }
 }

@@ -25,6 +25,8 @@ const birthDateError = ref("");
 const savingBirthDate = ref(false);
 const activeTab = ref<"profile" | "posts">("profile");
 
+const API_URL = import.meta.env.VITE_API_URL
+
 interface ForumPost {
   id: number;
   title: string;
@@ -53,7 +55,7 @@ onMounted(async () => {
 async function fetchMyPosts() {
   if (!getToken()) return;
 
-  const res = await fetch("http://localhost:8080/api/forum/posts");
+  const res = await fetch(`${API_URL}/forum/posts`);
   const all = await res.json();
 
   myPosts.value = all.filter(
@@ -70,7 +72,7 @@ async function deletePost(id: number) {
 
   deletingId.value = id;
 
-  await fetch(`http://localhost:8080/api/forum/posts/${id}`, {
+  await fetch(`${API_URL}/forum/posts/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: "Bearer " + getToken(),
@@ -125,7 +127,7 @@ async function saveBirthDate() {
     birthDateMessage.value = "";
     birthDateError.value = "";
 
-    const res = await fetch("http://localhost:8080/api/account/birthdate", {
+    const res = await fetch(`${API_URL}/account/birthdate`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -174,7 +176,7 @@ async function confirmDeleteAccount() {
   try {
     deletingAccount.value = true
 
-    await fetch("http://localhost:8080/api/auth/account", {
+    await fetch(`${API_URL}/auth/account`, {
       method: "DELETE",
       headers: {
         Authorization: "Bearer " + getToken(),

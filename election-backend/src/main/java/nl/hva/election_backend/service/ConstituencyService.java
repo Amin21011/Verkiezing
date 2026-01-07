@@ -1,51 +1,86 @@
 package nl.hva.election_backend.service;
 
-import nl.hva.election_backend.model.ConstituencyResult;
+import jakarta.transaction.Transactional;
+import nl.hva.election_backend.model.Constituencies;
+import nl.hva.election_backend.model.ConstituencyVotes;
 import nl.hva.election_backend.model.Election;
+import nl.hva.election_backend.repository.ConstituenciesRepository;
+import nl.hva.election_backend.repository.ConstituencyVotesRepository;
 import nl.hva.election_backend.utils.xml.transformers.DutchConstituencyVotesTransformer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional
 public class ConstituencyService {
 
-    private static final List<String> Constituencies = List.of(
-     "Amsterdam", "Arnhem", "Assen", "Bonaire", "Den_Helder", "Dordrecht", "Groningen", "Haarlem", "Leeuwarden", "Leiden", "Lelystad",
-            "Maastricht", "Middelburg", "Nijmegen", "Rotterdam", "s-Gravenhage", "s-Hertogenbosch", "Tilburg", "Utrecht", "Zwolle"
-    );
+    private final ConstituenciesRepository constituenciesRepo;
+    private final ConstituencyVotesRepository constituencyVotesRepo;
 
-    public List<ConstituencyResult> getConstituencyResults(int year) {
-        List<ConstituencyResult> result = new ArrayList<>();
+    public ConstituencyService(
+            ConstituenciesRepository constituenciesRepo,
+            ConstituencyVotesRepository constituencyVotesRepo
+    ) {
+        this.constituenciesRepo = constituenciesRepo;
+        this.constituencyVotesRepo = constituencyVotesRepo;
+    }
 
-        for (String constituency : Constituencies) {
+    public List<ConstituencyVotes> getVotesByYear(int year) {
+        return constituencyVotesRepo.findByYear(year);
+    }
+
+    public void importConstituencyResults(int year) {
+        importVotes(year);
+    }
+
+
+    private void importVotes(int year) {
+        Election election = new Election("TK" + year);
+
+        List<Constituencies> constituencies = constituenciesRepo.findAll();
+        if (constituencies.isEmpty()) {
+            return;
+        }
+
+        for (Constituencies constituency : constituencies) {
+
             String path = String.format(
-                    "TK2023_HvA_UvA/TK2023/Telling_TK2023_kieskring_%s.eml.xml",
-                    constituency
+                    "TK2023_HvA_UvA/TK%d/Telling_TK%d_kieskring_%s.eml.xml",
+                    year, year, constituency.getName()
             );
+
+
             Resource resource = new ClassPathResource(path);
-
-
-            if (!resource.exists()) continue;
+            if (!resource.exists()) {
+                continue;
+            }
 
             try (InputStream input = resource.getInputStream()) {
-                Election election = new Election("TK" + year);
+
                 DutchConstituencyVotesTransformer transformer =
                         new DutchConstituencyVotesTransformer(election);
 
-                Map<String, Integer> stemmen = transformer.parse(input);
+                Map<String, Integer> stemmenPerPartij =
+                        transformer.parse(input);
 
-                result.add(new ConstituencyResult(constituency, new HashMap<>(stemmen)));
+                for (Map.Entry<String, Integer> entry : stemmenPerPartij.entrySet()) {
+                    ConstituencyVotes votes = new ConstituencyVotes(
+                            entry.getKey(),
+                            entry.getValue(),
+                            year,
+                            constituency
+                    );
+                    constituencyVotesRepo.save(votes);
+                }
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
-        return result;
     }
 }

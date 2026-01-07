@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/simulation")
+@RequestMapping("/api/simulation")
 public class SimulationController {
 
     private final SeatSimulationService service;

@@ -1,5 +1,4 @@
-# UML 
-
+# Class Diagram
 
 Eerste versie van onze UML: 
 ![eerste](img/oldUML.png)

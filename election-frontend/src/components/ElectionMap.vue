@@ -21,50 +21,40 @@ const {
 const provinces = ref<ProvinceResult[]>([])
 const selectedProvince = ref<ProvinceResult | null>(null)
 const mapContainer = ref<HTMLElement | null>(null)
-
 const selectedYear = ref(2025)
 
 const constituencyPositions: Record<string, { x: number; y: number }> = {
-  Amsterdam: { x: 650, y: 475 },
+  Amsterdam:   { x: 235, y: 320 },
+  Den_Helder:  { x: 220, y: 165 },
+  Haarlem:     { x: 210, y: 300 },
+  Leiden:      { x: 200, y: 400 },
+  Den_Haag:    { x: 214, y: 371 },
+  Rotterdam:   { x: 191, y: 450 },
+  Middelburg:  { x: 40,  y: 534 },
+  Dordrecht:   { x: 230, y: 440 },
+  Utrecht:     { x: 293, y: 381 },
+  Lelystad:    { x: 354, y: 283 },
+  Zwolle:      { x: 470, y: 274 },
+  Arnhem:      { x: 413, y: 381 },
+  Nijmegen:    { x: 400, y: 430 },
+  Den_Bosch:   { x: 319, y: 430 },
+  Tilburg:     { x: 237, y: 509 },
+  Maastricht:  { x: 400, y: 700 },
+  Assen:       { x: 500, y: 180 },
+  Groningen:   { x: 528, y: 87 },
+  Leeuwarden:  { x: 406, y: 96 },
+}
 
-  Den_Helder: { x: 615, y: 330 },
-  Haarlem: { x: 600, y: 435 },
-  Leiden: { x: 630, y: 510 },
-  s_Gravenhage: { x: 610, y: 540 },
-  Rotterdam: { x: 590, y: 600 },
-  Dordrecht: { x: 620, y: 620 },
-
-  Utrecht: { x: 678, y: 550 },
-  Lelystad: { x: 730, y: 450 },
-  Zwolle: { x: 830, y: 440 },
-
-  Arnhem: { x: 780, y: 550 },
-  Nijmegen: { x: 770, y: 600 },
-
-  s_Hertogenbosch: { x: 700, y: 600 },
-  Tilburg: { x: 630, y: 680 },
-  Middelburg: { x: 442, y: 705 },
-  Maastricht: { x: 770, y: 875 },
-  Assen: { x: 760, y: 330 },
-  Groningen: { x: 880, y: 250 },
-  Leeuwarden: { x: 775, y: 260 },
-};
-
-
-
-
-const currentMode = ref<`provinces` | `constituencies` | `national`>(`provinces`)
+const currentMode = ref<`provinces` | `constituencies` >(`provinces`)
 const constituencies = ref<any[]>([])
-
 const API_URL = `${import.meta.env.VITE_API_URL}/provinces/results`
 const API_CONSTITUENCIES = `${import.meta.env.VITE_API_URL}/constituencies/results`
 
-function switchMode(mode: `provinces` | `constituencies` | `national`) {
+function switchMode(mode: `provinces` | `constituencies` ) {
   currentMode.value = mode
 
   if (mode === `provinces`) loadData()
   if (mode === `constituencies`) loadConstituencies()
-  if (mode === `national`) console.log("nog niet geimplementeerd")
 }
 const sortedVotes = computed(() => {
   if (!selectedProvince.value) return []
@@ -109,60 +99,70 @@ async function loadConstituencies() {
   }
 }
 
-
 onMounted(loadData)
 
 function onYearChange(event: Event) {
   const target = event.target as HTMLSelectElement
-  setYear(Number(target.value))
+  selectedYear.value = Number(target.value)
+  setYear(selectedYear.value)
+
+  if (currentMode.value === 'provinces') {
+    loadData()
+  }
+
+  if (currentMode.value === 'constituencies') {
+    loadConstituencies()
+  }
 }
 
 function highlightConstituencies() {
+  // kleine delay zodat SVG zeker in de DOM zit
   setTimeout(() => {
-    const svg = mapContainer.value?.querySelector("svg")
+    const svg = mapContainer.value?.querySelector("svg") as SVGSVGElement
     if (!svg) return
 
-    // Verwijder oude markers
-    const oldMarkers = mapContainer.value!.querySelectorAll(".kies-marker")
-    oldMarkers.forEach(m => m.remove())
+    // Zorg dat SVG correct schaalt
+    svg.setAttribute("preserveAspectRatio", "xMidYMid meet")
 
-    // Voor elke kieskring → marker toevoegen
+    // Verwijder oude markers
+    svg.querySelectorAll(".kies-marker").forEach(m => m.remove())
+
+    // Voeg markers toe
     constituencies.value.forEach((c: any) => {
-      const pos = constituencyPositions[c.constituencyName]
+      const name = c.constituencies.name
+      const pos = constituencyPositions[name]
       if (!pos) return
 
-      const marker = document.createElement("div")
+      const circle = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle"
+      )
 
-      marker.className =
-        "kies-marker absolute w-4 h-4 bg-red-600 rounded-full cursor-pointer shadow-md \
-         transition-transform duration-150 hover:scale-150 hover:bg-red-700"
+      circle.setAttribute("cx", String(pos.x))
+      circle.setAttribute("cy", String(pos.y))
+      circle.setAttribute("r", "8")
+      circle.setAttribute("class", "kies-marker")
 
-      marker.style.left = pos.x + "px"
-      marker.style.top = pos.y + "px"
+      circle.addEventListener("click", () => {
+        const stemmenPerPartij: Record<string, number> = {}
 
-// tooltip bij hover
-      marker.title = c.constituencyName
-
-      marker.addEventListener("click", () => {
-        const data = constituencies.value.find(
-          (x: any) => x.constituencyName === c.constituencyName
-        )
-
-        if (!data) return
+        constituencies.value
+          .filter((x: any) => x.constituencies.name === name)
+          .forEach((row: any) => {
+            stemmenPerPartij[row.partyNames] =
+              (stemmenPerPartij[row.partyNames] || 0) + row.votes
+          })
 
         selectedProvince.value = {
-          provinceNaam: c.constituencyName,
-          stemmenPerPartij: data.stemmenPerPartij
+          provinceNaam: name,
+          stemmenPerPartij
         }
       })
 
-      mapContainer.value!.appendChild(marker)
-
+      svg.appendChild(circle)
     })
-  }, 200)
+  }, 0)
 }
-
-
 
 function highlightProvinces() {
   setTimeout(() => {
@@ -220,52 +220,31 @@ function highlightProvinces() {
     </div>
 
     <div class="flex gap-3 mb-4">
-      <div
-        class="px-4 py-2 rounded-md border-2 shadow cursor-pointer bg-amber-200 border-amber-300 font-semibold"
-        :class="{ '!bg-amber-300 border-amber-400 shadow-md': currentMode === 'provinces' }"
-        @click="switchMode('provinces')"
-      >
+      <div class="px-4 py-2 rounded-md border-2 shadow cursor-pointer bg-amber-200 border-amber-300 font-semibold" :class="{ '!bg-amber-300 border-amber-400 shadow-md': currentMode === 'provinces' }"
+        @click="switchMode('provinces')">
         Provincies
       </div>
 
-      <div
-        class="px-4 py-2 rounded-md border-2 shadow cursor-pointer bg-amber-200 border-amber-300 font-semibold"
-        :class="{ '!bg-amber-300 border-amber-400 shadow-md': currentMode === 'constituencies' }"
-        @click="switchMode('constituencies')"
-      >
+      <div class="px-4 py-2 rounded-md border-2 shadow cursor-pointer bg-amber-200 border-amber-300 font-semibold" :class="{ '!bg-amber-300 border-amber-400 shadow-md': currentMode === 'constituencies' }"
+        @click="switchMode('constituencies')">
         Kieskringen
       </div>
-
-      <div
-        class="px-4 py-2 rounded-md border-2 shadow cursor-pointer bg-amber-200 border-amber-300 font-semibold"
-        :class="{ '!bg-amber-300 border-amber-400 shadow-md': currentMode === 'national' }"
-        @click="switchMode('national')"
-      >
-        Nationaal
-      </div>
     </div>
-
 
     <!-- Container voor map + resultaten -->
     <div class="flex flex-col md:flex-row items-start w-full max-w-6xl gap-6">
 
       <!-- Map container -->
-      <div
-        ref="mapContainer"
-        class="w-full md:flex-[1.5] border border-gray-400 overflow-hidden rounded shadow-lg bg-white p-4 md:p-6 h-[400px] md:h-[800px]"
+      <div ref="mapContainer"
+        class="w-full md:flex-[1.5] border border-gray-400 overflow-hidden rounded shadow-lg bg-white"
       />
-
-      <div
-        v-if="selectedProvince && !isComparing"
-        class="w-full md:flex-1 p-5 border rounded bg-white shadow h-[400px] md:h-[800px] overflow-y-auto"
-      >
+      <div v-if="selectedProvince && !isComparing"
+        class="w-full md:flex-1 p-5 border rounded bg-white shadow h-[400px] md:h-[800px] overflow-y-auto">
         <h2 class="font-bold text-lg mb-4">{{ selectedProvince.provinceNaam }}</h2>
 
         <!-- Vergelijk knop -->
-        <button
-          class="mb-4 bg-blue-600 text-white px-4 py-2 rounded"
-          @click="toggleProvince(selectedProvince.provinceNaam)"
-        >
+        <button class="mb-4 bg-blue-600 text-white px-4 py-2 rounded"
+          @click="toggleProvince(selectedProvince.provinceNaam)">
           Vergelijk deze provincie
         </button>
 
@@ -284,35 +263,22 @@ function highlightProvinces() {
           </div>
 
           <div class="absolute top-0 bottom-0 left-0 right-0 flex">
-            <div
-              v-for="n in 4"
-              :key="n"
-              class="border-r border-gray-200"
-              :style="{ width: '11.11%' }"
-            />
+            <div v-for="n in 4" :key="n" class="border-r border-gray-200"
+              :style="{ width: '11.11%' }" />
           </div>
 
           <div class="space-y-2 relative">
-            <div
-              v-for="item in sortedVotes"
+            <div v-for="item in sortedVotes"
               :key="item.party"
-              class="flex items-center gap-2"
-            >
-              <span
-                class="text-sm font-bold text-white px-2 py-1 rounded block"
-                style="width: 120px"
-                :style="{ backgroundColor: partyColors[item.party] || '#000' }"
-              >
+              class="flex items-center gap-2">
+              <span class="text-sm font-bold text-white px-2 py-1 rounded block"
+                style="width: 120px" :style="{ backgroundColor: partyColors[item.party] || '#000' }">
                 {{ item.party }}
               </span>
 
               <div class="flex-1 h-6 bg-gray-200 rounded">
-                <div
-                  class="h-6 rounded transition-all"
-                  :style="{
-                    width: item.percentage + '%',
-                    backgroundColor: partyColors[item.party] || '#000'
-                  }"
+                <div class="h-6 rounded transition-all" :style="{ width: item.percentage + '%',
+                    backgroundColor: partyColors[item.party] || '#000' }"
                 />
               </div>
             </div>
@@ -320,24 +286,16 @@ function highlightProvinces() {
         </div>
       </div>
 
-      <div
-        v-if="isComparing"
-        class="w-full md:flex-1 p-5 border rounded bg-white shadow h-[400px] md:h-[800px] overflow-y-auto"
-      >
+      <div v-if="isComparing"
+        class="w-full md:flex-1 p-5 border rounded bg-white shadow h-[400px] md:h-[800px] overflow-y-auto">
         <h2 class="font-bold text-lg mb-4 md:mb-8">Geselecteerd voor vergelijking</h2>
 
         <div class="flex flex-col md:flex-row w-full gap-6">
-          <div
-            v-for="prov in compareResults"
-            :key="prov.provinceNaam"
-            class="w-full md:flex-1 p-4 bg-white border rounded shadow mb-6 md:mb-0"
-          >
+          <div v-for="prov in compareResults" :key="prov.provinceNaam"
+            class="w-full md:flex-1 p-4 bg-white border rounded shadow mb-6 md:mb-0">
             <h3 class="font-bold text-lg mb-3">{{ prov.provinceNaam }}</h3>
 
-            <button
-              class="mb-4 bg-red-600 text-white px-4 py-2 rounded"
-              @click="toggleProvince(prov.provinceNaam)"
-            >
+            <button class="mb-4 bg-red-600 text-white px-4 py-2 rounded" @click="toggleProvince(prov.provinceNaam)">
               Verwijder uit vergelijking
             </button>
 
@@ -346,8 +304,7 @@ function highlightProvinces() {
               <div class="h-4 bg-gray-200 rounded">
                 <div
                   class="h-4 rounded"
-                  :style="{ width: row.percentage + '%', backgroundColor: partyColors[row.party] || '#000' }"
-                />
+                  :style="{ width: row.percentage + '%', backgroundColor: partyColors[row.party] || '#000' }" />
               </div>
             </div>
           </div>
@@ -361,9 +318,9 @@ function highlightProvinces() {
 /* Maak de map responsive */
 #mapContainer svg {
   width: 100%;
-  height: 100%;
-  max-width: 100%;
-  max-height: 100%;
+  height: auto;
+  aspect-ratio: 612 / 724;
+  display: block;
 }
 
 /* Basis styling van provincies */
@@ -374,7 +331,4 @@ svg path {
   stroke-width: 1.2;
   transition: fill 0.2s, stroke 0.3s;
 }
-
-
-
 </style>

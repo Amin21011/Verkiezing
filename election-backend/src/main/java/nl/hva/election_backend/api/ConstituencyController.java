@@ -1,11 +1,8 @@
 package nl.hva.election_backend.api;
 
-import nl.hva.election_backend.model.ConstituencyResult;
+import nl.hva.election_backend.model.ConstituencyVotes;
 import nl.hva.election_backend.service.ConstituencyService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 @RestController
@@ -18,8 +15,15 @@ public class ConstituencyController {
         this.constituencyService = constituencyService;
     }
 
+
+    @PostMapping("/import/{year}")
+    public void importResults(@PathVariable int year) {
+        constituencyService.importConstituencyResults(year);
+    }
+
+
     @GetMapping("/results/{year}")
-    public List<ConstituencyResult> getConstituencyResults(@PathVariable int year) {
-        return constituencyService.getConstituencyResults(year);
+    public List<ConstituencyVotes> getResultsByYear(@PathVariable int year) {
+        return constituencyService.getVotesByYear(year);
     }
 }
