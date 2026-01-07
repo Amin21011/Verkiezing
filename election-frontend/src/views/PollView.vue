@@ -67,8 +67,6 @@ async function vote(pollId: number, optionIndex: number) {
   await loadPolls();
 }
 
-
-
 onMounted(() => {
   loadUserVotes();
   loadPolls();
