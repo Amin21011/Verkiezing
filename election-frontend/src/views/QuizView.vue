@@ -84,7 +84,7 @@ async function loadQuiz() {
   globalError.value = "";
 
   try {
-    const response = await fetch("http://localhost:8080/quiz");
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/quiz`);
     if (!response.ok) throw new Error();
 
     const data = await response.json();
@@ -102,7 +102,7 @@ async function loadQuiz() {
 async function loadTopCandidates(partyId: string) {
   try {
     const res = await fetch(
-      `http://localhost:8080/api/candidates/top?partyId=${partyId}&limit=3`
+      `${import.meta.env.VITE_API_URL}/candidates/top?partyId=${partyId}&limit=3`
     );
     if (!res.ok) throw new Error("Kon kandidaten niet laden");
 
@@ -137,7 +137,7 @@ async function submitQuiz() {
   }
 
   try {
-    const response = await fetch("http://localhost:8080/quiz/result", {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/quiz/result`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
