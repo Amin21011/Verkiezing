@@ -25,7 +25,7 @@ const selectedYear = ref(2025)
 
 const constituencyPositions: Record<string, { x: number; y: number }> = {
   Amsterdam:   { x: 235, y: 320 },
-  Den_Helder:  { x: 220, y: 165 }, // anker
+  Den_Helder:  { x: 220, y: 165 },
   Haarlem:     { x: 210, y: 300 },
   Leiden:      { x: 200, y: 400 },
   Den_Haag:    { x: 214, y: 371 },
@@ -44,7 +44,6 @@ const constituencyPositions: Record<string, { x: number; y: number }> = {
   Groningen:   { x: 528, y: 87 },
   Leeuwarden:  { x: 406, y: 96 },
 }
-
 
 const currentMode = ref<`provinces` | `constituencies` >(`provinces`)
 const constituencies = ref<any[]>([])
