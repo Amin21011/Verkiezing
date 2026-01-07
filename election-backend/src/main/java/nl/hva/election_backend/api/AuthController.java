@@ -84,13 +84,14 @@ public class AuthController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String authHeader, @RequestBody UserDTO updatedUser) {
+    public ResponseEntity<UserDTO> updateUser(@RequestHeader(value = "Authorization", required = false) String authHeader, @RequestBody UserDTO updatedUser
+    ) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).body("Geen geldige token gevonden");
+            return ResponseEntity.status(401).build();
         }
-
         String token = authHeader.substring(7);
         String email = jwtUtil.validateTokenAndGetEmail(token);
+
         User user = userService.findByEmail(email);
         user.setName(updatedUser.name());
         user.setEmail(updatedUser.email());
@@ -99,31 +100,43 @@ public class AuthController {
     }
 
     @DeleteMapping("/account")
-    public ResponseEntity<?> deleteOwnAccount(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<MessageResponse> deleteOwnAccount(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.substring(7);
         String email = jwtUtil.validateTokenAndGetEmail(token);
         userService.deleteUser(email);
-        return ResponseEntity.ok(Map.of("message", "Account verwijderd"));
+
+        return ResponseEntity.ok(
+                new MessageResponse("Account verwijderd")
+        );
     }
 
+
     @PutMapping("/change-password")
-    public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String authHeader, @RequestBody PasswordChangeRequest request) {
+    public ResponseEntity<MessageResponse> changePassword(@RequestHeader(value = "Authorization", required = false) String authHeader, @RequestBody PasswordChangeRequest request) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).body(Map.of("error", "Geen geldige token gevonden"));
+            return ResponseEntity
+                    .status(401)
+                    .body(new MessageResponse("Geen geldige token gevonden"));
+        }
+
+        if (request.getOldPassword() == null || request.getNewPassword() == null) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Beide wachtwoordvelden zijn verplicht."));
         }
 
         String token = authHeader.substring(7);
         String email = jwtUtil.validateTokenAndGetEmail(token);
 
-        if (request.getOldPassword() == null || request.getNewPassword() == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Beide wachtwoordvelden zijn verplicht."));
-        }
+        userService.changePassword(
+                email,
+                request.getOldPassword(),
+                request.getNewPassword()
+        );
 
-        try {
-            userService.changePassword(email, request.getOldPassword(), request.getNewPassword());
-            return ResponseEntity.ok(Map.of("message", "Wachtwoord succesvol gewijzigd"));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
-        }
+        return ResponseEntity.ok(
+                new MessageResponse("Wachtwoord succesvol gewijzigd")
+        );
     }
+
 }
