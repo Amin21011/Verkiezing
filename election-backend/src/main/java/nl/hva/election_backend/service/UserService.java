@@ -63,4 +63,10 @@ public class UserService {
         User user = findByEmail(email);
         repository.delete(user);
     }
+
+    public void forceChangePassword(String email, String newPassword) {
+        User user = findByEmail(email);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        repository.save(user);
+    }
 }

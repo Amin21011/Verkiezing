@@ -2,13 +2,16 @@ package nl.hva.election_backend.api;
 import nl.hva.election_backend.api.response.AuthResponse;
 import nl.hva.election_backend.api.response.MessageResponse;
 import nl.hva.election_backend.dto.PasswordChangeRequest;
+import nl.hva.election_backend.dto.model.BirthDateRequest;
 import nl.hva.election_backend.dto.model.UserDTO;
 import nl.hva.election_backend.model.User;
 import nl.hva.election_backend.service.AuthService;
+import nl.hva.election_backend.service.PasswordResetService;
 import nl.hva.election_backend.service.UserService;
 import nl.hva.election_backend.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -18,11 +21,13 @@ public class AuthController {
     private final AuthService authService;
     private final JwtUtil jwtUtil;
     private final UserService userService;
+    private final PasswordResetService passwordResetService;
 
-    public AuthController(AuthService authService, JwtUtil jwtUtil, UserService userService) {
+    public AuthController(AuthService authService, JwtUtil jwtUtil, UserService userService,  PasswordResetService passwordResetService) {
         this.authService = authService;
         this.jwtUtil = jwtUtil;
         this.userService = userService;
+        this.passwordResetService = passwordResetService;
     }
 
     @PostMapping("/register")
@@ -48,7 +53,7 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getCurrentUser(@RequestHeader(value = "Authorization", required = false) String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer")) {
             return ResponseEntity.status(401).build();
         }
         String token = authHeader.substring(7);
@@ -58,29 +63,23 @@ public class AuthController {
     }
 
     @PutMapping("/birthdate")
-    public ResponseEntity<MessageResponse> updateBirthDate(@RequestHeader(value = "Authorization", required = false) String authHeader, @RequestBody Map<String, String> body) {
+    public ResponseEntity<MessageResponse> updateBirthDate(
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @RequestBody BirthDateRequest request
+    ) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity
-                    .status(401)
+            return ResponseEntity.status(401)
                     .body(new MessageResponse("Geen geldige token gevonden"));
-        }
-
-        if (!body.containsKey("birthDate")) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("birthDate is verplicht"));
         }
 
         String token = authHeader.substring(7);
         String email = jwtUtil.validateTokenAndGetEmail(token);
 
-        LocalDate birthDate = LocalDate.parse(body.get("birthDate"));
-        userService.updateBirthDate(email, birthDate);
+        userService.updateBirthDate(email, LocalDate.parse(request.birthDate()));
 
-        return ResponseEntity.ok(
-                new MessageResponse("Geboortedatum opgeslagen")
-        );
+        return ResponseEntity.ok(new MessageResponse("Geboortedatum opgeslagen"));
     }
+
 
     @PutMapping("/update")
     public ResponseEntity<UserDTO> updateUser(@RequestHeader(value = "Authorization", required = false) String authHeader, @RequestBody UserDTO updatedUser
@@ -138,4 +137,45 @@ public class AuthController {
         );
     }
 
+    @PostMapping("/verify")
+    public ResponseEntity<MessageResponse> verifyResetIdentity(@RequestBody BirthDateRequest request) {
+        User user = userService.findByEmail(request.email());
+
+        if (user.getBirthDate() == null) {
+            return ResponseEntity.status(403)
+                    .body(new MessageResponse("Verificatie mislukt"));
+        }
+
+        String dbDate = user.getBirthDate().toString(); // yyyy-MM-dd
+
+        if (!dbDate.equals(request.birthDate())) {
+            return ResponseEntity.status(403)
+                    .body(new MessageResponse("Verificatie mislukt"));
+        }
+
+        passwordResetService.allowReset(user.getEmail());
+
+        return ResponseEntity.ok(
+                new MessageResponse("Identiteit geverifieerd")
+        );
+    }
+
+    @PostMapping("/confirm")
+    public ResponseEntity<MessageResponse> resetPassword(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String newPassword = body.get("newPassword");
+
+        if (!passwordResetService.isResetAllowed(email)) {
+            return ResponseEntity
+                    .status(403)
+                    .body(new MessageResponse("Reset niet toegestaan"));
+        }
+
+        userService.forceChangePassword(email, newPassword);
+        passwordResetService.clear(email);
+
+        return ResponseEntity.ok(
+                new MessageResponse("Wachtwoord succesvol gereset")
+        );
+    }
 }

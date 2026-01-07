@@ -2,7 +2,7 @@ package nl.hva.election_backend.api;
 
 import nl.hva.election_backend.model.Topic;
 import nl.hva.election_backend.service.TopicService;
-import nl.hva.election_backend.dto.model.TopicDTO;
+import nl.hva.election_backend.dto.TopicDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

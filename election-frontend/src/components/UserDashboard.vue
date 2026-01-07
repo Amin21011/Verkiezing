@@ -127,7 +127,7 @@ async function saveBirthDate() {
     birthDateMessage.value = "";
     birthDateError.value = "";
 
-    const res = await fetch(`${API_URL}/account/birthdate`, {
+    const res = await fetch(`${API_URL}/auth/birthdate`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

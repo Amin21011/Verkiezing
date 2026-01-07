@@ -7,6 +7,13 @@ export const API_URL = `${import.meta.env.VITE_API_URL}/auth`
 export const authUser = ref<string | null>(null)
 export const authToken = ref<string | null>(localStorage.getItem("token"));
 
+interface JwtPayload {
+  sub: string // email
+  name: string
+  userId: number
+  role: "USER" | "ADMIN"
+}
+
 export async function register(name: string, email: string, password: string) {
   const res = await fetch(`${API_URL}/register`, {
     method: 'POST',
@@ -21,13 +28,6 @@ export async function register(name: string, email: string, password: string) {
   localStorage.setItem("token", data.token);
 
   return data
-}
-
-interface JwtPayload {
-  sub: string // email
-  name: string
-  userId: number
-  role: "USER" | "ADMIN"
 }
 
 export async function login(email: string, password: string) {
@@ -76,7 +76,7 @@ export async function updateUser(name: string, email: string) {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Geen token gevonden");
 
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/update`, {
+  const res = await fetch(`${API_URL}/update`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -97,7 +97,7 @@ export async function changePassword(oldPassword: string, newPassword: string) {
   const token = localStorage.getItem("token")
   if (!token) throw new Error("Geen token gevonden")
 
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/change-password`, {
+  const res = await fetch(`${API_URL}/change-password`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -108,4 +108,38 @@ export async function changePassword(oldPassword: string, newPassword: string) {
 
   if (!res.ok) throw new Error(await res.text())
   return await res.json()
+}
+
+export async function verifyResetIdentity(
+  email: string,
+  birthDate: string
+): Promise<void> {
+  const res = await fetch(`${API_URL}/verify`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, birthDate }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Verification failed");
+  }
+}
+
+export async function resetPassword(
+  email: string,
+  newPassword: string
+): Promise<void> {
+  const res = await fetch(`${API_URL}/confirm`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, newPassword }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Password reset failed");
+  }
 }

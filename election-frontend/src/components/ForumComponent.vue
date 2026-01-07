@@ -71,116 +71,107 @@ onMounted(fetchPosts);
 
 
 <template>
-
-  <div
-    v-if="showLoginPrompt"
-    class="fixed inset-0 bg-black/50 flex items-center justify-center z-[999]"
-  >
-    <div class="bg-white border-4 border-ink shadow-press p-8 rounded-3xl max-w-sm w-full text-center">
-      <h2 class="text-2xl font-headline font-bold uppercase mb-4 text-ink">
-        Inloggen vereist
+  <div v-if="showLoginPrompt" class="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center">
+    <div class="bg-paper border-2 border-ink shadow-hard p-10 max-w-md w-full text-center">
+      <h2 class="text-3xl font-serif font-black uppercase mb-4">
+        Editorial Access
       </h2>
-
-      <p class="text-graymain mb-6 font-semibold">
-        Je moet ingelogd zijn om deze actie uit te voeren.
+      <p class="italic text-graymain mb-8">
+        Log in om deel te nemen aan het publieke debat.
       </p>
 
-      <div class="flex justify-center gap-4">
-        <button
-          @click="goToLogin"
-          class="btn-primary px-6 py-2"
-        >
+      <div class="flex justify-center gap-6">
+        <button @click="goToLogin" class="btn-primary px-6 py-2">
           Inloggen
         </button>
-
-        <button
-          @click="showLoginPrompt = false"
-          class="px-6 py-2 border-2 border-ink bg-white hover:bg-gray-100 uppercase font-bold tracking-wider"
-        >
+        <button @click="showLoginPrompt = false" class="border border-ink px-6 py-2 uppercase text-xs tracking-widest">
           Sluiten
         </button>
       </div>
     </div>
   </div>
 
-  <div class="min-h-screen bg-[#F8F7F3] text-gray-900 font-sans py-10 px-6">
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+  <div class="min-h-screen bg-paper text-ink font-sans px-6 py-12">
+    <div class="max-w-7xl mx-auto space-y-8">
 
-      <aside class="md:col-span-1">
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-          <h3 class="text-lg font-semibold text-[#00712D] mb-4">🔥 Trending Posts</h3>
+      <header class="text-center border-ink pb-2">
+        <p class="uppercase tracking-widest text-xs mb-3">
+          Publiek Debat · Opinie · Analyse
+        </p>
 
-          <ul class="space-y-4">
-            <li
-              v-for="post in trending"
-              :key="post.id"
-              class="cursor-pointer group"
-              @click="$router.push(`/forum/${post.id}`)"
-            >
-              <p class="font-medium text-gray-800 group-hover:text-[#00712D] transition">
+        <h1 class="text-6xl md:text-4xl font-serif font-black uppercase leading-tight">
+          Het Forum</h1>
+
+        <p class="max-w-xl mx-auto mt-6 italic text-graymain text-md">
+          Waar meningen botsen, ideeën ontstaan en het publieke gesprek vorm krijgt.</p>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+
+        <aside class="md:col-span-1 border-r-2 border-ink pr-6">
+          <h3 class="font-serif font-bold uppercase mb-6 text-lg">
+            🔥 Trending
+          </h3>
+
+          <ul class="space-y-6">
+            <li v-for="post in trending" :key="post.id" class="cursor-pointer group" @click="$router.push(`/forum/${post.id}`)">
+              <p class="font-semibold group-hover:underline">
                 {{ post.title }}
               </p>
-              <p class="text-sm text-gray-500">
-                ❤️ {{ post.likeCount }} likes
+              <p class="text-xs text-graymain">
+                ❤️ {{ post.likeCount }} waarderingen
               </p>
             </li>
           </ul>
-        </div>
-      </aside>
+        </aside>
 
-      <main class="md:col-span-2 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-        <section class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <header class="px-6 pt-5 pb-3 border-b border-gray-200">
-            <h2 class="text-center text-lg font-semibold text-gray-800">Alle Forum Posts</h2>
-          </header>
-
-          <div v-if="loading" class="py-10 text-center text-gray-500 text-lg">Bezig met laden…</div>
-          <div v-else-if="errorMsg" class="py-4 text-red-500 text-center">{{ errorMsg }}</div>
-
-          <div v-else class="divide-y divide-gray-200">
-            <article
-              v-for="post in posts"
-              :key="post.id"
-              class="p-6 hover:bg-gray-50 transition cursor-pointer"
-              @click="$router.push(`/forum/${post.id}`)"
-            >
-              <h3 class="text-lg font-semibold text-[#00712D] mb-1">{{ post.title }}</h3>
-              <p class="text-sm text-gray-500 mb-2">
-                door {{ post.user?.name || 'Onbekend' }} •
-                {{ new Date(post.postedAt).toLocaleDateString('nl-NL') }} •
-                ❤️ {{ post.likeCount }}
-              </p>
-              <p v-if="post?.topic" class="text-sm text-gray-500 mb-2">
-                 {{ post.topic.name }}
-              </p>
-              <p class="text-gray-700 leading-relaxed line-clamp-3">
-                {{ post.content }}
-              </p>
-            </article>
+        <main class="md:col-span-2 max-h-[65vh] overflow-y-auto pr-4 space-y-8 custom-scrollbar">
+          <div v-if="loading" class="text-center italic text-graymain">
+            Artikelen worden gedrukt…
           </div>
-        </section>
-      </main>
 
-      <aside class="md:col-span-1 flex justify-center md:justify-end items-start h-auto">
-        <div class="bg-[#00712D] text-white rounded-3xl px-8 py-6 shadow-xl w-[300px] flex flex-col items-center">
-          <p class="text-xl font-semibold mb-4 text-center">
-            Deel nu ook jouw<br />mening!
-          </p>
+          <div v-else-if="errorMsg" class="text-center text-red-600">
+            {{ errorMsg }}
+          </div>
 
-          <button
-            @click="requireLogin() ? $router.push('/post') : null"
-            class="bg-white text-[#00712D] font-semibold px-5 py-2 rounded-xl shadow-md hover:bg-gray-200 transition"
-          >
-            Maak een nieuwe post
-          </button>
-        </div>
-      </aside>
+          <article v-for="(post, index) in posts" :key="post.id" class="pb-8 border-b border-ink/30 cursor-pointer hover:bg-black/5 transition px-2" @click="$router.push(`/forum/${post.id}`)">
 
+            <h2 :class="index === 0 ? 'text-2xl font-serif font-black' : 'text-xl font-serif font-bold'">
+              {{ post.title }}
+            </h2>
+
+            <p class="text-xs text-graymain mt-2 mb-3">
+              door {{ post.user?.name || 'Onbekend' }} ·
+              {{ new Date(post.postedAt).toLocaleDateString('nl-NL') }} ·
+              ❤️ {{ post.likeCount }}
+            </p>
+
+            <p v-if="post.topic" class="italic text-xs text-graymain mb-3">
+              Rubriek: {{ post.topic.name }}
+            </p>
+
+            <p class="leading-relaxed line-clamp-4">
+              {{ post.content }}
+            </p>
+          </article>
+        </main>
+
+        <aside class="md:col-span-1 flex items-start justify-center">
+          <div class="border-2 border-ink shadow-hard p-8 text-center max-w-xs">
+            <p class="font-serif font-bold uppercase text-xl mb-4">
+              Schrijf mee
+            </p>
+
+            <p class="text-sm italic text-graymain mb-6">
+              Jouw stem hoort ook in deze krant.
+            </p>
+
+            <button @click="requireLogin() ? $router.push('/post') : null" class="btn-primary px-6 py-2">
+              Nieuw artikel
+            </button>
+          </div>
+        </aside>
+      </div>
     </div>
   </div>
-
 </template>
-
-
-
-<style scoped></style>

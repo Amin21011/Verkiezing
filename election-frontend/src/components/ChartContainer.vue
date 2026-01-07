@@ -15,8 +15,6 @@ import CandidateChart from '@/components/CandidateChart.vue'
       <div class="h-[4px] w-40 bg-gradient-to-r from-retro-red via-retro-gold to-retro-blue mt-5 rounded-full"></div>
     </header>
 
-    <div class="relative max-w-6xl mx-auto mb-20 bg-white/80 border-[3px] border-retro-ink rounded-xl shadow-[6px_6px_0_var(--ink)] p-10 md:p-14">
-    </div>
     <div class="relative max-w-5xl mx-auto bg-white/80 border-[3px] border-retro-ink rounded-xl shadow-[6px_6px_0_var(--ink)] p-10 md:p-14">
       <CandidateChart />
     </div>

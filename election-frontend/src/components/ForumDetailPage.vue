@@ -134,118 +134,127 @@ async function dislikePost() {
 
 onMounted(fetchPost);
 </script>
-
 <template>
-
-  <div
-    v-if="showLoginPrompt"
-    class="fixed inset-0 bg-black/50 flex items-center justify-center z-[999]"
-  >
-    <div class="bg-white border-4 border-ink shadow-press p-8 rounded-3xl max-w-sm w-full text-center">
-      <h2 class="text-2xl font-headline font-bold uppercase mb-4 text-ink">
+  <div v-if="showLoginPrompt" class="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center">
+    <div class="bg-paper border-2 border-ink shadow-hard p-10 max-w-md w-full text-center">
+      <h2 class="text-3xl font-serif font-black uppercase mb-4">
         Inloggen vereist
       </h2>
-
-      <p class="text-graymain mb-6 font-semibold">
-        Je moet ingelogd zijn om deze actie uit te voeren.
+      <p class="italic text-graymain mb-8">
+        Log in om deel te nemen aan het debat.
       </p>
-
-      <div class="flex justify-center gap-4">
-        <button
-          @click="goToLogin"
-          class="btn-primary px-6 py-2"
-        >
+      <div class="flex justify-center gap-6">
+        <button @click="goToLogin" class="btn-primary px-6 py-2">
           Inloggen
         </button>
-
         <button
-          @click="showLoginPrompt = false"
-          class="px-6 py-2 border-2 border-ink bg-white hover:bg-gray-100 uppercase font-bold tracking-wider"
-        >
+          @click="showLoginPrompt = false" class="border border-ink px-6 py-2 uppercase text-xs tracking-widest">
           Sluiten
         </button>
       </div>
     </div>
   </div>
 
-  <div class="min-h-screen bg-[#F8F7F3] text-gray-900 font-sans py-10 px-6">
-    <section
-      class="max-w-3xl mx-auto bg-white rounded-2xl border border-gray-200 shadow-sm p-8"
-    >
+  <div class="min-h-screen bg-paper text-ink font-sans px-6 py-12">
+    <section class="max-w-3xl mx-auto border-2 border-ink shadow-press p-10">
+      <div v-if="loading" class="text-center italic text-graymain">
+        Artikel wordt geladen…
+      </div>
 
-      <div v-if="loading" class="text-center text-gray-500">Laden...</div>
-      <div v-else-if="errorMsg" class="text-center text-red-500">
+      <div v-else-if="errorMsg" class="text-center text-red-600">
         {{ errorMsg }}
       </div>
 
-      <div v-else>
-        <h1 class="text-2xl font-bold text-[#00712D] mb-2">{{ post?.title }}</h1>
-        <p class="text-sm text-gray-500 mb-4">
-          <strong>door</strong> {{ post?.user?.name || "Onbekend" }} •
-          {{ new Date(post?.postedAt || "").toLocaleDateString("nl-NL") }}
-        </p>
-        <p v-if="post?.topic" class="text-sm text-gray-600 mb-4">
-          <strong>Topic:</strong> {{ post.topic.name }}
-        </p>
-        <p class="text-gray-500 leading-relaxed whitespace-pre-line mb-8">
+      <article v-else class="space-y-10">
+        <header>
+          <p v-if="post?.topic" class="uppercase tracking-widest text-xs mb-3">
+            {{ post.topic.name }}
+          </p>
+
+          <h1 class="text-4xl md:text-4xl font-serif font-black leading-tight">
+            {{ post?.title }}
+          </h1>
+
+          <p class="text-xs text-graymain mt-4">
+            door {{ post?.user?.name || "Onbekend" }} ·
+            {{ new Date(post?.postedAt || "").toLocaleDateString("nl-NL") }}
+          </p>
+        </header>
+
+        <div class="leading-relaxed text-lg whitespace-pre-line">
           {{ post?.content }}
-        </p>
-
-        <div class="flex items-center gap-6 mt-4">
-          <button
-            @click="likePost"
-            class="flex items-center gap-2 text-green-700 hover:text-green-900 transition"
-          >
-            👍 <span>{{ post?.likeCount || 0 }}</span>
-          </button>
-
-          <button
-            @click="dislikePost"
-            class="flex items-center gap-2 text-red-600 hover:text-red-800 transition"
-          >
-            👎 <span>{{ post?.dislikeCount || 0 }}</span>
-          </button>
         </div>
 
-        <div class="mt-8 border-t border-gray-200 pt-6">
-          <h2 class="text-lg font-semibold mb-4">Reacties</h2>
+        <div class="space-y-3 max-w-xs select-none">
+          <p class="text-xs uppercase tracking-widest text-graymain">
+            Publieke stemming
+          </p>
 
-          <div v-if="post?.comments?.length">
-            <div
-              v-for="comment in post.comments"
-              :key="comment.id"
-              class="mb-4 p-4 bg-gray-50 rounded-lg"
-            >
-              <p class="text-gray-700">{{ comment.comment }}</p>
-              <p class="text-xs text-gray-500 mt-1">
-                door {{ comment.user?.name || "Onbekend" }} •
+          <div class="relative h-3 border border-ink overflow-hidden">
+            <div class="absolute left-0 top-0 h-full bg-ink/80 transition-all duration-300" :style="{
+        width: `${Math.max(
+          10, (post?.likeCount || 0) / ((post?.likeCount || 0) + (post?.dislikeCount || 0) || 1) * 100)}%`
+      }" />
+
+            <div class="absolute right-0 top-0 h-full bg-ink/20" />
+          </div>
+
+          <div class="flex items-center justify-between text-xs uppercase tracking-widest">
+
+            <button @click="likePost" class="group flex items-center gap-2">
+              <span class="w-8 h-8 flex items-center justify-center border border-ink group-hover:bg-ink group-hover:text-paper
+               group-active:scale-95 transition">
+                ✓ </span>
+
+              <span class="tabular-nums">
+                {{ post?.likeCount || 0 }}
+              </span>
+            </button>
+
+            <button @click="dislikePost" class="group flex items-center gap-2">
+              <span class="w-8 h-8 flex items-center justify-center border border-ink
+               group-hover:bg-ink group-hover:text-paper group-active:scale-95 transition">
+                ✕ </span>
+
+              <span class="tabular-nums"> {{ post?.dislikeCount || 0 }} </span>
+            </button>
+
+          </div>
+        </div>
+
+        <!-- COMMENTS -->
+        <section class="border-t-2 border-ink pt-8 space-y-6">
+          <h2 class="text-xl font-serif font-bold uppercase">
+            Reacties
+          </h2>
+
+          <!-- SCROLLABLE COMMENTS -->
+          <div class="max-h-[40vh] overflow-y-auto pr-4 space-y-6 custom-scrollbar">
+            <div v-for="comment in post?.comments" :key="comment.id" class="border-b border-ink/30 pb-4">
+              <p class="leading-relaxed">
+                {{ comment.comment }}
+              </p>
+
+              <p class="text-xs text-graymain mt-2 italic">
+                {{ comment.user?.name || "Onbekend" }} ·
                 {{ new Date(comment.createdAt).toLocaleString("nl-NL") }}
               </p>
             </div>
-          </div>
-          <p v-else class="text-gray-400">Nog geen reacties — wees de eerste!</p>
 
-          <div class="mt-6">
-            <textarea
-              v-model="newComment"
-              placeholder="Schrijf een reactie..."
-              class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#00712D] resize-none"
-              rows="3"
-            ></textarea>
-            <button
-              @click="submitComment"
-              :disabled="submitting"
-              class="mt-3 bg-[#00712D] text-white px-4 py-2 rounded-lg hover:bg-green-700 transition disabled:opacity-50"
-            >
-              {{ submitting ? "Bezig..." : "Plaats reactie" }}
+            <p v-if="!post?.comments?.length" class="italic text-graymain">
+              Nog geen reacties — wees de eerste.
+            </p>
+          </div>
+
+          <div class="pt-6 space-y-4">
+            <textarea v-model="newComment" rows="4" placeholder="Schrijf een reactie…" class="w-full bg-transparent border border-ink p-4 resize-none outline-none" />
+
+            <button @click="submitComment" :disabled="submitting" class="btn-primary px-6 py-2 disabled:opacity-50">
+              {{ submitting ? "Plaatsen…" : "Plaats reactie" }}
             </button>
           </div>
-        </div>
-      </div>
+        </section>
+      </article>
     </section>
   </div>
-
 </template>
-
-
-<style scoped></style>

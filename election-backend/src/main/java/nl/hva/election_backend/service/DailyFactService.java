@@ -1,9 +1,9 @@
 package nl.hva.election_backend.service;
 import nl.hva.election_backend.dto.model.DailyFactResponse;
 import nl.hva.election_backend.dto.SmallestPartyWinView;
+import nl.hva.election_backend.helpers.ForbiddenException;
 import nl.hva.election_backend.model.Candidate;
 import nl.hva.election_backend.model.Election;
-import nl.hva.election_backend.model.Region;
 import nl.hva.election_backend.repository.*;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -16,37 +16,45 @@ public class DailyFactService {
 
     private Election getElection() {
         return electionRepository.findById("TK2023")
-                .orElseThrow(() ->
-                        new IllegalStateException("Election TK2023 not found"));
+                .orElseThrow(() -> new ForbiddenException("Election TK2023 not found"));
     }
 
-    public DailyFactService(ResultRepository resultRepository,
-                            CandidateRepository candidateRepository, ElectionRepository electionRepository) {
+    public DailyFactService(ResultRepository resultRepository, CandidateRepository candidateRepository, ElectionRepository electionRepository) {
         this.resultRepository = resultRepository;
         this.candidateRepository = candidateRepository;
         this.electionRepository = electionRepository;
     }
 
     public List<DailyFactResponse> getDailyFacts() {
-        DailyFactResponse highestTurnout = getHighestTurnoutRegion();
+        DailyFactResponse highestTurnout = getHighestTurnoutMunicipality();
         DailyFactResponse topCandidate = getTopCandidate();
         DailyFactResponse smallestPartyWin = getSmallestPartyWin();
         return List.of(highestTurnout, topCandidate, smallestPartyWin);
     }
 
-    private DailyFactResponse getHighestTurnoutRegion() {
-        var election = getElection();
-        var result = resultRepository.findRegionTurnout(election);
-        Region region = result.getFirst().getRegion();
-        Long votes = result.getFirst().getVotes();
+    private DailyFactResponse getHighestTurnoutMunicipality() {
+        var result = resultRepository.findTopConstituencyByVotes();
+        if (result.isEmpty()) {
+            return new DailyFactResponse(
+                    "municipality",
+                    "Hoogste opkomst",
+                    "Geen gegevens beschikbaar",
+                    "-"
+            );
+        }
+
+        var top = result.getFirst();
+        String name = top.getConstituencies().getName();
+        Long votes = top.getVotes();
 
         return new DailyFactResponse(
-                "region",
+                "municipality",
                 "Hoogste opkomst",
-                "De regio met de meeste uitgebrachte stemmen",
-                region.getName() + " (" + votes + " stemmen)"
+                "De gemeente met de meeste uitgebrachte stemmen",
+                name + " (" + votes + " stemmen)"
         );
     }
+
 
     private DailyFactResponse getTopCandidate() {
         Candidate top = candidateRepository.findTopCandidates().getFirst();
