@@ -2,6 +2,32 @@
 import { ref, computed, onMounted } from "vue";
 import { getToken } from "@/services/authService";
 
+async function fetchWikipediaBio(fullName: string, party: string): Promise<string> {
+  try {
+    const formatted = fullName.replace(/ /g, "_");
+    const url = `https://nl.wikipedia.org/api/rest_v1/page/summary/${formatted}`;
+
+    const res = await fetch(url);
+    if (!res.ok) {
+      return generateFallbackBio(fullName, party);
+    }
+
+    const data = await res.json();
+    if (data.extract) {
+      return data.extract;
+    }
+
+    return generateFallbackBio(fullName, party);
+
+  } catch {
+    return generateFallbackBio(fullName, party);
+  }
+}
+
+function generateFallbackBio(fullName: string, party: string): string {
+  return `${fullName} is een kandidaat van ${party}. Meer informatie over deze kandidaat is momenteel niet beschikbaar.`;
+}
+
 const partyIdToDisplayName: Record<string, string> = {
   "vvd": "VVD",
   "groenlinks___partij_van_de_arbeid_(pvda)": "GroenLinks-PvdA",
@@ -79,7 +105,16 @@ async function loadTopCandidates(partyId: string) {
       `http://localhost:8080/api/candidates/top?partyId=${partyId}&limit=3`
     );
     if (!res.ok) throw new Error("Kon kandidaten niet laden");
-    topCandidates.value = await res.json();
+
+    const candidates = await res.json();
+
+    for (const cand of candidates) {
+      const fullName = `${cand.firstName} ${cand.lastName}`;
+      cand.bio = await fetchWikipediaBio(fullName, cand.partyName);
+    }
+
+    topCandidates.value = candidates;
+
   } catch (e) {
     console.error("Fout bij laden top kandidaten:", e);
   }
@@ -256,7 +291,10 @@ onMounted(loadQuiz);
               {{ cand.firstName }} {{ cand.lastName }}
             </h4>
             <p class="text-gray-700 text-sm">
-              Stemmen: {{ cand.votes }}
+                          Stemmen: {{ cand.votes }}
+                        </p>
+            <p class="text-gray-600 text-sm mt-2 italic">
+              {{ cand.bio }}
             </p>
 
           </div>
