@@ -2,34 +2,34 @@
 import { ref, computed, onMounted } from "vue";
 import { getToken } from "@/services/authService";
 
-const partyNameToId: Record<string, string> = {
-  "De Partij voor de Vrijheid (PVV)": "pvv_(partij_voor_de_vrijheid)",
-  "GroenLinks-PvdA": "groenlinks___partij_van_de_arbeid_(pvda)",
-  "Volkspartij voor Vrijheid en Democratie (VVD)": "vvd",
-  "Nieuw Sociaal Contract": "nieuw_sociaal_contract",
-  "Democraten 66 (D66)": "d66",
-  "BoerBurgerBeweging (BBB)": "bbb",
-  "Christen-Democratisch Appèl (CDA)": "cda",
-  "Socialistische Partij (SP)": "sp_(socialistische_partij)",
-  "DENK": "denk",
-  "Partij voor de Dieren (PvdD)": "partij_voor_de_dieren",
-  "Forum voor Democratie (FvD)": "forum_voor_democratie",
-  "Staatkundig Gereformeerde Partij (SGP)": "staatkundig_gereformeerde_partij_(sgp)",
-  "ChristenUnie": "christenunie",
-  "Volt Nederland": "volt",
-  "JA21": "ja21",
-  "Vrede voor Dieren": "partij_voor_de_dieren",
-  "Belang van Nederland (BVNL)": "bvnl___groep_van_haga",
-  "BIJ1": "bij1",
-  "Libertaire Partij (LP)": "lp_(libertaire_partij)",
-  "50PLUS": "50plus",
-  "Piratenpartij": "piratenpartij___de_groenen",
-  "Friese Nationale Partij (FNP)": "fnp",
-  "Vrij Verbond": "vrij_verbond",
-  "DE LINIE": "de_linie",
-  "NL PLAN": "nederland_met_een_plan",
-  "ELLECT": "ellect",
-  "Partij voor de Rechtsstaat": "partij_voor_de_rechtsstaat"
+const partyIdToDisplayName: Record<string, string> = {
+  "vvd": "VVD",
+  "groenlinks___partij_van_de_arbeid_(pvda)": "GroenLinks-PvdA",
+  "d66": "D66",
+  "pvv_(partij_voor_de_vrijheid)": "PVV",
+  "cda": "CDA",
+  "forum_voor_democratie": "FvD",
+  "bij1": "BIJ1",
+  "partij_voor_de_dieren": "Partij voor de Dieren",
+  "christenunie": "ChristenUnie",
+  "sp_(socialistische_partij)": "SP",
+  "50plus": "50Plus",
+  "denk": "DENK",
+  "fnp": "FNP",
+  "vrede_voor_dieren": "Vrede voor Dieren",
+  "ja21": "JA21",
+  "volt": "Volt",
+  "staatkundig_gereformeerde_partij_(sgp)": "SGP",
+  "bbb": "BBB",
+  "nieuw_sociaal_contract": "NSC",
+  "bvnl___groep_van_haga": "BVNL",
+  "lp_(libertaire_partij)": "LP",
+  "piratenpartij___de_groenen": "PiratenPartij",
+  "vrij_verbond": "Vrij Verbond",
+  "de_linie": "De Linie",
+  "nederland_met_een_plan": "NL PLAN",
+  "ellect": "ELLECT",
+  "partij_voor_de_rechtsstaat": "Partij voor de Rechtsstaat"
 };
 
 // Types
@@ -118,7 +118,7 @@ async function submitQuiz() {
     console.log("Quiz result:", result.value);
 
     // Top 3 kandidaten ophalen van de beste partij
-    const partyId = partyNameToId[result.value.bestMatchingParty];
+    const partyId = result.value.bestMatchingParty;
     await loadTopCandidates(partyId);
 
   } catch (e) {
@@ -228,21 +228,25 @@ onMounted(loadQuiz);
 
         <h2 class="text-3xl font-bold text-center mb-6">
           Jouw beste match:
-          <span class="text-black-700">{{ sortedResults[0].party }}</span>
+          <span class="text-black-700">
+          {{ partyIdToDisplayName[sortedResults[0].party] || sortedResults[0].party }}
+          </span>
         </h2>
 
         <!-- Alle partijen tonen -->
         <div class="bg-gray-50 border border-gray-200 rounded-md text-left max-h-60 overflow-y-auto p-4 mb-10">
           <div v-for="item in sortedResults" :key="item.party"
             class="flex justify-between border-b border-gray-200 py-1">
-            <span class="font-medium text-ink">{{ item.party }}</span>
+            <span class="font-medium text-ink">
+              {{ partyIdToDisplayName[item.party] || item.party }}
+            </span>
             <span class="text-gray-700">{{ item.score.toFixed(1) }}%</span>
           </div>
         </div>
 
         <!-- TOP 3 KANDIDATEN -->
         <h3 class="text-2xl font-bold text-center mb-4">
-          Top 3 kandidaten van {{ result.bestMatchingParty }}
+          Top 3 kandidaten van {{ partyIdToDisplayName[result.bestMatchingParty] || result.bestMatchingParty }}
         </h3>
 
         <div class="grid gap-6">

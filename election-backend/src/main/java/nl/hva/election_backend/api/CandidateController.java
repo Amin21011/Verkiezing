@@ -55,6 +55,6 @@ public class CandidateController {
             @RequestParam String partyId,
             @RequestParam(defaultValue = "3") int limit
     ) {
-        return ResponseEntity.ok(candidateService.getTopCandidatesByParty(partyId, limit));
+        return ResponseEntity.ok(candidateService.getTopCandidatesByParty(partyId));
     }
 }

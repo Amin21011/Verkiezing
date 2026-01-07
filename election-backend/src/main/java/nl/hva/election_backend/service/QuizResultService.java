@@ -16,6 +16,33 @@ public class QuizResultService {
         this.quizService = quizService;
     }
 
+    private static final Map<String, String> PARTY_NAME_TO_ID = Map.ofEntries(
+            Map.entry("VVD", "vvd"),
+            Map.entry("GroenLinks-PvdA", "groenlinks___partij_van_de_arbeid_(pvda)"),
+            Map.entry("D66", "d66"),
+            Map.entry("PVV", "pvv_(partij_voor_de_vrijheid)"),
+            Map.entry("CDA", "cda"),
+            Map.entry("FvD", "forum_voor_democratie"),
+            Map.entry("BIJ1", "bij1"),
+            Map.entry("PvdD", "partij_voor_de_dieren"),
+            Map.entry("ChristenUnie", "christenunie"),
+            Map.entry("SP", "sp_(socialistische_partij)"),
+            Map.entry("50Plus", "50plus"),
+            Map.entry("DENK", "denk"),
+            Map.entry("FNP", "fnp"),
+            Map.entry("Vrede voor Dieren", "vrede_voor_dieren"),
+            Map.entry("JA21", "ja21"),
+            Map.entry("Volt", "volt"),
+            Map.entry("SGP", "staatkundig_gereformeerde_partij_(sgp)"),
+            Map.entry("BBB", "bbb"),
+            Map.entry("NSC", "nieuw_sociaal_contract"),
+            Map.entry("BVNL", "bvnl___groep_van_haga"),
+            Map.entry("LP", "lp_(libertaire_partij)"),
+            Map.entry("PiratenPartij", "piratenpartij___de_groenen"),
+            Map.entry("Vrij Verbond", "vrij_verbond"),
+            Map.entry("De Linie", "de_linie")
+    );
+
     public QuizResult processQuiz(Map<String, String> userAnswers, String email) {
         QuizResult result = calculateResult(userAnswers);
         saveQuizResult(email, result.getBestMatchingParty());
@@ -44,7 +71,8 @@ public class QuizResultService {
                 if (partyPosition.getParty() == null) continue;
                 if (partyPosition.getPosition() == null) continue;
 
-                String party = partyPosition.getParty();
+                String partyName = partyPosition.getParty();
+                String party = PARTY_NAME_TO_ID.getOrDefault(partyName, partyName);
                 String partyAnswer = partyPosition.getPosition().name();
                 String normalizedUserAnswer = userAnswer.toUpperCase();
 
