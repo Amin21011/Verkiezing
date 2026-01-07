@@ -2,23 +2,41 @@
 import { ref, computed, onMounted } from "vue";
 import { getToken } from "@/services/authService";
 
+interface Question {
+  id: string;
+  text: string;
+}
+
+interface QuizResult {
+  bestMatchingParty: string;
+  percentages: Record<string, number>;
+}
+
+interface PartyScore {
+  party: string;
+  score: number;
+}
+
+interface Candidate {
+  id: string | number;
+  firstName: string;
+  lastName: string;
+  partyName: string;
+  votes: number;
+  bio: string;
+}
+
 async function fetchWikipediaBio(fullName: string, party: string): Promise<string> {
   try {
     const formatted = fullName.replace(/ /g, "_");
     const url = `https://nl.wikipedia.org/api/rest_v1/page/summary/${formatted}`;
 
     const res = await fetch(url);
-    if (!res.ok) {
-      return generateFallbackBio(fullName, party);
-    }
+
+    if (!res.ok) return generateFallbackBio(fullName, party);
 
     const data = await res.json();
-    if (data.extract) {
-      return data.extract;
-    }
-
-    return generateFallbackBio(fullName, party);
-
+    return data.extract ?? generateFallbackBio(fullName, party);
   } catch {
     return generateFallbackBio(fullName, party);
   }
@@ -58,28 +76,29 @@ const partyIdToDisplayName: Record<string, string> = {
   "partij_voor_de_rechtsstaat": "Partij voor de Rechtsstaat"
 };
 
-// Types
-type Question = { id: string; text: string };
-type QuizResult = { bestMatchingParty: string; percentages: Record<string, number> };
-type PartyScore = { party: string; score: number };
-
-// state
+// State
 const questions = ref<Question[]>([]);
 const answers = ref<Record<string, string>>({});
 const result = ref<QuizResult | null>(null);
 const loading = ref(true);
 const errorMessage = ref("");
 const globalError = ref("");
-
-const topCandidates = ref<any[]>([]);
-
+const topCandidates = ref<Candidate[]>([]);
 const isLoggedIn = computed(() => !!getToken());
+const sortedResults = computed<PartyScore[]>(() => {
+  if (!result.value) return [];
+  return Object.entries(result.value.percentages)
+    .map(([party, score]) => ({ party, score }))
+    .sort((a, b) => b.score - a.score);
+});
+
+// Fetch quiz
 async function loadQuiz() {
   loading.value = true;
   globalError.value = "";
 
   try {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/quiz`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/quiz`);
     if (!response.ok) throw new Error();
 
     const data = await response.json();
@@ -93,12 +112,9 @@ async function loadQuiz() {
 
 async function loadTopCandidates(partyId: string) {
   try {
-    const res = await fetch(
-      `${import.meta.env.VITE_API_URL}/candidates/top?partyId=${partyId}&limit=3`
-    );
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/candidates/top?partyId=${partyId}&limit=3`);
     if (!res.ok) throw new Error("Kon kandidaten niet laden");
-
-    const candidates = await res.json();
+    const candidates: Candidate[] = await res.json();
 
     for (const cand of candidates) {
       const fullName = `${cand.firstName} ${cand.lastName}`;
@@ -126,7 +142,7 @@ async function submitQuiz() {
   }
 
   try {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/quiz/result`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/quiz/result`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -136,29 +152,17 @@ async function submitQuiz() {
     });
 
     if (!response.ok) throw new Error();
-
-    result.value = await response.json();
-
-    console.log("Quiz result:", result.value);
+    result.value = await response.json() as QuizResult;
 
     // Top 3 kandidaten ophalen van de beste partij
-    const partyId = result.value.bestMatchingParty;
-    await loadTopCandidates(partyId);
-
+    await loadTopCandidates(result.value.bestMatchingParty);
   } catch (e) {
     console.error(e);
     globalError.value = "Quiz verwerken mislukt.";
   }
 }
 
-const sortedResults = computed<PartyScore[]>(() => {
-  if (!result.value) return [];
-
-  return Object.entries(result.value.percentages)
-    .map(([party, score]) => ({ party, score }))
-    .sort((a, b) => b.score - a.score);
-});
-
+// Reset quiz
 function resetQuiz() {
   answers.value = {};
   result.value = null;
@@ -171,11 +175,11 @@ onMounted(loadQuiz);
 </script>
 
 <template>
-<div class="min-h-screen w-full bg-paper text-ink font-body paper-layer flex flex-col items-center py-16 px-6 relative">
+  <div class="min-h-screen w-full bg-paper text-ink font-body paper-layer flex flex-col items-center py-16 px-6 relative">
     <div class="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/newsprint.png')]"></div>
 
     <div class="relative z-10 text-center max-w-2xl">
-    <h1 class="text-5xl font-headline retro-title mb-4 text-ink tracking-press">
+      <h1 class="text-5xl font-headline retro-title mb-4 text-ink tracking-press">
         Welke partij past het beste bij jou? 🤓
       </h1>
       <p class="text-lg text-gray-700 italic mb-10 leading-relaxed">
@@ -190,14 +194,14 @@ onMounted(loadQuiz);
 
     <!-- Fout bij laden -->
     <p v-if="!loading && globalError"
-      class="relative z-10 mt-6 text-red-700 font-semibold bg-red-50 border border-red-200 rounded-md px-4 py-2">
+       class="relative z-10 mt-6 text-red-700 font-semibold bg-red-50 border border-red-200 rounded-md px-4 py-2">
       {{ globalError }}
     </p>
 
     <!-- Quiz -->
     <div v-else class="w-full max-w-3xl relative z-10 mt-6">
       <form @submit.prevent="submitQuiz"
-        class="space-y-8 bg-paper-soft border-soft border rounded-xl shadow-soft p-8 hover-print">
+            class="space-y-8 bg-paper-soft border-soft border rounded-xl shadow-soft p-8 hover-print">
 
         <div v-for="question in questions" :key="question.id" class="border-b border-gray-300 pb-4 last:border-none">
           <p class="font-semibold text-xl text-ink mb-3">{{ question.text }}</p>
@@ -219,14 +223,14 @@ onMounted(loadQuiz);
         </div>
 
         <p v-if="errorMessage"
-          class="text-red-700 text-center font-semibold bg-red-50 border border-red-200 rounded-md py-2">
+           class="text-red-700 text-center font-semibold bg-red-50 border border-red-200 rounded-md py-2">
           {{ errorMessage }}
         </p>
 
         <div class="flex justify-center mt-6">
           <button v-if="isLoggedIn"
-            type="submit"
-            class="bg-black hover:bg-[#8e2f3b] text-white px-8 py-3 rounded-lg text-lg transition shadow-md">
+                  type="submit"
+                  class="bg-black hover:bg-[#8e2f3b] text-white px-8 py-3 rounded-lg text-lg transition shadow-md">
             Bekijk mijn resultaat
           </button>
 
@@ -243,7 +247,7 @@ onMounted(loadQuiz);
       </form>
 
       <div v-if="result && sortedResults.length"
-        class="mt-10 bg-paper-soft border-soft border rounded-xl shadow-soft p-8 paper-layer">
+           class="mt-10 bg-paper-soft border-soft border rounded-xl shadow-soft p-8 paper-layer">
 
         <h2 class="text-3xl font-bold text-center mb-6">
           Jouw beste match:
@@ -255,7 +259,7 @@ onMounted(loadQuiz);
         <!-- Alle partijen tonen -->
         <div class="bg-gray-50 border border-gray-200 rounded-md text-left max-h-60 overflow-y-auto p-4 mb-10">
           <div v-for="item in sortedResults" :key="item.party"
-            class="flex justify-between border-b border-gray-200 py-1">
+               class="flex justify-between border-b border-gray-200 py-1">
             <span class="font-medium text-ink">
               {{ partyIdToDisplayName[item.party] || item.party }}
             </span>
@@ -265,18 +269,18 @@ onMounted(loadQuiz);
 
         <!-- TOP 3 KANDIDATEN -->
         <h3 class="text-2xl font-bold text-center mb-4">
-          Top 3 kandidaten van {{ partyIdToDisplayName[result.bestMatchingParty] || result.bestMatchingParty }}
+          Top 3 kandidaten van {{ result ? partyIdToDisplayName[result.bestMatchingParty] || result.bestMatchingParty : '' }}
         </h3>
 
         <div class="grid gap-6">
           <div v-for="cand in topCandidates" :key="cand.id"
-            class="border border-gray-300 rounded-lg p-5 bg-white">
+               class="border border-gray-300 rounded-lg p-5 bg-white">
             <h4 class="text-xl font-bold mb-2">
               {{ cand.firstName }} {{ cand.lastName }}
             </h4>
             <p class="text-gray-700 text-sm">
-                          Stemmen: {{ cand.votes }}
-                        </p>
+              Stemmen: {{ cand.votes }}
+            </p>
             <p class="text-gray-600 text-sm mt-2 italic">
               {{ cand.bio }}
             </p>
@@ -285,7 +289,7 @@ onMounted(loadQuiz);
         </div>
 
         <button @click="resetQuiz"
-          class="btn-primary text-lg px-8 py-3">
+                class="btn-primary text-lg px-8 py-3">
           Opnieuw proberen
         </button>
       </div>
