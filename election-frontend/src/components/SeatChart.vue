@@ -29,7 +29,7 @@ const props = defineProps<{
     }"
     :options="{
       responsive: true,
-      animation: true,
+      animation: { duration: 1000 },
       plugins: {
         legend: { display: false },
       }

@@ -1,6 +1,3 @@
-@import '@/assets/main.css';
-@import "tailwindcss";
-
 <template>
 <div class="min-h-screen w-full bg-[#d9d9d9] flex flex-col font-sans">
 
@@ -8,7 +5,7 @@
 <main class="w-full max-w-none flex-1 py-10 px-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 place-items-center">
       <div v-for="party in parties" :key="party.id" class="party-card w-40">
         <div class="flex items-center justify-center w-32 h-32 bg-white overflow-hidden mb-2">
-          <img :src="party.imageUrl" :alt="party.name" class="object-contain w-28 h-28">
+          <img :src="party.imageUrl" :alt="party.name" class="object-contain w-28 h-28" />
         </div>
         <button @click="showDetail(party)" class="mt-2 bg-gray-800 text-white py-1 px-4 text-sm rounded-md hover:bg-black transition">
           More info
@@ -24,8 +21,8 @@
     </footer>
 
     <!-- POPUP -->
-    <div v-if="selectedParty" class="popup-overlay">
-      <div class="popup-content relative">
+    <div v-if="selectedParty" class="popup-overlay fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div class="popup-content relative bg-white p-6 rounded-md w-11/12 max-w-md">
         <button @click="selectedParty = null" class="absolute top-2 right-3 text-gray-600 text-2xl hover:text-black">✕</button>
         <div class="flex justify-center mb-4">
           <div class="flex items-center justify-center w-32 h-32 bg-white overflow-hidden">
@@ -39,37 +36,40 @@
   </div>
 </template>
 
-
-<script lang="ts">
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
-export default {
-  name: 'PartyListView',
-  setup() {
-    const parties = ref([])
-    const selectedParty = ref(null)
-
-    const API_URL = import.meta.env.VITE_API_URL
-
-    const fetchParties = async () => {
-      try {
-        const response = await fetch(`${API_URL}/parties`)
-        if (!response.ok) throw new Error('Failed to fetch parties')
-        parties.value = await response.json()
-      } catch (error) {
-        console.error('Error loading parties:', error)
-      }
-    }
-
-    const showDetail = (party) => {
-      selectedParty.value = party
-    }
-
-    onMounted(fetchParties)
-
-    return { parties, selectedParty, showDetail }
-  },
+// Party interface
+interface Party {
+  id: number
+  name: string
+  imageUrl: string
+  description: string
 }
+
+// State
+const parties = ref<Party[]>([])
+const selectedParty = ref<Party | null>(null)
+
+const API_URL = import.meta.env.VITE_API_URL as string
+
+// Data ophalen
+const fetchParties = async () => {
+  try {
+    const response = await fetch(`${API_URL}/parties`)
+    if (!response.ok) throw new Error('Failed to fetch parties')
+    parties.value = await response.json() as Party[]
+  } catch (error) {
+    console.error('Error loading parties:', error)
+  }
+}
+
+// Show popup
+const showDetail = (party: Party) => {
+  selectedParty.value = party
+}
+
+onMounted(fetchParties)
 </script>
 
 <style scoped>

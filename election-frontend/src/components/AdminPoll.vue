@@ -151,6 +151,7 @@ onMounted(async () => {
       role: decoded.role,
       id: decoded.userId,
       quizBestMatch: '',
+      createdAt: new Date().toISOString()
     }
   }
 
