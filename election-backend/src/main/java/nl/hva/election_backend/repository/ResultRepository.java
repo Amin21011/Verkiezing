@@ -1,4 +1,5 @@
 package nl.hva.election_backend.repository;
+import nl.hva.election_backend.dto.ConstituencyTurnoutView;
 import nl.hva.election_backend.dto.RegionTurnoutView;
 import nl.hva.election_backend.dto.SmallestPartyWinView;
 import nl.hva.election_backend.model.Result;
@@ -47,14 +48,12 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
             @Param("election") Election election
     );
 
-
     @Query("""
-    SELECT r.region AS region, SUM(r.votes) AS votes
-    FROM Result r
-    WHERE r.region IS NOT NULL
-      AND r.election = :election
-    GROUP BY r.region
-    ORDER BY SUM(r.votes) DESC
+    SELECT cv.constituencies AS constituencies,
+           SUM(cv.votes) AS votes
+    FROM ConstituencyVotes cv
+    GROUP BY cv.constituencies
+    ORDER BY SUM(cv.votes) DESC
 """)
-    List<RegionTurnoutView> findRegionTurnout(@Param("election") Election election);
+    List<ConstituencyTurnoutView> findTopConstituencyByVotes();
 }

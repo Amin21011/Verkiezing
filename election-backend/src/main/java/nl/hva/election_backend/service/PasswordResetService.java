@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class PasswordResetService {
-
     private final Map<String, Long> allowedResets = new ConcurrentHashMap<>();
     private static final long TTL_MS = 10 * 60 * 1000;
 
