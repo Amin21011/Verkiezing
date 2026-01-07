@@ -39,6 +39,11 @@ public class QuizResultService {
             }
 
             for (PartyPosition partyPosition : question.getPartyPositions()) {
+
+                if (partyPosition == null) continue;
+                if (partyPosition.getParty() == null) continue;
+                if (partyPosition.getPosition() == null) continue;
+
                 String party = partyPosition.getParty();
                 String partyAnswer = partyPosition.getPosition().name();
                 String normalizedUserAnswer = userAnswer.toUpperCase();
@@ -62,18 +67,18 @@ public class QuizResultService {
             percentages.put(entry.getKey(), percent);
         }
 
-        String bestParty = percentages.entrySet()
+        String bestMatchingParty = percentages.entrySet()
                 .stream()
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
                 .orElse("Geen partij gevonden");
 
-        return new QuizResult(bestParty, percentages);
+        return new QuizResult(bestMatchingParty, percentages);
     }
 
-    public void saveQuizResult(String email, String bestParty) {
+    public void saveQuizResult(String email, String bestMatchingParty) {
         User user = userService.findByEmail(email);
-        user.setQuizBestMatch(bestParty);
+        user.setQuizBestMatch(bestMatchingParty);
         userService.save(user);
     }
 }

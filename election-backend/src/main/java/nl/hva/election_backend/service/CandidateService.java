@@ -65,4 +65,12 @@ public class CandidateService {
                 c.getVotes()
         );
     }
+
+    public List<CandidateDTO> getTopCandidatesByParty(String partyId, int limit) {
+        return candidateRepository.findByParty_IdOrderByVotesDesc(partyId)
+                .stream()
+                .limit(limit)
+                .map(this::toDto)
+                .toList();
+    }
 }

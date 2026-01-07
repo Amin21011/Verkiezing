@@ -50,5 +50,11 @@ public class CandidateController {
     ) {
         return ResponseEntity.ok(candidateService.compareCandidates(selections));
     }
-
+    @GetMapping("/top")
+    public ResponseEntity<List<CandidateDTO>> getTopCandidates(
+            @RequestParam String partyId,
+            @RequestParam(defaultValue = "3") int limit
+    ) {
+        return ResponseEntity.ok(candidateService.getTopCandidatesByParty(partyId, limit));
+    }
 }

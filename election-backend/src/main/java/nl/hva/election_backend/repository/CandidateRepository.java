@@ -12,6 +12,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, String> {
     List<Candidate> findByParty_Id(String partyId);
     List<Candidate> findByFirstNameContainingIgnoreCase(String name);
     List<Candidate> findByLastNameContainingIgnoreCase(String name);
+    List<Candidate> findByParty_IdOrderByVotesDesc(String partyId);
     @Query("""
     SELECT c
     FROM Candidate c
