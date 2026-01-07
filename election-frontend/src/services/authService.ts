@@ -114,7 +114,7 @@ export async function verifyResetIdentity(
   email: string,
   birthDate: string
 ): Promise<void> {
-  const res = await fetch(`${API_URL}/password-reset/verify`, {
+  const res = await fetch(`${API_URL}/verify`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -131,7 +131,7 @@ export async function resetPassword(
   email: string,
   newPassword: string
 ): Promise<void> {
-  const res = await fetch(`${API_URL}/password-reset/confirm`, {
+  const res = await fetch(`${API_URL}/confirm`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
