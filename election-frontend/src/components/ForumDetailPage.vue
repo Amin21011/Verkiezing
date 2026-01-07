@@ -140,11 +140,9 @@ onMounted(fetchPost);
       <h2 class="text-3xl font-serif font-black uppercase mb-4">
         Inloggen vereist
       </h2>
-
       <p class="italic text-graymain mb-8">
         Log in om deel te nemen aan het debat.
       </p>
-
       <div class="flex justify-center gap-6">
         <button @click="goToLogin" class="btn-primary px-6 py-2">
           Inloggen
@@ -188,73 +186,37 @@ onMounted(fetchPost);
         </div>
 
         <div class="space-y-3 max-w-xs select-none">
-
-          <!-- LABEL -->
           <p class="text-xs uppercase tracking-widest text-graymain">
             Publieke stemming
           </p>
 
-          <!-- METER -->
-          <div
-            class="relative h-3 border border-ink overflow-hidden"
-          >
-            <!-- FOR -->
-            <div
-              class="absolute left-0 top-0 h-full bg-ink/80 transition-all duration-300"
-              :style="{
+          <div class="relative h-3 border border-ink overflow-hidden">
+            <div class="absolute left-0 top-0 h-full bg-ink/80 transition-all duration-300" :style="{
         width: `${Math.max(
-          10,
-          (post?.likeCount || 0) /
-          ((post?.likeCount || 0) + (post?.dislikeCount || 0) || 1) * 100
-        )}%`
-      }"
-            />
+          10, (post?.likeCount || 0) / ((post?.likeCount || 0) + (post?.dislikeCount || 0) || 1) * 100)}%`
+      }" />
 
-            <!-- AGAINST -->
-            <div
-              class="absolute right-0 top-0 h-full bg-ink/20"
-            />
+            <div class="absolute right-0 top-0 h-full bg-ink/20" />
           </div>
 
-          <!-- ACTIONS -->
           <div class="flex items-center justify-between text-xs uppercase tracking-widest">
 
-            <!-- VOOR -->
-            <button
-              @click="likePost"
-              class="group flex items-center gap-2"
-            >
-      <span
-        class="w-8 h-8 flex items-center justify-center
-               border border-ink
-               group-hover:bg-ink group-hover:text-paper
-               group-active:scale-95
-               transition"
-      >
-        ✓
-      </span>
+            <button @click="likePost" class="group flex items-center gap-2">
+              <span class="w-8 h-8 flex items-center justify-center border border-ink group-hover:bg-ink group-hover:text-paper
+               group-active:scale-95 transition">
+                ✓ </span>
+
               <span class="tabular-nums">
-        {{ post?.likeCount || 0 }}
-      </span>
+                {{ post?.likeCount || 0 }}
+              </span>
             </button>
 
-            <!-- TEGEN -->
-            <button
-              @click="dislikePost"
-              class="group flex items-center gap-2"
-            >
-      <span
-        class="w-8 h-8 flex items-center justify-center
-               border border-ink
-               group-hover:bg-ink group-hover:text-paper
-               group-active:scale-95
-               transition"
-      >
-        ✕
-      </span>
-              <span class="tabular-nums">
-        {{ post?.dislikeCount || 0 }}
-      </span>
+            <button @click="dislikePost" class="group flex items-center gap-2">
+              <span class="w-8 h-8 flex items-center justify-center border border-ink
+               group-hover:bg-ink group-hover:text-paper group-active:scale-95 transition">
+                ✕ </span>
+
+              <span class="tabular-nums"> {{ post?.dislikeCount || 0 }} </span>
             </button>
 
           </div>

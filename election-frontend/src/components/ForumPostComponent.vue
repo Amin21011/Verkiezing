@@ -1,47 +1,75 @@
 <template>
-  <div class="forum">
-    <h2 class="forum-title">Forum</h2>
+  <section class="max-w-4xl mx-auto space-y-16 pt-12">
+    <header class="border-b-4 border-ink pb-6">
+      <p class="font-mono text-[10px] uppercase tracking-[0.35em] text-muted">
+        Community </p>
+      <h2 class="text-4xl font-headline font-black">
+        Forum </h2>
+    </header>
 
-    <!-- Nieuwe topic aanmaken -->
-    <div class="new-topic card">
-      <h3>Nieuw topic aanmaken</h3>
-      <input
-        v-model="newTopicName"
-        type="text"
-        placeholder="Nieuw topic aanmaken"
-      />
-      <button @click="createTopic">Topic aanmaken</button>
-      <p v-if="topicError" class="error-msg">{{ topicError }}</p>
-    </div>
+    <!-- Nieuw topic -->
+    <section class="bg-paper border-4 border-ink shadow-press p-8">
+      <div class="space-y-6">
 
-    <hr />
+        <header class="space-y-1">
+          <p class="font-mono text-[10px] uppercase tracking-widest text-muted">
+            Beheer
+          </p>
+          <h3 class="text-2xl font-serif font-bold">
+            Nieuw topic
+          </h3>
+        </header>
 
-    <!-- Nieuwe post -->
-    <form @submit.prevent="submitPost" class="new-post card">
-      <h3>Nieuwe post</h3>
+        <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end">
+          <input v-model="newTopicName" type="text"
+            placeholder="Bijv. Verkiezingen 2025" class="input-field" />
 
-      <select v-model="selectedTopicId" required>
-        <option value="" disabled>-- Kies een topic --</option>
-        <option v-for="topic in topics" :key="topic.id" :value="topic.id">
-          {{ topic.name }}
-        </option>
-      </select>
+          <button @click="createTopic" class="btn-primary-blue">
+            Topic aanmaken
+          </button>
+        </div>
 
-      <input
-        v-model="title"
-        type="text"
-        placeholder="Titel van je vraag"
-        required
-      />
-      <textarea
-        v-model="content"
-        placeholder="Beschrijf je vraag..."
-        required
-      ></textarea>
-      <button type="submit">Plaats bericht</button>
-    </form>
-  </div>
+        <p v-if="topicError" class="text-red-600 text-sm italic">
+          {{ topicError }}
+        </p>
+      </div>
+    </section>
+
+    <section class="bg-paper border-4 border-ink shadow-press p-8">
+      <form @submit.prevent="submitPost" class="space-y-6">
+
+        <header class="space-y-1">
+          <p class="font-mono text-[10px] uppercase tracking-widest text-muted">
+            Discussie
+          </p>
+          <h3 class="text-2xl font-serif font-bold">
+            Nieuwe post
+          </h3>
+        </header>
+
+        <div class="flex flex-col gap-4">
+          <select v-model="selectedTopicId" required class="input-field">
+            <option value="" disabled>— Kies een topic —</option>
+            <option v-for="topic in topics" :key="topic.id" :value="topic.id">
+              {{ topic.name }}
+            </option>
+          </select>
+
+          <input v-model="title" type="text" placeholder="Titel van je vraag" required class="input-field" />
+
+          <textarea v-model="content" placeholder="Beschrijf je vraag..." required rows="6" class="input-field resize-none"></textarea>
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="btn-primary-blue">
+            Plaats bericht
+          </button>
+        </div>
+      </form>
+    </section>
+  </section>
 </template>
+
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
@@ -204,7 +232,7 @@ textarea {
 
 button {
   padding: 0.75rem 1.5rem;
-  background-color: #00712d;
+  background-color: #476a8a;
   color: white;
   font-weight: bold;
   border: none;
@@ -214,7 +242,7 @@ button {
 }
 
 button:hover {
-  background-color: #00591a;
+  background-color: midnightblue;
 }
 
 /* Error message styling */
