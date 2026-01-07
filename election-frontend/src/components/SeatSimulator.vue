@@ -6,6 +6,7 @@ import { normalizeParty, getPartyColor } from "@/helpers/SimulatorHelper";
 import SeatChart from "@/components/SeatChart.vue";
 import SeatChamber from "@/components/SeatChamber.vue";
 import SeatLegend from "@/components/SeatLegend.vue";
+import { getPartyLabel } from '@/helpers/partyUtils.ts'
 
 const turnout = ref(80);
 const threshold = ref(0.67);
@@ -32,6 +33,7 @@ async function load() {
 
     return {
       ...entry,
+      party: getPartyLabel(key),
       color: getPartyColor(key),
       delta: entry.seats - originalSeats,
     };
