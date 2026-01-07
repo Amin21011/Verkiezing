@@ -1,11 +1,67 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { getToken } from "@/services/authService.ts";
+import { getToken } from "@/services/authService";
+
+async function fetchWikipediaBio(fullName: string, party: string): Promise<string> {
+  try {
+    const formatted = fullName.replace(/ /g, "_");
+    const url = `https://nl.wikipedia.org/api/rest_v1/page/summary/${formatted}`;
+
+    const res = await fetch(url);
+    if (!res.ok) {
+      return generateFallbackBio(fullName, party);
+    }
+
+    const data = await res.json();
+    if (data.extract) {
+      return data.extract;
+    }
+
+    return generateFallbackBio(fullName, party);
+
+  } catch {
+    return generateFallbackBio(fullName, party);
+  }
+}
+
+function generateFallbackBio(fullName: string, party: string): string {
+  return `${fullName} is een kandidaat van ${party}. Meer informatie over deze kandidaat is momenteel niet beschikbaar.`;
+}
+
+const partyIdToDisplayName: Record<string, string> = {
+  "vvd": "VVD",
+  "groenlinks___partij_van_de_arbeid_(pvda)": "GroenLinks-PvdA",
+  "d66": "D66",
+  "pvv_(partij_voor_de_vrijheid)": "PVV",
+  "cda": "CDA",
+  "forum_voor_democratie": "FvD",
+  "bij1": "BIJ1",
+  "partij_voor_de_dieren": "Partij voor de Dieren",
+  "christenunie": "ChristenUnie",
+  "sp_(socialistische_partij)": "SP",
+  "50plus": "50Plus",
+  "denk": "DENK",
+  "fnp": "FNP",
+  "vrede_voor_dieren": "Vrede voor Dieren",
+  "ja21": "JA21",
+  "volt": "Volt",
+  "staatkundig_gereformeerde_partij_(sgp)": "SGP",
+  "bbb": "BBB",
+  "nieuw_sociaal_contract": "NSC",
+  "bvnl___groep_van_haga": "BVNL",
+  "lp_(libertaire_partij)": "LP",
+  "piratenpartij___de_groenen": "PiratenPartij",
+  "vrij_verbond": "Vrij Verbond",
+  "de_linie": "De Linie",
+  "nederland_met_een_plan": "NL PLAN",
+  "ellect": "ELLECT",
+  "partij_voor_de_rechtsstaat": "Partij voor de Rechtsstaat"
+};
 
 // Types
-type Question = { id: string; text: string; };
-type PartyScore = { party: string; score: number; };
-type QuizResult = { bestMatchingParty?: string; bestMatch?: string; partyScores: Record<string, number>; };
+type Question = { id: string; text: string };
+type QuizResult = { bestMatchingParty: string; percentages: Record<string, number> };
+type PartyScore = { party: string; score: number };
 
 // state
 const questions = ref<Question[]>([]);
@@ -15,7 +71,7 @@ const loading = ref(true);
 const errorMessage = ref("");
 const globalError = ref("");
 
-const API_URL = import.meta.env.VITE_API_URL;
+const topCandidates = ref<any[]>([]);
 
 const isLoggedIn = computed(() => !!getToken());
 async function loadQuiz() {
@@ -23,33 +79,45 @@ async function loadQuiz() {
   globalError.value = "";
 
   try {
-    const response = await fetch(`${API_URL}/quiz`);
-
-
-    if (!response.ok) {
-      throw new Error("Kon de quiz niet laden");
-    }
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/quiz`);
+    if (!response.ok) throw new Error();
 
     const data = await response.json();
     questions.value = data.questions ?? [];
-  } catch (e) {
-    console.error("Fout bij laden quiz:", e);
+  } catch {
     globalError.value = "Er ging iets mis bij het laden van de quiz.";
   } finally {
     loading.value = false;
   }
 }
 
-// quiz versturen
+async function loadTopCandidates(partyId: string) {
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/candidates/top?partyId=${partyId}&limit=3`
+    );
+    if (!res.ok) throw new Error("Kon kandidaten niet laden");
+
+    const candidates = await res.json();
+
+    for (const cand of candidates) {
+      const fullName = `${cand.firstName} ${cand.lastName}`;
+      cand.bio = await fetchWikipediaBio(fullName, cand.partyName);
+    }
+
+    topCandidates.value = candidates;
+
+  } catch (e) {
+    console.error("Fout bij laden top kandidaten:", e);
+  }
+}
+
 async function submitQuiz() {
-  // validatie
-  const unanswered = questions.value.filter((q) => !answers.value[q.id]);
-  if (unanswered.length > 0) {
+  const unanswered = questions.value.filter(q => !answers.value[q.id]);
+  if (unanswered.length) {
     errorMessage.value = "Beantwoord alle vragen voordat je doorgaat.";
     return;
   }
-  errorMessage.value = "";
-  globalError.value = "";
 
   const token = getToken();
   if (!token) {
@@ -58,7 +126,7 @@ async function submitQuiz() {
   }
 
   try {
-    const response = await fetch(`${API_URL}/quiz/result`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/quiz/result`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -67,54 +135,51 @@ async function submitQuiz() {
       body: JSON.stringify(answers.value),
     });
 
-    if (!response.ok) {
-      const text = await response.text();
-      console.error("Backend fout bij quiz/result:", text);
-      throw new Error("Quiz verwerken mislukt");
-    }
+    if (!response.ok) throw new Error();
 
-    const data: QuizResult = await response.json();
-    result.value = data;
+    result.value = await response.json();
+
+    console.log("Quiz result:", result.value);
+
+    // Top 3 kandidaten ophalen van de beste partij
+    const partyId = result.value.bestMatchingParty;
+    await loadTopCandidates(partyId);
+
   } catch (e) {
     console.error(e);
-    globalError.value =
-      "Er ging iets mis bij het berekenen of opslaan van jouw resultaat.";
+    globalError.value = "Quiz verwerken mislukt.";
   }
 }
 
-// gesorteerde resultaten
 const sortedResults = computed<PartyScore[]>(() => {
-  if (!result.value || !result.value.partyScores) return [];
-  return Object.entries(result.value.partyScores)
+  if (!result.value) return [];
+
+  return Object.entries(result.value.percentages)
     .map(([party, score]) => ({ party, score }))
     .sort((a, b) => b.score - a.score);
 });
 
-// reset
 function resetQuiz() {
   answers.value = {};
   result.value = null;
   errorMessage.value = "";
   globalError.value = "";
+  topCandidates.value = [];
 }
 
-onMounted(() => {
-  loadQuiz();
-});
+onMounted(loadQuiz);
 </script>
 
 <template>
-  <div class="min-h-screen w-full bg-paper text-ink font-body flex flex-col items-center py-16 px-6 relative">
+<div class="min-h-screen w-full bg-paper text-ink font-body paper-layer flex flex-col items-center py-16 px-6 relative">
     <div class="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/newsprint.png')]"></div>
 
     <div class="relative z-10 text-center max-w-2xl">
-      <h1
-        class="text-5xl font-headline font-bold mb-4 tracking-tight text-ink drop-shadow-sm">
+    <h1 class="text-5xl font-headline retro-title mb-4 text-ink tracking-press">
         Welke partij past het beste bij jou? 🤓
       </h1>
       <p class="text-lg text-gray-700 italic mb-10 leading-relaxed">
-        Ontdek met een paar korte vragen welke politieke partij het dichtst bij
-        jouw mening staat. Geen stress — gewoon eerlijk invullen!
+        Ontdek met een paar korte vragen welke politieke partij het dichtst bij jouw mening staat.
       </p>
     </div>
 
@@ -132,38 +197,22 @@ onMounted(() => {
     <!-- Quiz -->
     <div v-else class="w-full max-w-3xl relative z-10 mt-6">
       <form @submit.prevent="submitQuiz"
-        class="space-y-8 bg-white/70 backdrop-blur-sm border border-gray-300 rounded-xl shadow-lg p-8">
-        <div v-for="question in questions"
-          :key="question.id"
-          class="border-b border-gray-300 pb-4 last:border-none">
-          <p class="font-semibold text-xl text-ink mb-3">
-            {{ question.text }}
-          </p>
+        class="space-y-8 bg-paper-soft border-soft border rounded-xl shadow-soft p-8 hover-print">
+
+        <div v-for="question in questions" :key="question.id" class="border-b border-gray-300 pb-4 last:border-none">
+          <p class="font-semibold text-xl text-ink mb-3">{{ question.text }}</p>
 
           <div class="flex flex-wrap gap-6 text-gray-800">
             <label class="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                :name="question.id"
-                value="Ja"
-                v-model="answers[question.id]"
-                class="accent-indigo-600" />
+              <input type="radio" :name="question.id" value="Ja" v-model="answers[question.id]" class="accent-indigo-600" />
               Ja
             </label>
             <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio"
-                :name="question.id"
-                value="Nee"
-                v-model="answers[question.id]"
-                class="accent-indigo-600" />
+              <input type="radio" :name="question.id" value="Nee" v-model="answers[question.id]" class="accent-indigo-600" />
               Nee
             </label>
             <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio"
-                :name="question.id"
-                value="Neutraal"
-                v-model="answers[question.id]"
-                class="accent-indigo-600" />
+              <input type="radio" :name="question.id" value="Neutraal" v-model="answers[question.id]" class="accent-indigo-600" />
               Neutraal
             </label>
           </div>
@@ -177,14 +226,12 @@ onMounted(() => {
         <div class="flex justify-center mt-6">
           <button v-if="isLoggedIn"
             type="submit"
-            class="bg-indigo-700 text-white px-8 py-3 rounded-lg text-lg hover:bg-indigo-800 transition shadow-md">
+            class="bg-black hover:bg-[#8e2f3b] text-white px-8 py-3 rounded-lg text-lg transition shadow-md">
             Bekijk mijn resultaat
           </button>
 
           <div v-else class="text-center">
-            <button
-              disabled
-              class="bg-gray-400 cursor-not-allowed text-white px-8 py-3 rounded-lg text-lg opacity-70 shadow">
+            <button disabled class="bg-gray-400 cursor-not-allowed text-white px-8 py-3 rounded-lg text-lg opacity-70 shadow">
               Log in om jouw resultaat te zien
             </button>
 
@@ -195,33 +242,50 @@ onMounted(() => {
         </div>
       </form>
 
-      <!-- Resultaat -->
       <div v-if="result && sortedResults.length"
-        class="mt-10 bg-white/80 backdrop-blur-sm border border-gray-300 rounded-xl shadow-lg p-8 text-center">
-        <h2 class="text-3xl font-bold text-ink mb-3">
+        class="mt-10 bg-paper-soft border-soft border rounded-xl shadow-soft p-8 paper-layer">
+
+        <h2 class="text-3xl font-bold text-center mb-6">
           Jouw beste match:
-          <span class="text-indigo-700">
-            {{ sortedResults[0].party }} 🎉
+          <span class="text-black-700">
+          {{ partyIdToDisplayName[sortedResults[0].party] || sortedResults[0].party }}
           </span>
         </h2>
 
-        <p class="text-gray-700 mb-4 italic">
-          Bekijk hoe de andere partijen scoren:
-        </p>
-        <div class="bg-gray-50 border border-gray-200 rounded-md text-left max-h-60 overflow-y-auto p-4">
-          <div
-            v-for="item in sortedResults"
-            :key="item.party"
+        <!-- Alle partijen tonen -->
+        <div class="bg-gray-50 border border-gray-200 rounded-md text-left max-h-60 overflow-y-auto p-4 mb-10">
+          <div v-for="item in sortedResults" :key="item.party"
             class="flex justify-between border-b border-gray-200 py-1">
-            <span class="font-medium text-ink">{{ item.party }}</span>
-            <span class="text-gray-700">
-              {{ item.score.toFixed(1) }}%
+            <span class="font-medium text-ink">
+              {{ partyIdToDisplayName[item.party] || item.party }}
             </span>
+            <span class="text-gray-700">{{ item.score.toFixed(1) }}%</span>
+          </div>
+        </div>
+
+        <!-- TOP 3 KANDIDATEN -->
+        <h3 class="text-2xl font-bold text-center mb-4">
+          Top 3 kandidaten van {{ partyIdToDisplayName[result.bestMatchingParty] || result.bestMatchingParty }}
+        </h3>
+
+        <div class="grid gap-6">
+          <div v-for="cand in topCandidates" :key="cand.id"
+            class="border border-gray-300 rounded-lg p-5 bg-white">
+            <h4 class="text-xl font-bold mb-2">
+              {{ cand.firstName }} {{ cand.lastName }}
+            </h4>
+            <p class="text-gray-700 text-sm">
+                          Stemmen: {{ cand.votes }}
+                        </p>
+            <p class="text-gray-600 text-sm mt-2 italic">
+              {{ cand.bio }}
+            </p>
+
           </div>
         </div>
 
         <button @click="resetQuiz"
-          class="mt-6 bg-indigo-700 text-white px-5 py-2 rounded-lg hover:bg-indigo-800 transition shadow-md">
+          class="btn-primary text-lg px-8 py-3">
           Opnieuw proberen
         </button>
       </div>
@@ -229,13 +293,5 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
-@import "@/assets/base.css";
-@import "tailwindcss";
-
-.answers input[type="radio"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-}
+<style>
 </style>

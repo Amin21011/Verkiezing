@@ -8,7 +8,12 @@ import java.util.List;
 
 @Service
 public class QuestionService {
-    private final QuizService quizService = new QuizService();
+
+    private final QuizService quizService;
+
+    public QuestionService(QuizService quizService) {
+        this.quizService = quizService;
+    }
 
     public List<Question> getAllQuestions() {
         Quiz quiz = quizService.getQuiz();
@@ -19,6 +24,7 @@ public class QuestionService {
         return getAllQuestions().stream()
                 .filter(q -> q.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Vraag met ID " + id + " niet gevonden"));
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Vraag met ID " + id + " niet gevonden"));
     }
 }

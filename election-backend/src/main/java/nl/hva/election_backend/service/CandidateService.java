@@ -5,6 +5,7 @@ import nl.hva.election_backend.model.Candidate;
 import nl.hva.election_backend.repository.CandidateRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 @Service
@@ -64,5 +65,48 @@ public class CandidateService {
                 c.getGender(),
                 c.getVotes()
         );
+    }
+
+    public List<CandidateDTO> getTopCandidatesByParty(String partyId) {
+        List<CandidateDTO> candidates = candidateRepository.findByParty_IdOrderByVotesDesc(partyId)
+                .stream()
+                .sorted(Comparator.comparingInt(Candidate::getVotes).reversed())
+                .limit(3)
+                .map(this::toDto)
+                .toList();
+
+        // Fallback: als er GEEN kandidaten zijn
+        if (candidates.isEmpty()) {
+            return List.of(
+                    new CandidateDTO(
+                            "fallback-1",
+                            "FALLBACK",        // shortCode
+                            "Geen kandidaten",          // firstName
+                            "beschikbaar",              // lastName
+                            partyId,                    // partyId
+                            partyId,                    // partyName
+                            0                           // votes
+                    ),
+                    new CandidateDTO(
+                            "fallback-2",
+                            "FALLBACK",
+                            "Geen kandidaten",
+                            "beschikbaar",
+                            partyId,
+                            partyId,
+                            0
+                    ),
+                    new CandidateDTO(
+                            "fallback-3",
+                            "FALLBACK",
+                            "Geen kandidaten",
+                            "beschikbaar",
+                            partyId,
+                            partyId,
+                            0
+                    )
+            );
+        }
+        return candidates;
     }
 }

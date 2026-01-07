@@ -1,73 +1,85 @@
 package nl.hva.election_backend.api;
 
 import nl.hva.election_backend.model.Question;
-import nl.hva.election_backend.model.Quiz;
 import nl.hva.election_backend.model.QuizResult;
 import nl.hva.election_backend.security.JwtUtil;
 import nl.hva.election_backend.service.QuestionService;
 import nl.hva.election_backend.service.QuizResultService;
 import nl.hva.election_backend.service.QuizService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/quiz")
+@RequestMapping("/quiz")
 public class QuizController {
 
     private final QuizService quizService;
-    private final QuizResultService resultService;
+    private final QuizResultService quizResultService;
     private final QuestionService questionService;
     private final JwtUtil jwtUtil;
 
-    public QuizController(QuizResultService resultService, JwtUtil jwtUtil, QuizService quizService, QuestionService questionService) {
-        this.resultService = resultService;
-        this.jwtUtil = jwtUtil;
+    public QuizController(
+            QuizService quizService,
+            QuizResultService quizResultService,
+            JwtUtil jwtUtil,
+            QuestionService questionService
+    ) {
         this.quizService = quizService;
+        this.quizResultService = quizResultService;
+        this.jwtUtil = jwtUtil;
         this.questionService = questionService;
     }
 
     @GetMapping
-    public Quiz getQuiz() {
-        return quizService.getQuiz();
+    public ResponseEntity<?> getQuiz() {
+        return ResponseEntity.ok(quizService.getQuiz());
     }
 
-    @PostMapping("/api/result")
-    public QuizResult getResult(
-            @RequestHeader("Authorization") String authHeader,
-            @RequestBody Map<String, String> userAnswers
+    @PostMapping("/result")
+    public ResponseEntity<?> submitQuiz(
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @RequestBody Map<String, String> answers
     ) {
-        if (userAnswers == null || userAnswers.isEmpty()) {
-            throw new IllegalArgumentException("Er zijn geen antwoorden ontvangen.");
-        }
-
-        int totalQuestions = quizService.getQuiz().getQuestions().size();
-        if (userAnswers.size() != totalQuestions) {
-            throw new IllegalArgumentException("Niet alle vragen zijn beantwoord (" +
-                    userAnswers.size() + " van " + totalQuestions + ").");
-        }
-
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new IllegalArgumentException("Geen geldige token ontvangen.");
+            return ResponseEntity.status(401)
+                    .body(Map.of("error", "Geen geldige Authorization header."));
         }
 
-        String token = authHeader.substring(7);
-        String email = jwtUtil.validateTokenAndGetEmail(token);
+        try {
+            String token = authHeader.substring(7);
+            String email = jwtUtil.validateTokenAndGetEmail(token);
 
-        QuizResult result = resultService.calculateResult(userAnswers);
-        resultService.saveQuizResult(email, result.getBestMatch());
+            QuizResult result = quizResultService.processQuiz(answers, email);
+            // 201 CREATED omdat er iets nieuws is opgeslagen
+            return ResponseEntity.status(201).body(result);
 
-        return result;
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            // Token verlopen → 401 Unauthorized
+            return ResponseEntity.status(401)
+                    .body(Map.of("error", "Token is verlopen. Log opnieuw in."));
+        } catch (Exception e) {
+            // Andere fout → 400 Bad Request
+            return ResponseEntity.status(400)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
+    // Haalt alle vragen op 200 OK.
     @GetMapping("/questions")
-    public List<Question> getQuestions() {
-        return questionService.getAllQuestions();
+    public ResponseEntity<?> getQuestions() {
+        return ResponseEntity.ok(questionService.getAllQuestions());
     }
 
+    // Haalt één vraag op. Als niet gevonden → 404.
     @GetMapping("/questions/{id}")
-    public Question getQuestionById(@PathVariable String id) {
-        return questionService.getQuestionById(id);
+    public ResponseEntity<?> getQuestionById(@PathVariable String id) {
+        Question q = questionService.getQuestionById(id);
+
+        if (q == null) {
+            return ResponseEntity.status(404)
+                    .body(Map.of("error", "Vraag niet gevonden"));
+        }
+        return ResponseEntity.ok(q);
     }
 }

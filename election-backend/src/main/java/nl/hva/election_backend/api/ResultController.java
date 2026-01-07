@@ -26,7 +26,7 @@ public class ResultController {
                 .toList();
     }
 
-    @GetMapping("/candidates/top")
+    @GetMapping("/results/candidates/top")
     public List<CandidateDTO> getTopCandidatesByParty(
             @RequestParam String partyId,
             @RequestParam(defaultValue = "5") int limit
