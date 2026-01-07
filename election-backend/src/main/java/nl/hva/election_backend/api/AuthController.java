@@ -1,5 +1,6 @@
 package nl.hva.election_backend.api;
-
+import nl.hva.election_backend.api.response.AuthResponse;
+import nl.hva.election_backend.api.response.MessageResponse;
 import nl.hva.election_backend.dto.PasswordChangeRequest;
 import nl.hva.election_backend.dto.model.UserDTO;
 import nl.hva.election_backend.model.User;
@@ -8,7 +9,6 @@ import nl.hva.election_backend.service.UserService;
 import nl.hva.election_backend.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -26,54 +26,65 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
+    public ResponseEntity<AuthResponse> register(@RequestBody User user) {
         User savedUser = authService.register(user.getName(), user.getEmail(), user.getPassword());
         String token = jwtUtil.generateToken(savedUser);
 
-
-        return ResponseEntity.ok(Map.of(
-                "token", token,
-                "email", savedUser.getEmail(),
-                "name", savedUser.getName(),
-                "role", savedUser.getRole()
-        ));
+        return ResponseEntity.ok(
+                new AuthResponse(token, savedUser.getEmail(), savedUser.getName(), savedUser.getRole()));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
+    public ResponseEntity<AuthResponse> login(@RequestBody Map<String, String> body) {
         String email = body.get("email");
         String password = body.get("password");
         String token = authService.authenticate(email, password);
         User user = userService.findByEmail(email);
 
-        return ResponseEntity.ok(Map.of(
-                "token", token,
-                "email", user.getEmail(),
-                "name", user.getName(),
-                "role", user.getRole()
+        return ResponseEntity.ok(new AuthResponse(
+                token, user.getEmail(), user.getName(), user.getRole()
         ));
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser(
-            @RequestHeader(value = "Authorization", required = false) String authHeader
-    ) {
+    public ResponseEntity<UserDTO> getCurrentUser(@RequestHeader(value = "Authorization", required = false) String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(401)
-                    .body(Map.of("error", "Geen geldige token gevonden"));
+            return ResponseEntity.status(401).build();
+        }
+        String token = authHeader.substring(7);
+        String email = jwtUtil.validateTokenAndGetEmail(token);
+        User user = userService.findByEmail(email);
+
+        return ResponseEntity.ok(UserDTO.from(user));
+    }
+
+    @PutMapping("/birthdate")
+    public ResponseEntity<MessageResponse> updateBirthDate(@RequestHeader(value = "Authorization", required = false) String authHeader, @RequestBody Map<String, String> body) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity
+                    .status(401)
+                    .body(new MessageResponse("Geen geldige token gevonden"));
+        }
+
+        if (!body.containsKey("birthDate")) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("birthDate is verplicht"));
         }
 
         String token = authHeader.substring(7);
         String email = jwtUtil.validateTokenAndGetEmail(token);
-        User user = userService.findByEmail(email);
-        return ResponseEntity.ok(UserDTO.from(user));
+
+        LocalDate birthDate = LocalDate.parse(body.get("birthDate"));
+        userService.updateBirthDate(email, birthDate);
+
+        return ResponseEntity.ok(
+                new MessageResponse("Geboortedatum opgeslagen")
+        );
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateUser(
-            @RequestHeader("Authorization") String authHeader,
-            @RequestBody UserDTO updatedUser
-    ) {
+    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String authHeader, @RequestBody UserDTO updatedUser) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body("Geen geldige token gevonden");
         }
@@ -87,27 +98,6 @@ public class AuthController {
         return ResponseEntity.ok(UserDTO.from(saved));
     }
 
-    @PutMapping("/birthdate")
-    public ResponseEntity<?> updateBirthDate(
-            @RequestHeader(value = "Authorization", required = false) String authHeader, @RequestBody Map<String, String> body) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(401)
-                    .body(Map.of("error", "Geen geldige token gevonden"));
-        }
-
-        String token = authHeader.substring(7);
-        String email = jwtUtil.validateTokenAndGetEmail(token);
-
-        if (!body.containsKey("birthDate")) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "birthDate is verplicht"));
-        }
-
-        LocalDate birthDate = LocalDate.parse(body.get("birthDate"));
-        userService.updateBirthDate(email, birthDate);
-        return ResponseEntity.ok(Map.of("message", "Geboortedatum opgeslagen"));
-    }
-
     @DeleteMapping("/account")
     public ResponseEntity<?> deleteOwnAccount(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.substring(7);
@@ -117,9 +107,7 @@ public class AuthController {
     }
 
     @PutMapping("/change-password")
-    public ResponseEntity<?> changePassword(
-            @RequestHeader("Authorization") String authHeader, @RequestBody PasswordChangeRequest request) {
-
+    public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String authHeader, @RequestBody PasswordChangeRequest request) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body(Map.of("error", "Geen geldige token gevonden"));
         }
