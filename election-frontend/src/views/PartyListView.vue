@@ -49,9 +49,11 @@ export default {
     const parties = ref([])
     const selectedParty = ref(null)
 
+    const API_URL = import.meta.env.VITE_API_URL
+
     const fetchParties = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/parties')
+        const response = await fetch(`${API_URL}/parties`)
         if (!response.ok) throw new Error('Failed to fetch parties')
         parties.value = await response.json()
       } catch (error) {
