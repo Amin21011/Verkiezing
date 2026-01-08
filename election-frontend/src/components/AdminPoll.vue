@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { getCurrentUser } from '@/services/authService'
 import type { AuthUser } from '@/types/IUser.ts'
-import { jwtDecode } from 'jwt-decode'
+import jwtDecode from 'jwt-decode'
 
 interface Poll {
   id: number

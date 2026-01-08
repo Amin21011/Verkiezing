@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import type { AuthUser } from '@/types/IUser.ts'
 import { authFetch } from '@/helpers/authFetch.ts'
-import { jwtDecode } from 'jwt-decode'
+import jwtDecode from 'jwt-decode'
 
 export const API_URL = `${import.meta.env.VITE_API_URL}/auth`
 export const authUser = ref<string | null>(null)
