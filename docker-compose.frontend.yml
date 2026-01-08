@@ -1,0 +1,15 @@
+services:
+  frontend:
+    build:
+      context: ./election-frontend
+      dockerfile: Dockerfile
+      args:
+        # Gebruik relatief pad zodat nginx proxy wordt gebruikt
+        VITE_API_URL: ${VITE_API_URL:-/api}
+    container_name: election-frontend-prod
+    restart: always
+    ports:
+      - "9000:80"
+    environment:
+      # Optioneel: voor runtime configuratie (maar Vite gebruikt build-time vars)
+      - VITE_API_URL=${VITE_API_URL:-/api}
